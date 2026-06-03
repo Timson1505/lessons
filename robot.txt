@@ -1,0 +1,13 @@
+User-agent: *
+User-agent: Googlebot
+User-agent: Googlebot mobile
+User-agent: bingbot
+Allow: /
+
+Disallow: /admin/
+Disallow: /cgi-bin/
+Disallow: /tmp/
+Disallow: /private/
+
+Sitemap: https://timson.com/sitemap.xml
+Sitemap: https://timson.com/sitemap.rss
