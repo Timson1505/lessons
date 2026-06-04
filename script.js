@@ -43,30 +43,33 @@ const phrases = ["teacher", "programmer"];
 
   /* ====== Passord Modal ====== */
   document.addEventListener("DOMContentLoaded", function () {
-
-    const correctPassword = "Timson2025"; // Change this password
-
     const modal = document.getElementById("passwordModal");
-    const content = document.getElementById("protectedContent");
     const input = document.getElementById("passwordInput");
     const button = document.getElementById("unlockBtn");
     const errorMsg = document.getElementById("errorMsg");
+    const protectedContent = document.getElementById("protectedContent");
 
-    function checkPassword() {
-        if (input.value === correctPassword) {
-            modal.style.display = "none";
-            content.style.display = "block";
-        } else {
-            errorMsg.textContent = "Incorrect password!";
-            input.value = "";
-        }
+    const PASSWORD = "Timson2025";
+    const STORAGE_KEY = "timson_unlocked";
+
+    // If already unlocked before → skip modal
+    if (localStorage.getItem(STORAGE_KEY) === "true") {
+        modal.style.display = "none";
+        protectedContent.style.display = "block";
+    } else {
+        modal.style.display = "flex";
+        protectedContent.style.display = "none";
     }
 
-    button.addEventListener("click", checkPassword);
+    button.addEventListener("click", function () {
+        const value = input.value;
 
-    input.addEventListener("keypress", function (e) {
-        if (e.key === "Enter") {
-            checkPassword();
+        if (value === PASSWORD) {
+            localStorage.setItem(STORAGE_KEY, "true"); // remember forever (until cleared)
+            modal.style.display = "none";
+            protectedContent.style.display = "block";
+        } else {
+            errorMsg.textContent = "Incorrect password";
         }
     });
 });
