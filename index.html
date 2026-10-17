@@ -66,13 +66,6 @@
                 <li><a href="#for-students"><i class="fa fa-briefcase"></i>For Students</a></li>
                 <li><a href="#contact"><i class="fa fa-comments"></i> Contact</a></li>
             </ul>
-            <div class="sidebar-account">
-                <button type="button" class="sidebar-account-button" id="openAccountModal">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Create account <small>or log in</small></span>
-                    <i class="fas fa-chevron-right account-arrow"></i>
-                </button>
-            </div>
         </div>
         <!--========= Main Content ==========-->
         <div class="main-content">
@@ -433,36 +426,6 @@
       </div>
       <!--======= Style Switcher End ========-->
       
-
-      <!-- Account dialog -->
-      <div class="account-modal" id="accountModal" aria-hidden="true">
-        <div class="account-modal-backdrop" data-close-account></div>
-        <section class="account-dialog" role="dialog" aria-modal="true" aria-labelledby="accountModalTitle">
-          <button type="button" class="account-modal-close" id="closeAccountModal" aria-label="Close account dialog"><i class="fas fa-times"></i></button>
-          <div class="account-dialog-icon"><i class="fas fa-user-lock"></i></div>
-          <h2 id="accountModalTitle">Your account</h2>
-          <p class="account-dialog-subtitle">Sign in or create a learning account.</p>
-          <div class="account-tabs" role="tablist" aria-label="Account action">
-            <button type="button" class="account-tab active" data-account-mode="login" role="tab" aria-selected="true">Log in</button>
-            <button type="button" class="account-tab" data-account-mode="register" role="tab" aria-selected="false">Create account</button>
-          </div>
-          <form id="accountForm">
-            <label for="accountRole">I am a</label>
-            <select id="accountRole" name="role">
-              <option value="student">Student</option>
-              <option value="teacher">Teacher</option>
-              <option value="admin">Admin</option>
-            </select>
-            <label for="accountEmail">Email address</label>
-            <input id="accountEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
-            <label for="accountPassword">Password</label>
-            <input id="accountPassword" name="password" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters" required>
-            <div class="account-status" id="accountStatus" role="status" aria-live="polite"></div>
-            <button class="btn account-submit" type="submit" id="accountSubmit">Log in</button>
-          </form>
-          <p class="account-security-note">Account authentication is not connected yet. Please don't enter a real password until secure sign-in is configured.</p>
-        </section>
-      </div>
 
       <script src="script.js"></script>
       <script src="style.switcher.js"></script>
