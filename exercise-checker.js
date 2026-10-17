@@ -3,8 +3,9 @@
 
   // Answer keys are attached to exercises in document order. Add more entries here
   // as the remaining lessons' keys are verified.
-  const answerKeys = {
+  const answerKeys =   const answerKeys = {
     "Beginner-1/lesson-0/index.html": [
+      null,
       null,
       null
     ],
@@ -183,26 +184,14 @@
     ],
     "Beginner-1/lesson-8/index.html": [
       [
-        "aren't",
-        "are",
-        "are",
         "is",
-        "isn't",
-        "is",
-        "aren't",
-        "are",
-        "is",
-        "is"
-      ],
-      [
         "is",
         "is",
         "are",
         "are",
         "are",
         "are",
-        "is",
-        "is",
+        "are",
         "are",
         "is",
         "is"
@@ -221,8 +210,6 @@
         "red",
         "buses"
       ],
-      null,
-      null,
       [
         "Is",
         "are",
