@@ -50,7 +50,7 @@
     if (!inputs.length || container.querySelector(".check-answers")) return;
     // Prefer an exercise block; avoid adding buttons to a list item if its exercise block exists.
     if (container.matches("li") && container.closest(".ex-1k, .exercise, .question")) return;
-    if (container.matches("section") && container.querySelector(".ex-1k, .exercise, .question")) return;
+    if (container.matches("section") && container.querySelector(".ex-1k, .exercise, .question, li input." + inputClass)) return;
 
     const button = document.createElement("button");
     button.type = "button";
