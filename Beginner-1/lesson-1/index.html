@@ -55,6 +55,17 @@
             outline: 2px solid #65a9d5;
             outline-offset: 1px;
           }
+        
+          .check-answers {
+            display: inline-block; margin: 12px 4px 4px; padding: 10px 18px;
+            border: 0; border-radius: 7px; background: #2878a8; color: #fff;
+            font-size: 15px; font-weight: 600; cursor: pointer;
+          }
+          .check-answers:hover { filter: brightness(1.08); }
+          .word-answer.correct { border: 2px solid #24834b; background: #effaf2; }
+          .word-answer.incorrect { border: 2px solid #c43b3b; background: #fff0f0; }
+          .answer-feedback { margin: 8px 4px; font-weight: 600; }
+
         </style>
 
     </head>
@@ -147,7 +158,7 @@
                     <i><span class="bold">Model:</span> I am timson. You are Mark.</i>
                 </div>
 
-                <div class="ex-1k">
+                <div class="ex-1k" id="exercise2-check">
                     <h3>Exercise 2: Complete the sentences with am, are, is</h3>
                     <ol>
                         <li>I <input class="word-answer" type="text" maxlength="12" aria-label="Type one word" autocomplete="off"> a manager</li>
@@ -161,6 +172,8 @@
                         <li>Your name <input class="word-answer" type="text" maxlength="12" aria-label="Type one word" autocomplete="off"> John</li>
                         <li>I <input class="word-answer" type="text" maxlength="12" aria-label="Type one word" autocomplete="off"> a student</li>
                     </ol>
+                    <button type="button" class="check-answers" data-check="exercise2-check">Check the answer</button>
+                    <p class="answer-feedback" aria-live="polite"></p>
                 </div>
                 <table>
                     <tr>
@@ -288,7 +301,7 @@
 
                 <h3 style="text-align: center; margin-bottom: 20px;">Homework</h3>
 
-                <div class="ex-1k">
+                <div class="ex-1k" id="homework-check">
                     <h3>Exercise 1: Complete the sentence with I, my, you, your.</h3>
                     <ol>
                         <li>Hello, <input class="word-answer" type="text" maxlength="12" aria-label="Type one word" autocomplete="off"> am Roy Maggie</li>
@@ -302,6 +315,8 @@
                         <li><input class="word-answer" type="text" maxlength="12" aria-label="Type one word" autocomplete="off"> are a student</li>
                         <li>I <input class="word-answer" type="text" maxlength="12" aria-label="Type one word" autocomplete="off"> Luiza</li>
                     </ol>
+                    <button type="button" class="check-answers" data-check="homework-check">Check the answer</button>
+                    <p class="answer-feedback" aria-live="polite"></p>
                 </div>
 
             </section>
@@ -331,6 +346,45 @@
         });
       </script>
       
+
+      <script>
+        (function () {
+          const answerKey = {
+            "exercise2-check": ["am", "are", "am", "are", "am", "is", "am", "are", "is", "am"],
+            "homework-check": ["I", "you", "your", "my", "I", "you", "you", "am", "is", "you", "am"]
+          };
+
+          document.querySelectorAll(".check-answers").forEach(function (button) {
+            button.addEventListener("click", function () {
+              const exercise = document.getElementById(button.dataset.check);
+              const inputs = Array.from(exercise.querySelectorAll("input.word-answer"));
+              const answers = answerKey[button.dataset.check];
+              let correct = 0;
+
+              inputs.forEach(function (input, index) {
+                const isCorrect = input.value.trim().toLowerCase() === answers[index].toLowerCase();
+                input.classList.toggle("correct", isCorrect);
+                input.classList.toggle("incorrect", !isCorrect);
+                input.setAttribute("aria-invalid", String(!isCorrect));
+                if (isCorrect) correct++;
+              });
+
+              const feedback = exercise.querySelector(".answer-feedback");
+              feedback.textContent = "Your score: " + correct + " / " + answers.length +
+                (correct === answers.length ? " — Excellent! All answers are correct." : " — Correct the answers marked in red and try again.");
+              feedback.style.color = correct === answers.length ? "#24834b" : "#b52f2f";
+            });
+          });
+
+          document.querySelectorAll("input.word-answer").forEach(function (input) {
+            input.addEventListener("input", function () {
+              input.classList.remove("correct", "incorrect");
+              input.removeAttribute("aria-invalid");
+            });
+          });
+        })();
+      </script>
+
       <script src="script.js"></script>
       <script src="style.switcher.js"></script>
     </body>
