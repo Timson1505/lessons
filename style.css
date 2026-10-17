@@ -939,3 +939,190 @@ body.dark .teacher-access-card { background: linear-gradient(135deg, var(--bg-bl
     .teacher-access-footer { align-items: stretch; flex-direction: column; }
     .teacher-access-button { text-align: center; }
 }
+
+
+/* ======== Teacher information and monthly access ======== */
+.teacher-intro {
+    display: grid;
+    grid-template-columns: 68px minmax(0, 1fr);
+    gap: 22px;
+    align-items: start;
+    padding: 30px;
+    margin-bottom: 24px;
+    border: 1px solid var(--bg-black-50);
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--bg-black-100), var(--bg-black-50));
+}
+.teacher-intro-icon {
+    width: 62px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: var(--bg-black-900);
+    color: var(--skin-color);
+    font-size: 27px;
+}
+.teacher-eyebrow {
+    display: inline-block;
+    margin-bottom: 9px;
+    color: var(--skin-color);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+.teacher-intro h3, .teacher-pricing-heading h3, .teacher-bottom-cta h3 {
+    color: var(--text-black-900);
+    font-size: 25px;
+    line-height: 1.3;
+    margin-bottom: 12px;
+}
+.teacher-intro p, .teacher-pricing-heading p, .teacher-bottom-cta p {
+    color: var(--text-black-700);
+    font-size: 16px;
+    line-height: 1.8;
+}
+.teacher-benefits {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 48px;
+}
+.teacher-benefit {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 20px;
+    border: 1px solid var(--bg-black-50);
+    border-radius: 14px;
+    background: var(--bg-black-100);
+}
+.teacher-benefit > i {
+    color: var(--skin-color);
+    font-size: 21px;
+    margin-top: 3px;
+}
+.teacher-benefit h4 {
+    color: var(--text-black-900);
+    font-size: 16px;
+    margin-bottom: 7px;
+}
+.teacher-benefit p {
+    color: var(--text-black-700);
+    font-size: 14px;
+    line-height: 1.65;
+}
+.teacher-pricing-heading {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 28px;
+}
+.teacher-pricing-heading h3 { font-size: 27px; }
+.teacher-pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+.teacher-price-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
+    border: 1px solid var(--bg-black-50);
+    border-radius: 18px;
+    background: var(--bg-black-100);
+    box-shadow: 0 8px 25px rgba(30, 25, 60, .05);
+}
+.teacher-price-featured { border: 2px solid var(--skin-color); }
+.teacher-popular-tag {
+    align-self: flex-start;
+    padding: 5px 10px;
+    margin: -2px 0 14px;
+    border-radius: 30px;
+    color: var(--skin-color);
+    background: var(--bg-black-50);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .7px;
+}
+.teacher-plan-label {
+    color: var(--skin-color);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.1px;
+}
+.teacher-price-top h4 {
+    color: var(--text-black-900);
+    font-size: 22px;
+    margin: 9px 0;
+}
+.teacher-price-top p {
+    min-height: 48px;
+    color: var(--text-black-700);
+    font-size: 14px;
+    line-height: 1.6;
+}
+.teacher-price {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    padding: 20px 0;
+    margin: 14px 0;
+    border-top: 1px solid var(--bg-black-50);
+    border-bottom: 1px solid var(--bg-black-50);
+}
+.teacher-price strong {
+    color: var(--text-black-900);
+    font-size: 42px;
+    line-height: 1;
+}
+.teacher-price span { color: var(--text-black-700); font-size: 14px; }
+.teacher-price-card ul {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    margin-bottom: 25px;
+}
+.teacher-price-card li {
+    display: flex;
+    gap: 10px;
+    color: var(--text-black-700);
+    font-size: 14px;
+    line-height: 1.5;
+}
+.teacher-price-card li i { color: var(--skin-color); margin-top: 3px; }
+.teacher-plan-button { align-self: flex-start; margin-top: auto; }
+.teacher-pricing-note {
+    max-width: 900px;
+    margin: 18px auto 38px;
+    color: var(--text-black-700);
+    font-size: 13px;
+    line-height: 1.7;
+}
+.teacher-pricing-note i { color: var(--skin-color); margin-right: 6px; }
+.teacher-bottom-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 26px 28px;
+    border-radius: 16px;
+    background: var(--bg-black-50);
+}
+.teacher-bottom-cta h3 { font-size: 21px; margin-bottom: 7px; }
+.teacher-bottom-cta p { font-size: 14px; }
+.teacher-bottom-cta .btn { flex-shrink: 0; }
+
+@media (max-width: 850px) {
+    .teacher-benefits { grid-template-columns: 1fr; }
+    .teacher-pricing-grid { grid-template-columns: 1fr; max-width: 520px; }
+}
+@media (max-width: 560px) {
+    .teacher-intro { grid-template-columns: 1fr; padding: 22px; }
+    .teacher-intro h3, .teacher-pricing-heading h3 { font-size: 22px; }
+    .teacher-price-card { padding: 22px; }
+    .teacher-bottom-cta { flex-direction: column; align-items: flex-start; padding: 23px; }
+}
