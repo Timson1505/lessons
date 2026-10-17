@@ -415,7 +415,16 @@
     ]
   ],
   "Beginner-2/lesson-8/index.html": [
-    null,
+    [
+      "download",
+      "piano",
+      "guitar",
+      "",
+      "",
+      "instruments",
+      "fans",
+      "record"
+    ],
     [
       "mine",
       "yours",
