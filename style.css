@@ -1372,3 +1372,103 @@ body.dark .teacher-access-card { background: linear-gradient(135deg, var(--bg-bl
         transform: none;
     }
 }
+
+/* Refined compact teacher plans */
+.teacher-plans-section {
+    padding-top: 48px;
+    padding-bottom: 52px;
+}
+.teacher-plans-section::before {
+    width: 250px;
+    height: 250px;
+    top: 0;
+    right: -125px;
+}
+.teacher-plans-section .teacher-plans-heading {
+    margin-bottom: 25px;
+}
+.teacher-plans-section .teacher-plans-heading h2 {
+    margin: 0 0 7px;
+    font-size: clamp(25px, 3vw, 34px);
+    letter-spacing: -0.7px;
+}
+.teacher-plans-section .teacher-plans-heading p {
+    font-size: 14px;
+}
+.teacher-plans-section .teacher-pricing-grid {
+    max-width: 940px;
+    margin-inline: auto;
+    gap: 16px;
+}
+.teacher-plans-section .teacher-price-card {
+    padding: 22px 20px 18px;
+    border-radius: 17px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.045);
+}
+.teacher-plans-section .teacher-price-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(0,0,0,.085);
+}
+.teacher-plans-section .teacher-plan-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 13px;
+    border-radius: 12px;
+    font-size: 17px;
+}
+.teacher-plans-section .teacher-price-card h3 {
+    margin-bottom: 0;
+    font-size: 19px;
+}
+.teacher-plans-section .teacher-price {
+    padding: 13px 0;
+    margin: 10px 0 12px;
+}
+.teacher-plans-section .teacher-price strong {
+    font-size: 35px;
+}
+.teacher-plans-section .teacher-price span {
+    font-size: 12px;
+}
+.teacher-plans-section .teacher-plan-includes {
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 12px;
+}
+.teacher-plans-section .teacher-plan-button {
+    min-height: 39px;
+    padding: 9px 11px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+.teacher-plans-section .teacher-popular-tag {
+    top: -11px;
+    right: 13px;
+    padding: 5px 8px;
+    font-size: 8px;
+    letter-spacing: .5px;
+}
+@media (max-width: 1000px) {
+    .teacher-plans-section .teacher-pricing-grid {
+        gap: 15px;
+    }
+}
+@media (max-width: 650px) {
+    .teacher-plans-section {
+        padding-top: 40px;
+        padding-bottom: 42px;
+    }
+    .teacher-plans-section .teacher-plans-heading {
+        margin-bottom: 23px;
+        text-align: center;
+    }
+    .teacher-plans-section .teacher-plans-heading h2 {
+        font-size: 27px;
+    }
+    .teacher-plans-section .teacher-pricing-grid {
+        gap: 18px;
+    }
+    .teacher-plans-section .teacher-price-card {
+        padding: 22px 20px 18px;
+    }
+}
