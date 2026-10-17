@@ -345,7 +345,28 @@
       ]
     ],
     "Beginner-2/lesson-5/index.html": [
-      null,
+      [
+        "likes",
+        "playing",
+        "hates",
+        "doing",
+        "love",
+        "eating",
+        "doesn't like",
+        "reading",
+        "hate",
+        "dancing",
+        "love",
+        "watching",
+        "likes",
+        "listening",
+        "study",
+        "",
+        "study",
+        "",
+        "love",
+        "riding"
+      ],
       [
         "it",
         "me",
