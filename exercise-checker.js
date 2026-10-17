@@ -15,13 +15,19 @@
       ["a","a","a","a","a","an","a","an","a","an","a","a"]
     ],
     "Beginner-1/Lesson-6/index.html": [
-      ["there is","there are","there are","there is","there are","there is","there is"],
       ["Is there","Are there","Are there","Is there","Are there","Is there","Is there"]
     ],
     "Beginner-1/Lesson-7/index.html": [
       ["are","are","is","are","is","is","are","are"],
-      ["there aren't any","there aren't any","there aren't any","there aren't any","there aren't any","there aren't any"],
-      ["there is","are there","some","any","any","there is"]
+      ["some","any","a","any"]
+    ],
+    "Beginner-1/lesson-3/index.html": [
+      ["practice","listen","work","match","look","say"],
+      null,
+      null,
+      null,
+      null,
+      ["one","seven","nineteen","eight","two","fifteen","fourteen","seventeen","eleven","thirteen","sixteen","three"]
     ],
     "Beginner-1/lesson-5/index.html": [
       ["teachers","doctors","students","children","men","women","babies","people"],
