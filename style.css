@@ -1372,3 +1372,72 @@ body.dark .teacher-access-card { background: linear-gradient(135deg, var(--bg-bl
         transform: none;
     }
 }
+
+
+/* Compact teacher pricing cards */
+.teacher-plans-section .teacher-plans-heading {
+    margin-bottom: 30px;
+}
+.teacher-plans-section .teacher-pricing-grid {
+    max-width: 1020px;
+    margin-inline: auto;
+    gap: 18px;
+}
+.teacher-plans-section .teacher-price-card {
+    padding: 24px 21px 21px;
+    border-radius: 18px;
+}
+.teacher-plans-section .teacher-plan-icon {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 15px;
+    border-radius: 13px;
+    font-size: 18px;
+}
+.teacher-plans-section .teacher-plan-label {
+    margin-bottom: 6px;
+    font-size: 9px;
+    letter-spacing: 1.1px;
+}
+.teacher-plans-section .teacher-price-card h3 {
+    margin-bottom: 7px;
+    font-size: 20px;
+}
+.teacher-plans-section .teacher-plan-description {
+    min-height: 42px;
+    margin-bottom: 15px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.teacher-plans-section .teacher-price {
+    padding: 15px 0;
+    margin-bottom: 14px;
+}
+.teacher-plans-section .teacher-price strong {
+    font-size: 38px;
+}
+.teacher-plans-section .teacher-plan-includes {
+    margin-bottom: 19px;
+    font-size: 13px;
+}
+.teacher-plans-section .teacher-plan-button {
+    min-height: 43px;
+    padding: 10px 13px;
+    font-size: 12px;
+}
+.teacher-plans-section .teacher-popular-tag {
+    right: 15px;
+    padding: 6px 10px;
+    font-size: 9px;
+}
+@media (max-width: 650px) {
+    .teacher-plans-section .teacher-pricing-grid {
+        gap: 20px;
+    }
+    .teacher-plans-section .teacher-price-card {
+        padding: 23px 20px 20px;
+    }
+    .teacher-plans-section .teacher-plan-description {
+        min-height: 0;
+    }
+}
