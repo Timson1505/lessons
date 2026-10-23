@@ -1,5 +1,6 @@
 /* Shared theme system for all Timson's Lessons pages */
 :root {
+  --skin-color: var(--lesson-accent) !important;
   --lesson-page-bg: #f4f6fb;
   --lesson-surface: #ffffff;
   --lesson-text: #24263a;
