@@ -1,58 +1,70 @@
-/* Shared theme system for all Timson's Lessons pages */
+/* Shared theme colours and appearance panel */
 :root {
-  --skin-color: var(--lesson-accent) !important;
-  --lesson-page-bg: #f4f6fb;
-  --lesson-surface: #ffffff;
-  --lesson-text: #24263a;
-  --lesson-muted: #5e6478;
-  --lesson-border: #dce1ec;
-  --lesson-accent: #ec5b8b;
-  --lesson-accent-soft: #fde8f0;
-  color-scheme: light;
+  --lesson-page-bg:#ffffff;
+  --lesson-surface:#ffffff;
+  --lesson-text:#302e4d;
+  --lesson-muted:#65627e;
+  --lesson-border:#e8dfee;
+  --lesson-accent:#f0183a;
+  --lesson-accent-soft:#fff0f4;
+  --skin-color:var(--lesson-accent) !important;
+  color-scheme:light;
 }
+html[data-palette="red"] { --lesson-accent:#f0183a; --lesson-accent-soft:#fff0f4; }
+html[data-palette="blue"] { --lesson-accent:#4eafc0; --lesson-accent-soft:#eaf8fb; }
+html[data-palette="green"] { --lesson-accent:#35b184; --lesson-accent-soft:#e9f8f1; }
 html[data-theme="dark"] {
-  --lesson-page-bg: #151821;
-  --lesson-surface: #202431;
-  --lesson-text: #f1f3fa;
-  --lesson-muted: #c0c5d3;
-  --lesson-border: #3b4253;
-  --lesson-accent-soft: #442838;
-  color-scheme: dark;
+  --lesson-page-bg:#171923;
+  --lesson-surface:#222532;
+  --lesson-text:#f4f2fa;
+  --lesson-muted:#c7c2d6;
+  --lesson-border:#454052;
+  --lesson-accent-soft:#34303c;
+  color-scheme:dark;
 }
-html[data-palette="blue"] { --lesson-accent:#3984e8; --lesson-accent-soft:#e4efff; }
-html[data-palette="green"] { --lesson-accent:#198b68; --lesson-accent-soft:#dff6ec; }
-html[data-palette="purple"] { --lesson-accent:#805ad5; --lesson-accent-soft:#eee7ff; }
-html[data-palette="orange"] { --lesson-accent:#d97706; --lesson-accent-soft:#fff0d9; }
-html[data-palette="pink"] { --lesson-accent:#ec5b8b; --lesson-accent-soft:#fde8f0; }
-html[data-theme="dark"][data-palette="blue"],
-html[data-theme="dark"][data-palette="green"],
-html[data-theme="dark"][data-palette="purple"],
-html[data-theme="dark"][data-palette="orange"],
-html[data-theme="dark"][data-palette="pink"] { --lesson-accent-soft:#343041; }
 html, body { background-color:var(--lesson-page-bg); color:var(--lesson-text); }
-body, body * { transition: background-color .18s ease, color .18s ease, border-color .18s ease; }
 body { background-color:var(--lesson-page-bg) !important; color:var(--lesson-text); }
-body.dark { --bg-black-900:var(--lesson-page-bg); --bg-black-100:var(--lesson-surface); --bg-black-50:var(--lesson-border); --text-black-900:var(--lesson-text); --text-black-700:var(--lesson-muted); }
-html[data-theme="dark"] body { --bg-black-900:var(--lesson-page-bg); --bg-black-100:var(--lesson-surface); --bg-black-50:var(--lesson-border); --text-black-900:var(--lesson-text); --text-black-700:var(--lesson-muted); }
-body :is(section, .section, .main-container, .main-content, .container, .aside, .modal-content, .text, .my, .grammar-container, .gr-item, .ex-1, .ex-1k, .ex-2, .ex-3, .ex-4, .gallery, .nw-grid, .grid-item, .teacher-price-card, .card, .box) {
+body.dark, html[data-theme="dark"] body {
+  --bg-black-900:var(--lesson-page-bg);
+  --bg-black-100:var(--lesson-surface);
+  --bg-black-50:var(--lesson-border);
+  --text-black-900:var(--lesson-text);
+  --text-black-700:var(--lesson-muted);
+}
+html[data-theme="dark"] body :is(section, .section, .main-container, .main-content, .container, .aside, .modal-content, .text, .my, .grammar-container, .gr-item, .ex-1, .ex-1k, .ex-2, .ex-3, .ex-4, .gallery, .nw-grid, .grid-item, .teacher-price-card, .card, .box, table, td, th) {
   background-color:var(--lesson-surface);
   color:var(--lesson-text);
+  border-color:var(--lesson-border);
 }
-body :is(h1,h2,h3,h4,h5,h6,p,li,label,td,th,caption,span,div,a,i,strong,em) { color:inherit; }
-body :is(p,li,td,th,label,small,.muted,.description) { color:var(--lesson-text); }
-body a, body :is(.btn,button,input[type="button"],input[type="submit"]) { --skin-color:var(--lesson-accent); }
+html[data-theme="dark"] body :is(h1,h2,h3,h4,h5,h6,p,li,label,td,th,caption,span,div,a,i,strong,em) { color:inherit; }
+html[data-theme="dark"] body :is(input,textarea,select) { background:var(--lesson-surface); color:var(--lesson-text); border-color:var(--lesson-border); }
 body a:not(.btn):hover { color:var(--lesson-accent); }
 body :is(button,.btn,input[type="button"],input[type="submit"]) { accent-color:var(--lesson-accent); }
-body :is(table,td,th,.text,.my,.gallery,.grid-item,input,textarea,select) { border-color:var(--lesson-border); }
-body :is(input,textarea,select) { background:var(--lesson-surface); color:var(--lesson-text); }
-body :is(thead,tr:first-child,.bold) { border-color:var(--lesson-border); }
-body :is(.aside,.modal-content,.gallery,.text,.my,.teacher-price-card) { border-color:var(--lesson-border); }
-body :is(.aside,.nav-toggler) { background:var(--lesson-surface); }
 body :is(.section-title h2::before,.section-title h2::after) { background-color:var(--lesson-accent); }
-.lesson-theme-tools { position:fixed; z-index:99999; right:18px; bottom:18px; display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px; max-width:min(390px,calc(100vw - 24px)); border:1px solid var(--lesson-border); border-radius:14px; background:var(--lesson-surface); color:var(--lesson-text); box-shadow:0 8px 30px rgba(0,0,0,.18); font:14px/1.4 Arial,sans-serif; }
-.lesson-theme-tools button,.lesson-theme-tools select { min-height:36px; border:1px solid var(--lesson-border); border-radius:9px; padding:7px 10px; background:var(--lesson-page-bg); color:var(--lesson-text); font:inherit; cursor:pointer; }
-.lesson-theme-tools button:focus-visible,.lesson-theme-tools select:focus-visible { outline:3px solid var(--lesson-accent); outline-offset:2px; }
-.lesson-theme-tools .lesson-theme-label { font-weight:700; width:100%; font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--lesson-muted); }
-.lesson-theme-tools .lesson-theme-toggle { background:var(--lesson-accent); border-color:var(--lesson-accent); color:#fff; font-weight:700; }
-.lesson-theme-tools select { flex:1; min-width:135px; }
-@media (max-width:520px) { .lesson-theme-tools { right:10px; bottom:10px; left:10px; max-width:none; justify-content:space-between; } .lesson-theme-tools select { min-width:110px; } }
+.lesson-appearance { position:fixed; z-index:99999; left:clamp(14px,6vw,84px); top:42px; display:flex; align-items:flex-start; gap:48px; font-family:Georgia,'Times New Roman',serif; }
+.lesson-appearance-actions { display:flex; flex-direction:column; gap:30px; }
+.lesson-appearance-icon { display:grid; place-items:center; width:80px; height:80px; padding:18px; border:2px solid var(--lesson-border); border-radius:50%; background:var(--lesson-surface); color:var(--lesson-text); cursor:pointer; }
+.lesson-appearance-icon svg { width:38px; height:38px; fill:currentColor; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+.lesson-appearance-icon:focus-visible,.lesson-colour-dot:focus-visible { outline:3px solid var(--lesson-accent); outline-offset:4px; }
+.lesson-colour-panel { width:400px; min-height:152px; padding:32px 30px 26px; border:2px solid var(--lesson-border); border-radius:11px; background:var(--lesson-surface); color:var(--lesson-text); box-sizing:border-box; }
+.lesson-colour-panel[hidden] { display:none; }
+.lesson-colour-panel h2 { margin:0 0 26px; font-size:32px; line-height:1.15; font-weight:700; color:var(--lesson-text); }
+.lesson-colour-options { display:flex; justify-content:space-evenly; align-items:center; gap:22px; }
+.lesson-colour-dot { width:60px; height:60px; flex:0 0 60px; padding:0; border:0; border-radius:50%; background:var(--dot-color); cursor:pointer; box-shadow:0 0 0 0 transparent; }
+.lesson-colour-dot.is-active { box-shadow:0 0 0 4px var(--lesson-surface),0 0 0 6px var(--dot-color); }
+@media (max-width:760px) {
+ .lesson-appearance { top:14px; left:14px; right:14px; gap:12px; }
+ .lesson-appearance-actions { gap:12px; }
+ .lesson-appearance-icon { width:54px; height:54px; padding:12px; }
+ .lesson-appearance-icon svg { width:28px; height:28px; }
+ .lesson-colour-panel { width:min(400px,calc(100vw - 90px)); min-height:125px; padding:18px; }
+ .lesson-colour-panel h2 { font-size:23px; margin-bottom:18px; }
+ .lesson-colour-dot { width:42px; height:42px; flex-basis:42px; }
+}
+@media (max-width:440px) {
+ .lesson-appearance { left:8px; right:8px; gap:8px; }
+ .lesson-appearance-icon { width:46px; height:46px; padding:10px; }
+ .lesson-colour-panel { width:calc(100vw - 70px); padding:14px; }
+ .lesson-colour-panel h2 { font-size:20px; }
+ .lesson-colour-dot { width:32px; height:32px; flex-basis:32px; }
+}
