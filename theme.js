@@ -1,1 +1,0 @@
-/* Appearance controls cancelled by request. Kept as an empty compatibility file so existing lesson pages remain unaffected. */
