@@ -29,6 +29,8 @@
         <h2>Sign in to your account</h2>
         <label for="signin-email">Email address</label>
         <input id="signin-email" name="email" type="email" autocomplete="username" required placeholder="you@example.com">
+        <label for="signin-phone">Phone number</label>
+        <input id="signin-phone" name="phone" type="tel" autocomplete="tel" required maxlength="30" placeholder="+1 555 123 4567">
         <label for="signin-password">Password</label>
         <input id="signin-password" name="password" type="password" autocomplete="current-password" required placeholder="Enter your password">
         <button class="button button-primary" type="submit">Sign in</button>
@@ -39,6 +41,8 @@
         <input id="signup-name" name="name" type="text" autocomplete="name" required maxlength="100" placeholder="Your full name">
         <label for="signup-email">Email address</label>
         <input id="signup-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com">
+        <label for="signup-phone">Phone number</label>
+        <input id="signup-phone" name="phone" type="tel" autocomplete="tel" required maxlength="30" placeholder="+1 555 123 4567">
         <label for="signup-password">Create password</label>
         <input id="signup-password" name="password" type="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters">
         <p class="account-hint">New registrations cannot choose an administrator or teacher role. The administrator assigns roles securely.</p>
