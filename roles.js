@@ -56,7 +56,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
 
     const { data: profile, error } = await client
       .from('profiles')
-      .select('id, full_name, role')
+      .select('id, name, role')
       .eq('id', session.user.id)
       .maybeSingle();
 
@@ -80,7 +80,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     authPanel?.classList.add('hidden');
     dashboardPanel?.classList.remove('hidden');
     setMessage(authMessage, '');
-    setMessage(dashboardMessage, 'Signed in as ' + (profile.full_name || session.user.email) + '.');
+    setMessage(dashboardMessage, 'Signed in as ' + (profile.name || session.user.email) + '.');
 
     if (requiredRole === 'admin') await loadAdminProfiles();
   }
@@ -92,7 +92,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     body.innerHTML = '<tr><td colspan="4">Loading profiles…</td></tr>';
     const { data, error } = await client
       .from('profiles')
-      .select('full_name, role, phone, created_at')
+      .select('name, role, phone, created_at')
       .order('created_at', { ascending: false })
       .limit(100);
 
@@ -109,7 +109,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     body.replaceChildren();
     data.forEach(profile => {
       const row = document.createElement('tr');
-      [profile.full_name || '—', profile.role || '—', profile.phone || '—',
+      [profile.name || '—', profile.role || '—', profile.phone || '—',
         profile.created_at ? new Date(profile.created_at).toLocaleDateString() : '—'
       ].forEach(value => {
         const cell = document.createElement('td');
