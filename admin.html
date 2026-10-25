@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Dashboard | Timson's English Lessons</title>
+  <link rel="icon" href="timson_icon.png">
+  <link rel="stylesheet" href="roles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="roles.js"></script>
+</head>
+<body data-required-role="admin">
+  <header class="topbar"><a class="brand" href="index.html">Timson's <span>English Lessons</span></a><div class="top-actions"><span id="session-email" class="session-email"></span><button id="logout-btn" class="button button-light hidden" type="button">Log out</button></div></header>
+  <main class="page-shell">
+    <section class="welcome"><div><p class="eyebrow">ADMINISTRATION</p><h1>Admin dashboard</h1><p>Manage accounts and oversee the learning platform.</p></div><div class="role-chip">Administrator</div></section>
+    <section id="auth-panel" class="panel auth-panel"><h2>Sign in</h2><p class="muted">Use the administrator account assigned in Supabase.</p><form id="login-form"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="username" required placeholder="you@example.com"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required placeholder="Your password"><button class="button button-primary" type="submit">Sign in securely</button><p id="auth-message" class="message" role="status"></p></form></section>
+    <section id="dashboard-panel" class="hidden">
+      <div class="stats-grid"><article class="stat-card"><span>Profiles visible to admin</span><strong id="profile-count">—</strong></article><article class="stat-card"><span>Your access</span><strong>Full admin</strong></article><article class="stat-card"><span>Platform</span><strong>English Lessons</strong></article></div>
+      <section class="panel"><div class="section-heading"><div><h2>Account profiles</h2><p class="muted">Role changes are intentionally not enabled in this starter dashboard.</p></div><button id="refresh-btn" class="button button-light" type="button">Refresh</button></div><div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Phone</th><th>Joined</th></tr></thead><tbody id="profiles-body"><tr><td colspan="4">Loading profiles…</td></tr></tbody></table></div><p id="dashboard-message" class="message" role="status"></p></section>
+    </section>
+    <p class="security-note"><strong>Security:</strong> This page is only the interface. Supabase Row Level Security (RLS) must enforce permissions in the database.</p>
+    <a class="back-link" href="index.html">← Back to learning website</a>
+  </main>
+  <footer>© <span data-year></span> Timson's English Lessons</footer>
+</body>
+</html>
