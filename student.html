@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Dashboard | Timson's English Lessons</title>
+  <link rel="icon" href="timson_icon.png">
+  <link rel="stylesheet" href="roles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="roles.js"></script>
+</head>
+<body data-required-role="student">
+  <header class="topbar"><a class="brand" href="index.html">Timson's <span>English Lessons</span></a><div class="top-actions"><span id="session-email" class="session-email"></span><button id="logout-btn" class="button button-light hidden" type="button">Log out</button></div></header>
+  <main class="page-shell">
+    <section class="welcome"><div><p class="eyebrow">MY LEARNING</p><h1>Your student dashboard</h1><p>See your learning progress and personal rating.</p></div><div class="role-chip">Student</div></section>
+    <section id="auth-panel" class="panel auth-panel"><h2>Sign in</h2><p class="muted">Sign in with your student account to continue learning.</p><form id="login-form"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="username" required placeholder="you@example.com"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required placeholder="Your password"><button class="button button-primary" type="submit">Sign in securely</button><p id="auth-message" class="message" role="status"></p></form></section>
+    <section id="dashboard-panel" class="hidden"><div class="stats-grid"><article class="stat-card"><span>My rating</span><strong>—</strong><small>Rating feature will appear when configured</small></article><article class="stat-card"><span>My homework</span><strong>—</strong><small>Homework records are not configured yet</small></article><article class="stat-card"><span>Learning level</span><strong>English</strong><small>Continue practising every day</small></article></div><section class="panel"><h2>My learning space</h2><p>Welcome! This page is prepared for your personal learning progress. Your rating and homework will be displayed after the related database tables and access policies are configured.</p><div class="notice">Only your own records should be visible from a student account.</div><p id="dashboard-message" class="message" role="status"></p><a class="button button-primary inline-button" href="index.html">Browse lessons</a></section></section>
+    <p class="security-note"><strong>Privacy:</strong> Students should only be able to read their own rating and learning records. Supabase RLS must enforce this.</p>
+    <a class="back-link" href="index.html">← Back to learning website</a>
+  </main>
+  <footer>© <span data-year></span> Timson's English Lessons</footer>
+</body>
+</html>
