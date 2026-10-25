@@ -1515,3 +1515,28 @@ body.dark .teacher-access-card { background: linear-gradient(135deg, var(--bg-bl
     .aside .nav { margin-top: 105px; margin-bottom: 20px; }
     .sidebar-auth-list-item { margin-bottom: 20px; }
 }
+
+
+/* Pin account actions to the bottom of the sidebar */
+.aside {
+    flex-direction: column;
+    justify-content: flex-start;
+}
+.aside .nav {
+    width: 100%;
+    margin-top: 145px;
+}
+.aside > .sidebar-auth-list-item {
+    width: 100%;
+    margin-top: auto;
+    padding-top: 18px;
+    padding-bottom: 4px;
+}
+.aside > .sidebar-auth-list-item .sidebar-auth-actions {
+    width: 100%;
+}
+@media (max-height: 650px) {
+    .aside { align-items: stretch; overflow-y: auto; }
+    .aside .nav { margin-top: 105px; margin-bottom: 16px; }
+    .aside > .sidebar-auth-list-item { margin-top: 0; }
+}
