@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const normalizePhone = value => value.replace(/[^+\\d]/g, '').replace(/^00/, '+');
+    const normalizePhone = value => value.replace(/[^+\d]/g, '').replace(/^00/, '+');
     if (!profile.phone || normalizePhone(profile.phone) !== normalizePhone(phone)) {
       await supabase.auth.signOut();
       setMessage('The phone number does not match this account. Please check it or contact the administrator.', true);
