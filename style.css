@@ -1472,3 +1472,45 @@ body.dark .teacher-access-card { background: linear-gradient(135deg, var(--bg-bl
         padding: 22px 20px 18px;
     }
 }
+
+
+/* ===== Sidebar account actions ===== */
+.sidebar-auth-actions {
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    bottom: 28px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+.sidebar-auth-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 43px;
+    padding: 11px 14px;
+    border: 1px solid var(--skin-color);
+    border-radius: 9px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    transition: transform .2s ease, background .2s ease, color .2s ease;
+}
+.sidebar-auth-btn:hover { transform: translateY(-2px); }
+.sidebar-signin {
+    color: var(--skin-color);
+    background: transparent;
+}
+.sidebar-signup {
+    color: #fff;
+    background: var(--skin-color);
+}
+.sidebar-auth-btn i { font-size: 14px; }
+@media (max-height: 650px) {
+    .aside { align-items: flex-start; overflow-y: auto; }
+    .aside .nav { margin-top: 105px; margin-bottom: 115px; }
+    .sidebar-auth-actions { position: fixed; width: 222px; left: 24px; right: auto; bottom: 12px; }
+}
