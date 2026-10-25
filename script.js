@@ -40,36 +40,3 @@ const phrases = ["teacher", "programmer"];
       list.classList.toggle('open');
     });
   });
-
-  /* ====== Passord Modal ====== */
-  document.addEventListener("DOMContentLoaded", function () {
-    const modal = document.getElementById("passwordModal");
-    const input = document.getElementById("passwordInput");
-    const button = document.getElementById("unlockBtn");
-    const errorMsg = document.getElementById("errorMsg");
-    const protectedContent = document.getElementById("protectedContent");
-
-    const PASSWORD = "Timson2025";
-    const STORAGE_KEY = "timson_unlocked";
-
-    // If already unlocked before → skip modal
-    if (localStorage.getItem(STORAGE_KEY) === "true") {
-        modal.style.display = "none";
-        protectedContent.style.display = "block";
-    } else {
-        modal.style.display = "flex";
-        protectedContent.style.display = "none";
-    }
-
-    button.addEventListener("click", function () {
-        const value = input.value;
-
-        if (value === PASSWORD) {
-            localStorage.setItem(STORAGE_KEY, "true"); // remember forever (until cleared)
-            modal.style.display = "none";
-            protectedContent.style.display = "block";
-        } else {
-            errorMsg.textContent = "Incorrect password";
-        }
-    });
-});
