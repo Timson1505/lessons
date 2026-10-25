@@ -1474,23 +1474,24 @@ body.dark .teacher-access-card { background: linear-gradient(135deg, var(--bg-bl
 }
 
 
-/* ===== Sidebar account actions ===== */
+/* ===== Sidebar account actions: directly below Contact ===== */
+.sidebar-auth-list-item {
+    list-style: none;
+    margin-top: 16px;
+}
 .sidebar-auth-actions {
-    position: absolute;
-    left: 24px;
-    right: 24px;
-    bottom: 28px;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 9px;
+    width: 100%;
 }
 .sidebar-auth-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 9px;
-    min-height: 43px;
-    padding: 11px 14px;
+    min-height: 41px;
+    padding: 10px 12px;
     border: 1px solid var(--skin-color);
     border-radius: 9px;
     text-align: center;
@@ -1511,6 +1512,6 @@ body.dark .teacher-access-card { background: linear-gradient(135deg, var(--bg-bl
 .sidebar-auth-btn i { font-size: 14px; }
 @media (max-height: 650px) {
     .aside { align-items: flex-start; overflow-y: auto; }
-    .aside .nav { margin-top: 105px; margin-bottom: 115px; }
-    .sidebar-auth-actions { position: fixed; width: 222px; left: 24px; right: auto; bottom: 12px; }
+    .aside .nav { margin-top: 105px; margin-bottom: 20px; }
+    .sidebar-auth-list-item { margin-bottom: 20px; }
 }
