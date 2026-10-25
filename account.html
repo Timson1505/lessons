@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in or Sign up | Timson's English Lessons</title>
+  <link rel="icon" type="image/png" href="timson_icon.png">
+  <link rel="stylesheet" href="roles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="account.js"></script>
+</head>
+<body class="account-page">
+  <header class="topbar">
+    <a class="brand" href="index.html">Timson's <span>English Lessons</span></a>
+    <a class="back-link" href="index.html">← Back to website</a>
+  </header>
+  <main class="account-shell">
+    <section class="account-intro">
+      <p class="eyebrow">YOUR LEARNING STARTS HERE</p>
+      <h1>Welcome to your English learning space.</h1>
+      <p>Sign in to continue or create an account to get started.</p>
+    </section>
+    <section class="panel account-panel">
+      <div class="account-tabs" role="tablist" aria-label="Account options">
+        <button id="signin-tab" class="account-tab active" type="button" role="tab" aria-selected="true">Sign in</button>
+        <button id="signup-tab" class="account-tab" type="button" role="tab" aria-selected="false">Sign up</button>
+      </div>
+      <form id="signin-form" class="account-form">
+        <h2>Sign in to your account</h2>
+        <label for="signin-email">Email address</label>
+        <input id="signin-email" name="email" type="email" autocomplete="username" required placeholder="you@example.com">
+        <label for="signin-password">Password</label>
+        <input id="signin-password" name="password" type="password" autocomplete="current-password" required placeholder="Enter your password">
+        <button class="button button-primary" type="submit">Sign in</button>
+      </form>
+      <form id="signup-form" class="account-form hidden">
+        <h2>Create an account</h2>
+        <label for="signup-name">Full name</label>
+        <input id="signup-name" name="name" type="text" autocomplete="name" required maxlength="100" placeholder="Your full name">
+        <label for="signup-email">Email address</label>
+        <input id="signup-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com">
+        <label for="signup-password">Create password</label>
+        <input id="signup-password" name="password" type="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters">
+        <p class="account-hint">New registrations cannot choose an administrator or teacher role. The administrator assigns roles securely.</p>
+        <button class="button button-primary" type="submit">Create account</button>
+      </form>
+      <p id="account-message" class="message" role="status" aria-live="polite"></p>
+    </section>
+    <p class="account-security">Your access depends on your role in the database. Never share your password with anyone.</p>
+  </main>
+  <footer>© <span data-year></span> Timson's English Lessons</footer>
+</body>
+</html>
