@@ -7,7 +7,21 @@
   <link rel="icon" href="timson_icon.png">
   <link rel="stylesheet" href="roles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="roles.js"></script>
+  <script defer src="roles.js?v=20261026-teacher-schedule"></script>
+
+<style>
+.schedule-add-form{display:grid;grid-template-columns:minmax(140px,.8fr) minmax(180px,1.3fr) auto;gap:12px;align-items:end;margin:18px 0 22px}
+.schedule-add-form label{display:grid;gap:6px;font-size:13px;font-weight:700}
+.schedule-add-form input,.schedule-table input{min-width:100px;width:100%;padding:9px 10px;border:1px solid #d5dce8;border-radius:8px;font:inherit;color:var(--ink);background:#fff}
+.schedule-table-wrap{border:1px solid var(--line);border-radius:12px}
+.schedule-table{min-width:1050px}
+.schedule-table td{white-space:normal;vertical-align:middle}
+.schedule-table td:first-child,.schedule-table td:nth-child(2){min-width:140px}
+.schedule-table .schedule-actions{display:flex;gap:6px}
+.schedule-table .schedule-actions .button{padding:8px 10px;min-height:36px;font-size:12px}
+.schedule-delete{background:#b42318;color:#fff}
+@media(max-width:720px){.schedule-add-form{grid-template-columns:1fr}.schedule-add-form .button{width:100%}}
+</style>
 </head>
 <body data-required-role="teacher">
   <header class="topbar"><a class="brand" href="index.html">Timson's <span>English Lessons</span></a><div class="top-actions"><span id="session-email" class="session-email"></span><button id="logout-btn" class="button button-light hidden" type="button">Log out</button></div></header>
@@ -22,6 +36,17 @@
           <label><input type="checkbox" value="Intermediate"> Intermediate</label><label><input type="checkbox" value="Upper-Intermediate"> Upper-Intermediate</label><label><input type="checkbox" value="Advanced"> Advanced</label>
         </div>
         <button id="create-invite-btn" class="button button-primary" type="button">Create student invite link</button><p id="invite-result" class="message" role="status"></p>
+      </section>
+
+      <section class="panel" id="teacher-schedule">
+        <div class="section-heading"><div><h2>Teaching schedule &amp; assessments</h2><p class="muted">Add a time and student, then record progress in writing, reading, listening and speaking. Changes are saved to your teacher account.</p></div><button id="schedule-refresh-btn" class="button button-light" type="button">Refresh schedule</button></div>
+        <form id="schedule-add-form" class="schedule-add-form">
+          <label>Time <input id="schedule-time" type="text" maxlength="40" placeholder="09:00–09:45" required></label>
+          <label>Student name <input id="schedule-student" type="text" maxlength="160" placeholder="Student's full name" required></label>
+          <button class="button button-primary" type="submit">Add to schedule</button>
+        </form>
+        <div class="table-wrap schedule-table-wrap"><table class="schedule-table"><thead><tr><th>Time</th><th>Student name</th><th>Writing</th><th>Reading</th><th>Listening</th><th>Speaking</th><th>Notes</th><th>Actions</th></tr></thead><tbody id="schedule-body"><tr><td colspan="8">Loading schedule…</td></tr></tbody></table></div>
+        <p id="schedule-message" class="message" role="status"></p>
       </section>
       <section class="panel"><div class="section-heading"><div><h2>My students</h2><p class="muted">Only students who joined using your invitation links appear here.</p></div><button id="refresh-students-btn" class="button button-light" type="button">Refresh students</button></div>
         <div class="table-wrap"><table><thead><tr><th>Student</th><th>Email</th><th>Joined</th><th>Accessible levels</th></tr></thead><tbody id="teacher-students-body"><tr><td colspan="4">Loading students…</td></tr></tbody></table></div>
