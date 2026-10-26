@@ -59,6 +59,20 @@ document.addEventListener('DOMContentLoaded', () => {
     setMessage('');
   }
 
+  const invitedEmail = urlParams.get('invite_email') || '';
+  const invitedPhone = urlParams.get('invite_phone') || '';
+  if (invitedEmail) {
+    const emailInput = signUpForm?.querySelector('input[name="email"]');
+    if (emailInput) emailInput.value = invitedEmail;
+  }
+  if (invitedPhone) {
+    const phoneInput = signUpForm?.querySelector('input[name="phone"]');
+    if (phoneInput) phoneInput.value = invitedPhone;
+  }
+  if (inviteFromUrl || roleInviteFromUrl || invitedEmail || invitedPhone || window.location.hash === '#signup') {
+    showTab('signup');
+  }
+
   function setBusy(form, busy, text) {
     const button = form.querySelector('button[type="submit"]');
     button.disabled = busy;
