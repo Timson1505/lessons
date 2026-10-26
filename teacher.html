@@ -14,7 +14,20 @@
   <main class="page-shell">
     <section class="welcome"><div><p class="eyebrow">TEACHER SPACE</p><h1>Your teaching dashboard</h1><p>Keep track of your assigned students and their progress.</p></div><div class="role-chip">Teacher</div></section>
     <section id="auth-panel" class="panel auth-panel"><h2>Sign in</h2><p class="muted">Sign in with the teacher account assigned by the administrator.</p><form id="login-form"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="username" required placeholder="you@example.com"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required placeholder="Your password"><button class="button button-primary" type="submit">Sign in securely</button><p id="auth-message" class="message" role="status"></p></form></section>
-    <section id="dashboard-panel" class="hidden"><div class="stats-grid"><article class="stat-card"><span>Assigned students</span><strong>—</strong><small>Student assignment table not configured yet</small></article><article class="stat-card"><span>Student ratings</span><strong>—</strong><small>Rating table not configured yet</small></article><article class="stat-card"><span>Lesson resources</span><strong>Coming next</strong><small>Connect lesson and homework data</small></article></div><section class="panel"><h2>Teaching workspace</h2><p>Your teacher account is signed in. When the database tables and RLS policies for student assignments, homework, submissions, and ratings are configured, this area can show only the students assigned to you.</p><div class="notice">For privacy, this starter page does not fetch other students’ records until database-level access rules are in place.</div><p id="dashboard-message" class="message" role="status"></p></section></section>
+    <section id="dashboard-panel" class="hidden">
+      <section class="panel"><h2>Invite students</h2><p class="muted">Create a shareable link. Students who register or sign in through it will be linked to your teacher account and receive only the levels you select from your own approved access.</p>
+        <div id="teacher-level-options" class="access-levels">
+          <label><input type="checkbox" value="Beginner-1"> Beginner-1</label><label><input type="checkbox" value="Beginner-2"> Beginner-2</label><label><input type="checkbox" value="Beginner-3"> Beginner-3</label>
+          <label><input type="checkbox" value="Elementary-1"> Elementary-1</label><label><input type="checkbox" value="Elementary-2"> Elementary-2</label><label><input type="checkbox" value="Elementary-3"> Elementary-3</label>
+          <label><input type="checkbox" value="Intermediate"> Intermediate</label><label><input type="checkbox" value="Upper-Intermediate"> Upper-Intermediate</label><label><input type="checkbox" value="Advanced"> Advanced</label>
+        </div>
+        <button id="create-invite-btn" class="button button-primary" type="button">Create student invite link</button><p id="invite-result" class="message" role="status"></p>
+      </section>
+      <section class="panel"><div class="section-heading"><div><h2>My students</h2><p class="muted">Only students who joined using your invitation links appear here.</p></div><button id="refresh-students-btn" class="button button-light" type="button">Refresh students</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Student</th><th>Email</th><th>Joined</th><th>Accessible levels</th></tr></thead><tbody id="teacher-students-body"><tr><td colspan="4">Loading students…</td></tr></tbody></table></div>
+        <p id="dashboard-message" class="message" role="status"></p>
+      </section>
+    </section>
     <p class="security-note"><strong>Security:</strong> Teachers must only access assigned students. Enforce this in Supabase RLS, not just in JavaScript.</p>
     <a class="back-link" href="index.html">← Back to learning website</a>
   </main>
