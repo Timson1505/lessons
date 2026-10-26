@@ -534,11 +534,7 @@ h3.my-profession {
     padding: 0 50px;
 }
 
-/* ====== Password Modal ====== */
-/* Hide protected content initially */
-#protectedContent {
-    display: none;
-}
+/* Password gate removed: keep lesson library visible. */
 
 /* Modal Background */
 .modal {
