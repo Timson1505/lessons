@@ -244,20 +244,44 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
   async function createAdminInvite() {
     const button = document.getElementById('admin-create-invite-btn');
     const result = document.getElementById('admin-invite-result');
-    const levels = [...document.querySelectorAll('#admin-invite-levels input:checked')].map(input => input.value);
-    if (!levels.length) { setMessage(result, 'Select at least one lesson level.', true); return; }
-    button.disabled = true; button.textContent = 'Creating link…';
-    const { data, error } = await client.rpc('admin_create_invite', { p_levels: levels, p_expires_at: null });
-    button.disabled = false; button.textContent = 'Create invitation link';
+    const role = document.getElementById('admin-invite-role')?.value || 'student';
+    button.disabled = true;
+    button.textContent = 'Generating link…';
+    let code = '';
+    let error = null;
+    if (role === 'teacher') {
+      const response = await client.rpc('admin_create_role_invite', { p_role: 'teacher', p_expires_at: null });
+      error = response.error;
+      code = response.data?.[0]?.invite_code || '';
+    } else {
+      const levels = [...document.querySelectorAll('#admin-invite-levels input:checked')].map(input => input.value);
+      if (!levels.length) {
+        button.disabled = false;
+        button.textContent = 'Generate invitation link';
+        setMessage(result, 'Select at least one lesson level for the student.', true);
+        return;
+      }
+      const response = await client.rpc('admin_create_invite', { p_levels: levels, p_expires_at: null });
+      error = response.error;
+      code = response.data?.[0]?.invite_code || '';
+    }
+    button.disabled = false;
+    button.textContent = 'Generate invitation link';
     if (error) { setMessage(result, error.message, true); return; }
-    const code = data?.[0]?.invite_code;
     if (!code) { setMessage(result, 'The database did not return an invitation code.', true); return; }
-    const link = new URL('account.html?invite=' + encodeURIComponent(code) + '#signup', window.location.href).href;
+    const param = role === 'teacher' ? 'role_invite' : 'invite';
+    const link = new URL('account.html?' + param + '=' + encodeURIComponent(code) + '#signup', window.location.href).href;
     result.replaceChildren();
-    const label = document.createElement('span'); label.textContent = 'Share this link with the student: ';
-    const anchor = document.createElement('a'); anchor.href = link; anchor.textContent = link; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer';
-    const copy = document.createElement('button'); copy.type = 'button'; copy.className = 'button button-light'; copy.textContent = 'Copy link';
-    copy.addEventListener('click', async () => { try { await navigator.clipboard.writeText(link); copy.textContent = 'Copied!'; } catch (_) { setMessage(result, 'Copy was blocked. Select and copy the link manually.', true); } });
+    const label = document.createElement('span');
+    label.textContent = 'Share this ' + role + ' invitation link: ';
+    const anchor = document.createElement('a');
+    anchor.href = link; anchor.textContent = link; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer';
+    const copy = document.createElement('button');
+    copy.type = 'button'; copy.className = 'button button-light'; copy.textContent = 'Copy link';
+    copy.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(link); copy.textContent = 'Copied!'; }
+      catch (_) { setMessage(result, 'Copy was blocked. Select and copy the link manually.', true); }
+    });
     result.append(label, anchor, document.createElement('br'), copy);
   }
 
@@ -449,6 +473,10 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
   document.getElementById('accounts-refresh-btn')?.addEventListener('click', loadAdminAccounts);
   document.getElementById('ratings-refresh-btn')?.addEventListener('click', loadAdminRatings);
   document.getElementById('admin-create-invite-btn')?.addEventListener('click', createAdminInvite);
+  document.getElementById('admin-invite-role')?.addEventListener('change', event => {
+    const levels = document.getElementById('admin-student-levels');
+    if (levels) levels.classList.toggle('hidden', event.target.value !== 'student');
+  });
   document.getElementById('create-invite-btn')?.addEventListener('click', createTeacherInvite);
   document.getElementById('refresh-students-btn')?.addEventListener('click', loadTeacherStudents);
   client.auth.onAuthStateChange(() => { void renderSession(); });
