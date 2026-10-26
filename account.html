@@ -43,9 +43,14 @@
         <input id="signup-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com">
         <label for="signup-phone">Phone number</label>
         <input id="signup-phone" name="phone" type="tel" autocomplete="tel" required maxlength="30" placeholder="+1 555 123 4567">
+        <label for="signup-role">I want to register as</label>
+        <select id="signup-role" name="requested_role" required>
+          <option value="student" selected>Student</option>
+          <option value="teacher">Teacher</option>
+        </select>
+        <p class="account-hint">Teacher registration requests require administrator approval. For security, you cannot register yourself as an administrator.</p>
         <label for="signup-password">Create password</label>
         <input id="signup-password" name="password" type="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters">
-        <p class="account-hint">New registrations cannot choose an administrator or teacher role. The administrator assigns roles securely.</p>
         <button class="button button-primary" type="submit">Create account</button>
       </form>
       <p id="account-message" class="message" role="status" aria-live="polite"></p>
