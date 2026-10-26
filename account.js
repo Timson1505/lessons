@@ -152,4 +152,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   showTab(window.location.hash.toLowerCase() === '#signup' ? 'signup' : 'signin');
+
+  // A returning user with a valid saved session should go straight to their dashboard.
+  (async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) await goToRoleDashboard(session.user);
+  })();
 });
