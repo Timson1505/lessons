@@ -11,6 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const signInTab = document.getElementById('signin-tab');
   const signUpTab = document.getElementById('signup-tab');
 
+  function setMessage(text, error = false) {
+    if (!message) return;
+    message.textContent = text || '';
+    message.classList.toggle('error', error);
+    message.classList.toggle('success', Boolean(text) && !error);
+  }
+
   if (!createClient) {
     setMessage('Unable to load the account service. Check your connection and reload.', true);
     return;
@@ -19,12 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
   });
-
-  function setMessage(text, error = false) {
-    message.textContent = text || '';
-    message.classList.toggle('error', error);
-    message.classList.toggle('success', Boolean(text) && !error);
-  }
 
   function showTab(tab) {
     const isSignIn = tab === 'signin';
@@ -47,6 +48,23 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       button.textContent = button.dataset.originalText || (form === signInForm ? 'Sign in' : 'Create account');
     }
+  }
+
+  async function goToRoleDashboard(user) {
+    const { data: profile, error } = await supabase
+      .from('profiles').select('role, phone').eq('id', user.id).maybeSingle();
+
+    if (error || !profile) {
+      setMessage('Your account exists, but its profile is not ready. Please try again shortly or contact the administrator.', true);
+      return false;
+    }
+    const destinations = { admin: 'admin.html', teacher: 'teacher.html', student: 'student.html' };
+    if (destinations[profile.role]) {
+      window.location.replace(destinations[profile.role]);
+      return true;
+    }
+    setMessage('Your account is saved. The administrator must assign your role before dashboard access is available.');
+    return false;
   }
 
   signInTab.addEventListener('click', () => showTab('signin'));
@@ -84,9 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const destinations = { admin: 'admin.html', teacher: 'teacher.html', student: 'student.html' };
     if (destinations[profile.role]) {
-      window.location.href = destinations[profile.role];
+      window.location.replace(destinations[profile.role]);
     } else {
-      setMessage('Your account is awaiting role assignment by the administrator. Please contact the site administrator.');
+      setMessage('Your account is saved, but its role is awaiting administrator assignment.');
     }
   });
 
@@ -118,13 +136,19 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const chosenRole = requestedRole === 'teacher' ? 'Teacher' : 'Student';
-    if (data.session) {
-      setMessage(`Account created as a ${chosenRole} request. Your actual role and access must be approved by the administrator before you can use the role dashboard.`);
-    } else {
-      setMessage(`Registration submitted as a ${chosenRole} request. Check your email for a confirmation link. The administrator must approve your role before dashboard access is granted.`);
-    }
     signUpForm.reset();
+
+    if (data.session && data.user) {
+      if (requestedRole === 'student') {
+        setMessage('Account created. Opening your student dashboard…');
+        await goToRoleDashboard(data.user);
+      } else {
+        setMessage('Your account is saved. Your teacher role request must be approved by the administrator before the teacher dashboard is available.');
+      }
+    } else {
+      const roleLabel = requestedRole === 'teacher' ? 'teacher' : 'student';
+      setMessage(`Registration saved as a ${roleLabel} request. Check your email to confirm the account. After confirmation, sign in to open your assigned dashboard. Teacher access requires administrator approval.`);
+    }
   });
 
   showTab(window.location.hash.toLowerCase() === '#signup' ? 'signup' : 'signin');
