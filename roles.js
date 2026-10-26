@@ -285,78 +285,138 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     const button = document.getElementById('create-invite-btn');
     const result = document.getElementById('invite-result');
     const levels = [...document.querySelectorAll('#teacher-level-options input:checked')].map(input => input.value);
+    const contact = document.getElementById('teacher-invite-contact')?.value.trim() || '';
+
     if (!levels.length) {
       setMessage(result, 'Select at least one lesson level.', true);
       return;
     }
+    if (contact && !contact.includes('@') && !/^[+()0-9\\s.-]{7,30}$/.test(contact)) {
+      setMessage(result, 'Enter a valid email address or phone number.', true);
+      return;
+    }
+
     button.disabled = true;
     button.textContent = 'Creating link…';
+    setMessage(result, 'Creating your invitation link…');
     const { data, error } = await client.rpc('teacher_create_invite', {
       p_levels: levels,
       p_expires_at: null
     });
     button.disabled = false;
     button.textContent = 'Create student invite link';
+
     if (error) {
-      setMessage(result, error.message, true);
+      setMessage(result, 'Could not create invitation: ' + error.message, true);
       return;
     }
-    const inviteCode = data?.[0]?.invite_code;
+    const inviteCode = Array.isArray(data) ? data[0]?.invite_code : data?.invite_code;
     if (!inviteCode) {
-      setMessage(result, 'The database did not return an invite code.', true);
+      setMessage(result, 'The database did not return an invite code. Please try again or contact the administrator.', true);
       return;
     }
-    const contact = document.getElementById('teacher-invite-contact')?.value.trim() || '';
-    if (contact && !contact.includes('@') && !/^[+()0-9\s.-]{7,30}$/.test(contact)) {
-      setMessage(result, 'Enter a valid email address or phone number.', true);
-      return;
-    }
+
     const inviteUrl = new URL('account.html', window.location.href);
     inviteUrl.searchParams.set('invite', inviteCode);
     if (contact) inviteUrl.searchParams.set(contact.includes('@') ? 'invite_email' : 'invite_phone', contact);
     inviteUrl.hash = 'signup';
     const link = inviteUrl.href;
+
     result.replaceChildren();
-    const text = document.createElement('span');
-    text.textContent = 'Share this link with your students: ';
-    const anchor = document.createElement('a');
-    anchor.href = link;
-    anchor.textContent = link;
-    anchor.target = '_blank';
-    anchor.rel = 'noopener noreferrer';
+    result.classList.remove('error');
+    result.classList.add('success');
+    const intro = document.createElement('p');
+    intro.textContent = 'Invitation link created. Share this link with your student:';
+    const linkBox = document.createElement('input');
+    linkBox.type = 'text';
+    linkBox.readOnly = true;
+    linkBox.value = link;
+    linkBox.setAttribute('aria-label', 'Student invitation link');
+    linkBox.style.width = '100%';
+    linkBox.style.margin = '.5rem 0';
+    linkBox.style.padding = '.75rem';
+    linkBox.style.border = '1px solid #cbd5e1';
+    linkBox.style.borderRadius = '8px';
+    linkBox.addEventListener('click', () => linkBox.select());
+
+    const actions = document.createElement('div');
+    actions.style.display = 'flex';
+    actions.style.flexWrap = 'wrap';
+    actions.style.gap = '.5rem';
+
     const copy = document.createElement('button');
     copy.type = 'button';
     copy.className = 'button button-light';
-    copy.textContent = 'Copy link';
+    copy.textContent = 'Copy invitation link';
     copy.addEventListener('click', async () => {
       try {
-        await navigator.clipboard.writeText(link);
-        copy.textContent = 'Copied!';
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(link);
+        } else {
+          linkBox.focus();
+          linkBox.select();
+          if (!document.execCommand('copy')) throw new Error('Copy not supported');
+        }
+        copy.textContent = 'Link copied!';
       } catch (_) {
-        setMessage(result, 'Copy was blocked by the browser. Select and copy the link manually.', true);
+        linkBox.focus();
+        linkBox.select();
+        copy.textContent = 'Select the link and copy';
       }
     });
-    result.append(text, anchor, document.createElement('br'), copy);
+
+    const share = document.createElement('button');
+    share.type = 'button';
+    share.className = 'button button-primary';
+    share.textContent = 'Share with student';
+    share.addEventListener('click', async () => {
+      const shareText = 'You are invited to join Timson’s English Lessons. Open this link to create your account and connect with your teacher: ' + link;
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: 'English Lessons invitation', text: shareText, url: link });
+        } catch (shareError) {
+          if (shareError?.name !== 'AbortError') {
+            linkBox.focus();
+            linkBox.select();
+          }
+        }
+      } else {
+        try {
+          if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(link);
+          else { linkBox.focus(); linkBox.select(); document.execCommand('copy'); }
+          share.textContent = 'Link copied — paste into a message';
+        } catch (_) {
+          linkBox.focus();
+          linkBox.select();
+          share.textContent = 'Select and copy the link';
+        }
+      }
+    });
+
+    actions.append(copy, share);
+    result.append(intro, linkBox, actions);
+
     if (contact) {
       const send = document.createElement('button');
       send.type = 'button';
-      send.className = 'button button-primary';
-      send.style.marginLeft = '.5rem';
-      const emailContact = contact.includes('@');
-      send.textContent = emailContact ? 'Open email draft' : 'Open text message';
+      send.className = 'button button-light';
+      send.style.marginTop = '.5rem';
+      send.textContent = contact.includes('@') ? 'Open email draft' : 'Open text message';
       send.addEventListener('click', () => {
-        const message = 'You are invited to join English Lessons. Open this link to sign up: ' + link;
-        const destination = emailContact
-          ? 'mailto:' + encodeURIComponent(contact) + '?subject=' + encodeURIComponent('Your English Lessons invitation') + '&body=' + encodeURIComponent(message)
-          : 'sms:' + encodeURIComponent(contact) + '?body=' + encodeURIComponent(message);
+        const messageText = 'You are invited to join Timson’s English Lessons. Open this link to sign up and connect with your teacher: ' + link;
+        const destination = contact.includes('@')
+          ? 'mailto:' + encodeURIComponent(contact) + '?subject=' + encodeURIComponent('Your English Lessons invitation') + '&body=' + encodeURIComponent(messageText)
+          : 'sms:' + encodeURIComponent(contact) + '?body=' + encodeURIComponent(messageText);
         window.location.href = destination;
       });
       result.appendChild(send);
-      setMessage(result, 'Invitation link created for ' + contact + '. Use the button to open your email or messaging app; the message is not sent automatically.');
+      const note = document.createElement('p');
+      note.textContent = 'Choose “Open email draft” or “Open text message” to prepare a message. It will not send automatically.';
+      result.appendChild(note);
     }
+
     await loadTeacherStudents();
   }
-
 
 
   async function deleteAdminUser(userId, email, button) {
