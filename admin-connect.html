@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — Connect Students | Timson's English Lessons</title>
+<link rel="icon" href="timson_icon.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#172033;background:#f4f6fb}*{box-sizing:border-box}body{margin:0}.top{background:#202b59;color:#fff;padding:18px max(20px,calc((100% - 1100px)/2));display:flex;justify-content:space-between;gap:12px;align-items:center}.brand{color:#fff;text-decoration:none;font-weight:800}.wrap{max-width:1100px;margin:30px auto;padding:0 18px}.panel{background:#fff;border:1px solid #e1e6f0;border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 6px 22px #1720330a}h1{margin:0 0 8px;font-size:clamp(25px,4vw,34px)}h2{margin:0 0 10px}.muted{color:#64708a;line-height:1.5}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{display:grid;gap:7px;font-weight:700;font-size:14px}input,select{width:100%;padding:12px;border:1px solid #cbd3e1;border-radius:9px;font:inherit;background:white;color:#172033}.button{border:0;border-radius:9px;padding:11px 16px;font:inherit;font-weight:750;cursor:pointer}.primary{background:#3346a8;color:white}.light{background:#e9edfa;color:#24326c}.button:disabled{opacity:.55;cursor:wait}.message{min-height:1.5em;margin:12px 0 0}.error{color:#b42318}.success{color:#067647}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:700px}th,td{text-align:left;padding:12px;border-bottom:1px solid #e8ebf2}th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#64708a}td{font-size:14px}.pill{display:inline-block;background:#edf0ff;color:#3446a8;border-radius:20px;padding:4px 8px;font-size:12px;font-weight:750}.hidden{display:none!important}.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}.toolbar input{max-width:380px}@media(max-width:650px){.grid{grid-template-columns:1fr}.toolbar{align-items:stretch;flex-direction:column}.toolbar input{max-width:none}.panel{padding:16px}}
+</style>
+</head>
+<body data-required-role="admin">
+<header class="top"><a class="brand" href="index.html">Timson's English Lessons</a><button id="logout" class="button light" type="button">Log out</button></header>
+<main class="wrap">
+<section class="panel"><h1>Manually connect a student to a teacher</h1><p class="muted">Choose an existing student account and assign it to one teacher. No invitation link is required. Each student can have only one teacher; assigning a different teacher replaces the previous connection.</p></section>
+<section id="login-panel" class="panel hidden"><h2>Administrator sign in</h2><form id="login-form" class="grid"><label>Email<input id="email" type="email" autocomplete="username" required></label><label>Password<input id="password" type="password" autocomplete="current-password" required></label><button class="button primary" type="submit">Sign in</button></form><p id="login-message" class="message" role="status"></p></section>
+<section id="admin-panel" class="hidden">
+<div class="panel"><h2>Assignment</h2><div class="grid"><label for="student">Registered student<select id="student" required><option value="">Loading accounts…</option></select></label><label for="teacher">Teacher<select id="teacher" required><option value="">Loading teachers…</option></select></label></div><p id="assignment-note" class="muted">Student accounts with role Student or User are available for assignment.</p><button id="connect" class="button primary" type="button">Connect student to teacher</button><p id="assignment-message" class="message" role="status"></p></div>
+<div class="panel"><div class="toolbar"><div><h2>Registered accounts</h2><p class="muted">Review student-teacher connections.</p></div><input id="search" type="search" placeholder="Search name, email or role" aria-label="Search accounts"></div><div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Teacher connection</th><th>Registered</th></tr></thead><tbody id="accounts"><tr><td colspan="5">Loading…</td></tr></tbody></table></div><p id="table-message" class="message" role="status"></p></div>
+</section>
+<p class="muted"><a href="index.html">← Back to lessons website</a></p>
+</main>
+<script src="admin-connect.js?v=20261028-1"></script>
+</body></html>
