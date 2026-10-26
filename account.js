@@ -10,7 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const signUpForm = document.getElementById('signup-form');
   const signInTab = document.getElementById('signin-tab');
   const signUpTab = document.getElementById('signup-tab');
-  const inviteFromUrl = new URLSearchParams(window.location.search).get('invite');
+  const urlParams = new URLSearchParams(window.location.search);
+  const inviteFromUrl = urlParams.get('invite');
+  const roleInviteFromUrl = urlParams.get('role_invite');
+  if (roleInviteFromUrl) { try { localStorage.setItem('lesson_role_invite_code', roleInviteFromUrl); } catch (_) {} }
   if (inviteFromUrl) {
     try { localStorage.setItem('lesson_invite_code', inviteFromUrl); } catch (_) {}
   }
@@ -51,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     signUpTab.classList.toggle('active', !isSignIn);
     signInTab.setAttribute('aria-selected', String(isSignIn));
     signUpTab.setAttribute('aria-selected', String(!isSignIn));
-    const inviteQuery = inviteFromUrl ? '?invite=' + encodeURIComponent(inviteFromUrl) : '';
+    const inviteQuery = roleInviteFromUrl ? '?role_invite=' + encodeURIComponent(roleInviteFromUrl) : (inviteFromUrl ? '?invite=' + encodeURIComponent(inviteFromUrl) : '');
     history.replaceState(null, '', window.location.pathname + inviteQuery + (isSignIn ? '#signin' : '#signup'));
     setMessage('');
   }
@@ -76,7 +79,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return false;
     }
     const destinations = { admin: 'admin.html', teacher: 'teacher.html', student: 'student.html' };
-    if (inviteFromUrl || (() => { try { return Boolean(localStorage.getItem('lesson_invite_code')); } catch (_) { return false; } })()) {
+    const roleInvite = roleInviteFromUrl || (() => { try { return localStorage.getItem('lesson_role_invite_code'); } catch (_) { return null; } })();
+    if (roleInvite) {
+      const { data: invitedRole, error: roleInviteError } = await supabase.rpc('admin_accept_role_invite', { p_invite_code: roleInvite });
+      if (roleInviteError) { setMessage('Your account is signed in, but the role invitation could not be applied: ' + roleInviteError.message, true); return false; }
+      try { localStorage.removeItem('lesson_role_invite_code'); } catch (_) {}
+      if (invitedRole === 'teacher') { window.location.replace('teacher.html'); return true; }
+    } else if (inviteFromUrl || (() => { try { return Boolean(localStorage.getItem('lesson_invite_code')); } catch (_) { return false; } })()) {
       const joined = await applyPendingInvite();
       if (!joined) return;
     }
@@ -121,7 +130,14 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const hasInvite = inviteFromUrl || (() => { try { return Boolean(localStorage.getItem('lesson_invite_code')); } catch (_) { return false; } })();
+    const roleInvite = roleInviteFromUrl || (() => { try { return localStorage.getItem('lesson_role_invite_code'); } catch (_) { return null; } })();
+    if (roleInvite) {
+      const { data: invitedRole, error: roleInviteError } = await supabase.rpc('admin_accept_role_invite', { p_invite_code: roleInvite });
+      if (roleInviteError) { setMessage('Your account is signed in, but the role invitation could not be applied: ' + roleInviteError.message, true); return; }
+      try { localStorage.removeItem('lesson_role_invite_code'); } catch (_) {}
+      if (invitedRole === 'teacher') { window.location.replace('teacher.html'); return; }
+    }
+    const hasInvite = !roleInvite && (inviteFromUrl || (() => { try { return Boolean(localStorage.getItem('lesson_invite_code')); } catch (_) { return false; } })());
     if (hasInvite) {
       const joined = await applyPendingInvite();
       if (!joined) return;
@@ -165,6 +181,13 @@ document.addEventListener('DOMContentLoaded', () => {
     signUpForm.reset();
 
     if (data.session && data.user) {
+      if (roleInviteFromUrl) {
+        const { data: invitedRole, error: roleInviteError } = await supabase.rpc('admin_accept_role_invite', { p_invite_code: roleInviteFromUrl });
+        if (roleInviteError) { setMessage('Account created, but the invitation could not be applied: ' + roleInviteError.message, true); return; }
+        try { localStorage.removeItem('lesson_role_invite_code'); } catch (_) {}
+        if (invitedRole === 'teacher') { setMessage('Teacher invitation accepted. Opening dashboard…'); window.location.replace('teacher.html'); return; }
+        setMessage('Student invitation accepted. Opening dashboard…'); window.location.replace('student.html'); return;
+      }
       if (requestedRole === 'student') {
         if (inviteFromUrl) {
           const joined = await applyPendingInvite();
