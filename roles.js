@@ -83,6 +83,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     setMessage(dashboardMessage, 'Signed in as ' + (profile.name || session.user.email) + '.');
 
     if (requiredRole === 'admin') { await loadAdminProfiles(); await loadAdminAccess(); }
+    if (requiredRole === 'teacher') { await loadTeacherStudents(); }
   }
 
   async function loadAdminProfiles() {
@@ -118,6 +119,87 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       });
       body.appendChild(row);
     });
+  }
+
+  async function loadTeacherStudents() {
+    const body = document.getElementById('teacher-students-body');
+    if (!body) return;
+    body.innerHTML = '<tr><td colspan="4">Loading students…</td></tr>';
+    const { data, error } = await client.rpc('teacher_list_linked_students');
+    if (error) {
+      body.innerHTML = '<tr><td colspan="4">Could not load students. Check the teacher RPC and database migration.</td></tr>';
+      setMessage(dashboardMessage, error.message, true);
+      return;
+    }
+    body.replaceChildren();
+    if (!data || !data.length) {
+      body.innerHTML = '<tr><td colspan="4">No students have joined your links yet.</td></tr>';
+      return;
+    }
+    data.forEach(student => {
+      const row = document.createElement('tr');
+      [
+        student.full_name || 'Student',
+        student.email || '—',
+        student.joined_at ? new Date(student.joined_at).toLocaleDateString() : '—',
+        (student.levels || []).join(', ') || 'No levels'
+      ].forEach(value => {
+        const cell = document.createElement('td');
+        cell.textContent = value;
+        row.appendChild(cell);
+      });
+      body.appendChild(row);
+    });
+  }
+
+  async function createTeacherInvite() {
+    const button = document.getElementById('create-invite-btn');
+    const result = document.getElementById('invite-result');
+    const levels = [...document.querySelectorAll('#teacher-level-options input:checked')].map(input => input.value);
+    if (!levels.length) {
+      setMessage(result, 'Select at least one lesson level.', true);
+      return;
+    }
+    button.disabled = true;
+    button.textContent = 'Creating link…';
+    const { data, error } = await client.rpc('teacher_create_invite', {
+      p_levels: levels,
+      p_expires_at: null
+    });
+    button.disabled = false;
+    button.textContent = 'Create student invite link';
+    if (error) {
+      setMessage(result, error.message, true);
+      return;
+    }
+    const inviteCode = data?.[0]?.invite_code;
+    if (!inviteCode) {
+      setMessage(result, 'The database did not return an invite code.', true);
+      return;
+    }
+    const link = new URL('account.html?invite=' + encodeURIComponent(inviteCode) + '#signup', window.location.href).href;
+    result.replaceChildren();
+    const text = document.createElement('span');
+    text.textContent = 'Share this link with your students: ';
+    const anchor = document.createElement('a');
+    anchor.href = link;
+    anchor.textContent = link;
+    anchor.target = '_blank';
+    anchor.rel = 'noopener noreferrer';
+    const copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'button button-light';
+    copy.textContent = 'Copy link';
+    copy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(link);
+        copy.textContent = 'Copied!';
+      } catch (_) {
+        setMessage(result, 'Copy was blocked by the browser. Select and copy the link manually.', true);
+      }
+    });
+    result.append(text, anchor, document.createElement('br'), copy);
+    await loadTeacherStudents();
   }
 
   const LESSON_LEVELS = [
@@ -305,6 +387,8 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
 
   document.getElementById('refresh-btn')?.addEventListener('click', loadAdminProfiles);
   document.getElementById('access-refresh-btn')?.addEventListener('click', loadAdminAccess);
+  document.getElementById('create-invite-btn')?.addEventListener('click', createTeacherInvite);
+  document.getElementById('refresh-students-btn')?.addEventListener('click', loadTeacherStudents);
   client.auth.onAuthStateChange(() => { void renderSession(); });
   void renderSession();
 })();
