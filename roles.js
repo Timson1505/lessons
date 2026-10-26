@@ -544,12 +544,6 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       save.type = 'button';
       save.className = 'button button-primary';
       save.textContent = 'Save access';
-      const approve = document.createElement('button');
-      approve.type = 'button';
-      approve.className = 'button button-primary';
-      approve.textContent = 'Approve access';
-      approve.style.marginBottom = '.4rem';
-
       async function saveAccess(approveNow = false, button = save) {
         let approvedLevels = [...levelsBox.querySelectorAll('input:checked')].map(input => input.value);
         if (approveNow) {
@@ -602,8 +596,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
         await loadAdminAccess();
       }
       save.addEventListener('click', () => saveAccess(false, save));
-      approve.addEventListener('click', () => saveAccess(true, approve));
-      actionCell.append(approve, document.createElement('br'), save);
+      actionCell.appendChild(save);
       const remove = document.createElement('button');
       remove.type = 'button';
       remove.className = 'button button-danger';
