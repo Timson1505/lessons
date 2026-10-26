@@ -244,45 +244,66 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
   async function createAdminInvite() {
     const button = document.getElementById('admin-create-invite-btn');
     const result = document.getElementById('admin-invite-result');
+    if (!button || !result) return;
     const role = document.getElementById('admin-invite-role')?.value || 'student';
+    const originalText = 'Generate invitation link';
     button.disabled = true;
     button.textContent = 'Generating link…';
-    let code = '';
-    let error = null;
-    if (role === 'teacher') {
-      const response = await client.rpc('admin_create_role_invite', { p_role: 'teacher', p_expires_at: null });
-      error = response.error;
-      code = response.data?.[0]?.invite_code || '';
-    } else {
-      const levels = [...document.querySelectorAll('#admin-invite-levels input:checked')].map(input => input.value);
-      if (!levels.length) {
-        button.disabled = false;
-        button.textContent = 'Generate invitation link';
-        setMessage(result, 'Select at least one lesson level for the student.', true);
-        return;
+    setMessage(result, '');
+    try {
+      let code = '';
+      if (role === 'teacher') {
+        const { data, error } = await client.rpc('admin_create_role_invite', {
+          p_role: 'teacher',
+          p_expires_at: null
+        });
+        if (error) throw error;
+        code = Array.isArray(data) ? data[0]?.invite_code : data?.invite_code;
+      } else {
+        const levels = [...document.querySelectorAll('#admin-invite-levels input:checked')].map(input => input.value);
+        if (!levels.length) {
+          setMessage(result, 'Select at least one lesson level for the student.', true);
+          return;
+        }
+        const { data, error } = await client.rpc('admin_create_invite', {
+          p_levels: levels,
+          p_expires_at: null
+        });
+        if (error) throw error;
+        code = Array.isArray(data) ? data[0]?.invite_code : data?.invite_code;
       }
-      const response = await client.rpc('admin_create_invite', { p_levels: levels, p_expires_at: null });
-      error = response.error;
-      code = response.data?.[0]?.invite_code || '';
+      if (!code) throw new Error('Supabase did not return an invitation code. Please try again.');
+      const param = role === 'teacher' ? 'role_invite' : 'invite';
+      const link = new URL('account.html?' + param + '=' + encodeURIComponent(code) + '#signup', window.location.href).href;
+      result.replaceChildren();
+      const label = document.createElement('span');
+      label.textContent = 'Share this ' + role + ' invitation link: ';
+      const anchor = document.createElement('a');
+      anchor.href = link;
+      anchor.textContent = link;
+      anchor.target = '_blank';
+      anchor.rel = 'noopener noreferrer';
+      const copy = document.createElement('button');
+      copy.type = 'button';
+      copy.className = 'button button-light';
+      copy.textContent = 'Copy link';
+      copy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(link);
+          copy.textContent = 'Copied!';
+        } catch (_) {
+          setMessage(result, 'Copy was blocked by the browser. Select and copy the link manually.', true);
+        }
+      });
+      result.append(label, anchor, document.createElement('br'), copy);
+      setMessage(result, '');
+    } catch (error) {
+      console.error('Invitation generation failed:', error);
+      setMessage(result, error?.message || 'Invitation could not be generated. Check your connection and try again.', true);
+    } finally {
+      button.disabled = false;
+      button.textContent = originalText;
     }
-    button.disabled = false;
-    button.textContent = 'Generate invitation link';
-    if (error) { setMessage(result, error.message, true); return; }
-    if (!code) { setMessage(result, 'The database did not return an invitation code.', true); return; }
-    const param = role === 'teacher' ? 'role_invite' : 'invite';
-    const link = new URL('account.html?' + param + '=' + encodeURIComponent(code) + '#signup', window.location.href).href;
-    result.replaceChildren();
-    const label = document.createElement('span');
-    label.textContent = 'Share this ' + role + ' invitation link: ';
-    const anchor = document.createElement('a');
-    anchor.href = link; anchor.textContent = link; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer';
-    const copy = document.createElement('button');
-    copy.type = 'button'; copy.className = 'button button-light'; copy.textContent = 'Copy link';
-    copy.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(link); copy.textContent = 'Copied!'; }
-      catch (_) { setMessage(result, 'Copy was blocked. Select and copy the link manually.', true); }
-    });
-    result.append(label, anchor, document.createElement('br'), copy);
   }
 
   const LESSON_LEVELS = [
