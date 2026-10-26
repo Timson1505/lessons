@@ -358,6 +358,30 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     });
   }
 
+  async function loadInviteTeachers() {
+    const select = document.getElementById('admin-invite-teacher');
+    if (!select) return;
+    select.replaceChildren();
+    const ownOption = document.createElement('option');
+    ownOption.value = '';
+    ownOption.textContent = 'Administrator (not linked to a teacher)';
+    select.appendChild(ownOption);
+    const { data, error } = await client.from('profiles')
+      .select('id,name')
+      .eq('role', 'teacher')
+      .order('name', { ascending: true });
+    if (error) {
+      setMessage(document.getElementById('admin-invite-result'), 'Could not load teachers: ' + error.message, true);
+      return;
+    }
+    (data || []).forEach(teacher => {
+      const option = document.createElement('option');
+      option.value = teacher.id;
+      option.textContent = teacher.name || ('Teacher ' + teacher.id.slice(0, 8));
+      select.appendChild(option);
+    });
+  }
+
   async function createAdminInvite() {
     const button = document.getElementById('admin-create-invite-btn');
     const result = document.getElementById('admin-invite-result');
@@ -382,10 +406,17 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
           setMessage(result, 'Select at least one lesson level for the student.', true);
           return;
         }
-        const { data, error } = await client.rpc('admin_create_invite', {
-          p_levels: levels,
-          p_expires_at: null
-        });
+        const teacherId = document.getElementById('admin-invite-teacher')?.value || '';
+        const { data, error } = teacherId
+          ? await client.rpc('admin_create_invite_for_teacher', {
+              p_teacher_id: teacherId,
+              p_levels: levels,
+              p_expires_at: null
+            })
+          : await client.rpc('admin_create_invite', {
+              p_levels: levels,
+              p_expires_at: null
+            });
         if (error) throw error;
         code = Array.isArray(data) ? data[0]?.invite_code : data?.invite_code;
       }
@@ -394,7 +425,11 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       const link = new URL('account.html?' + param + '=' + encodeURIComponent(code) + '#signup', window.location.href).href;
       result.replaceChildren();
       const label = document.createElement('span');
-      label.textContent = 'Share this ' + role + ' invitation link: ';
+      const selectedTeacher = document.getElementById('admin-invite-teacher');
+      const teacherName = role === 'student' && selectedTeacher?.value
+        ? selectedTeacher.options[selectedTeacher.selectedIndex]?.textContent
+        : '';
+      label.textContent = 'Share this ' + role + ' invitation link' + (teacherName ? ' for ' + teacherName : '') + ': ';
       const anchor = document.createElement('a');
       anchor.href = link;
       anchor.textContent = link;
@@ -639,9 +674,13 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
   document.getElementById('ratings-refresh-btn')?.addEventListener('click', loadAdminRatings);
   document.getElementById('admin-create-invite-btn')?.addEventListener('click', createAdminInvite);
   document.getElementById('admin-invite-role')?.addEventListener('change', event => {
+    const isStudent = event.target.value === 'student';
     const levels = document.getElementById('admin-student-levels');
-    if (levels) levels.classList.toggle('hidden', event.target.value !== 'student');
+    const teacherOwner = document.getElementById('admin-invite-teacher-owner');
+    if (levels) levels.classList.toggle('hidden', !isStudent);
+    if (teacherOwner) teacherOwner.classList.toggle('hidden', !isStudent);
   });
+  void loadInviteTeachers();
   document.getElementById('create-invite-btn')?.addEventListener('click', createTeacherInvite);
   document.getElementById('refresh-students-btn')?.addEventListener('click', loadTeacherStudents);
   document.getElementById('schedule-add-form')?.addEventListener('submit', addTeacherScheduleEntry);
