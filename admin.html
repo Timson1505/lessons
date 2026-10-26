@@ -8,7 +8,12 @@
   <link rel="stylesheet" href="roles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="roles.js"></script>
-</head>
+<style>
+.access-help{margin:0 0 1rem;padding:1rem;border-radius:10px;background:#f2f5fa;color:#354052;line-height:1.5}
+.access-table{min-width:1450px}.access-table select,.access-table input[type="date"],.access-table input[type="text"]{max-width:180px;padding:.45rem;border:1px solid #ccd3df;border-radius:6px}
+.access-levels{display:grid;gap:.35rem;min-width:155px}.access-levels label{display:flex;gap:.4rem;align-items:center;font-size:.85rem;white-space:nowrap}
+.access-user-email{font-size:.82rem;overflow-wrap:anywhere;color:#586174}.status-pill{display:inline-block;padding:.25rem .5rem;border-radius:99px;background:#edf0f5;font-size:.8rem;font-weight:700}
+</style></head>
 <body data-required-role="admin">
   <header class="topbar"><a class="brand" href="index.html">Timson's <span>English Lessons</span></a><div class="top-actions"><span id="session-email" class="session-email"></span><button id="logout-btn" class="button button-light hidden" type="button">Log out</button></div></header>
   <main class="page-shell">
@@ -17,7 +22,13 @@
     <section id="dashboard-panel" class="hidden">
       <section class="panel"><div class="section-heading"><div><h2>Lessons</h2><p class="muted">Open the full lesson library from your administrator account.</p></div><a class="button button-primary inline-button" href="index.html#project">Open Lessons →</a></div></section>
       <div class="stats-grid"><article class="stat-card"><span>Profiles visible to admin</span><strong id="profile-count">—</strong></article><article class="stat-card"><span>Your access</span><strong>Full admin</strong></article><article class="stat-card"><span>Platform</span><strong>English Lessons</strong></article></div>
-      <section class="panel"><div class="section-heading"><div><h2>Account profiles</h2><p class="muted">Role changes are intentionally not enabled in this starter dashboard.</p></div><button id="refresh-btn" class="button button-light" type="button">Refresh</button></div><div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Phone</th><th>Joined</th></tr></thead><tbody id="profiles-body"><tr><td colspan="4">Loading profiles…</td></tr></tbody></table></div><p id="dashboard-message" class="message" role="status"></p></section>
+      <section class="panel" id="manage-access">
+        <div class="section-heading"><div><h2>Manage Access</h2><p class="muted">Review registered users, confirm payments manually, and grant access only to selected lesson levels.</p></div><button id="access-refresh-btn" class="button button-light" type="button">Refresh users</button></div>
+        <div class="access-help">Plans: Beginner ($10/month), Elementary ($15/month), All lessons ($20/month). Approval requires payment confirmation and at least one selected level. Set an expiry date to end access automatically in the access-checking logic.</div>
+        <div class="table-wrap"><table class="access-table"><thead><tr><th>User / Email</th><th>Requested plan</th><th>Requested levels</th><th>Payment confirmed</th><th>Allowed levels</th><th>Status</th><th>Expires</th><th>Admin note</th><th>Action</th></tr></thead><tbody id="access-body"><tr><td colspan="9">Loading registered users…</td></tr></tbody></table></div>
+        <p id="access-message" class="message" role="status"></p>
+      </section>
+      <section class="panel"><div class="section-heading"><div><h2>Account profiles</h2><p class="muted">Basic account profile information.</p></div><button id="refresh-btn" class="button button-light" type="button">Refresh</button></div><div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Phone</th><th>Joined</th></tr></thead><tbody id="profiles-body"><tr><td colspan="4">Loading profiles…</td></tr></tbody></table></div><p id="dashboard-message" class="message" role="status"></p></section>
     </section>
     <p class="security-note"><strong>Security:</strong> This page is only the interface. Supabase Row Level Security (RLS) must enforce permissions in the database.</p>
     <a class="back-link" href="index.html">← Back to learning website</a>
