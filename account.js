@@ -10,6 +10,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const signUpForm = document.getElementById('signup-form');
   const signInTab = document.getElementById('signin-tab');
   const signUpTab = document.getElementById('signup-tab');
+  const inviteFromUrl = new URLSearchParams(window.location.search).get('invite');
+  if (inviteFromUrl) {
+    try { localStorage.setItem('lesson_invite_code', inviteFromUrl); } catch (_) {}
+  }
+  async function applyPendingInvite() {
+    let code = inviteFromUrl;
+    try { code = code || localStorage.getItem('lesson_invite_code'); } catch (_) {}
+    if (!code) return true;
+    const { error } = await supabase.rpc('join_teacher_by_invite', { p_invite_code: code });
+    if (error) {
+      setMessage('Your account is signed in, but the invitation could not be applied: ' + error.message, true);
+      return false;
+    }
+    try { localStorage.removeItem('lesson_invite_code'); } catch (_) {}
+    return true;
+  }
 
   function setMessage(text, error = false) {
     if (!message) return;
@@ -35,7 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
     signUpTab.classList.toggle('active', !isSignIn);
     signInTab.setAttribute('aria-selected', String(isSignIn));
     signUpTab.setAttribute('aria-selected', String(!isSignIn));
-    history.replaceState(null, '', isSignIn ? '#signin' : '#signup');
+    const inviteQuery = inviteFromUrl ? '?invite=' + encodeURIComponent(inviteFromUrl) : '';
+    history.replaceState(null, '', window.location.pathname + inviteQuery + (isSignIn ? '#signin' : '#signup'));
     setMessage('');
   }
 
@@ -59,6 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return false;
     }
     const destinations = { admin: 'admin.html', teacher: 'teacher.html', student: 'student.html' };
+    if (inviteFromUrl || (() => { try { return Boolean(localStorage.getItem('lesson_invite_code')); } catch (_) { return false; } })()) {
+      const joined = await applyPendingInvite();
+      if (!joined) return;
+    }
     if (destinations[profile.role]) {
       window.location.replace(destinations[profile.role]);
       return true;
@@ -140,6 +161,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (data.session && data.user) {
       if (requestedRole === 'student') {
+        if (inviteFromUrl) {
+          const joined = await applyPendingInvite();
+          if (!joined) return;
+        }
         setMessage('Account created. Opening your student dashboard…');
         await goToRoleDashboard(data.user);
       } else {
