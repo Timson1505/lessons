@@ -83,7 +83,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     setMessage(dashboardMessage, 'Signed in as ' + (profile.name || session.user.email) + '.');
 
     if (requiredRole === 'admin') { await loadAdminProfiles(); await loadAdminAccess(); await loadAdminAccounts(); await loadAdminRatings(); }
-    if (requiredRole === 'teacher') { await loadTeacherStudents(); }
+    if (requiredRole === 'teacher') { await loadTeacherStudents(); await loadTeacherSchedule(); }
   }
 
   async function loadAdminProfiles() {
@@ -119,6 +119,98 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       });
       body.appendChild(row);
     });
+  }
+
+
+  async function loadTeacherSchedule() {
+    const body = document.getElementById('schedule-body');
+    if (!body) return;
+    body.innerHTML = '<tr><td colspan="8">Loading schedule…</td></tr>';
+    const { data, error } = await client.from('teacher_schedule_entries')
+      .select('id,time_slot,student_name,writing_score,reading_score,listening_score,speaking_score,notes')
+      .order('time_slot', { ascending: true });
+    if (error) {
+      body.innerHTML = '<tr><td colspan="8">Could not load schedule.</td></tr>';
+      setMessage(document.getElementById('schedule-message'), error.message, true);
+      return;
+    }
+    body.replaceChildren();
+    if (!data || !data.length) {
+      body.innerHTML = '<tr><td colspan="8">Your schedule is empty. Add your first student above.</td></tr>';
+      return;
+    }
+    data.forEach(entry => {
+      const row = document.createElement('tr');
+      const fields = [
+        ['time_slot', 'Time', 40],
+        ['student_name', 'Student name', 160],
+        ['writing_score', 'Writing assessment', 80],
+        ['reading_score', 'Reading assessment', 80],
+        ['listening_score', 'Listening assessment', 80],
+        ['speaking_score', 'Speaking assessment', 80],
+        ['notes', 'Notes', 500]
+      ];
+      const inputs = {};
+      fields.forEach(([key, label, max]) => {
+        const cell = document.createElement('td');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.maxLength = max;
+        input.value = entry[key] || '';
+        input.placeholder = label;
+        input.setAttribute('aria-label', label + ' for ' + (entry.student_name || 'student'));
+        inputs[key] = input;
+        cell.appendChild(input);
+        row.appendChild(cell);
+      });
+      const actionsCell = document.createElement('td');
+      actionsCell.className = 'schedule-actions';
+      const save = document.createElement('button');
+      save.type = 'button'; save.className = 'button button-primary'; save.textContent = 'Save';
+      save.addEventListener('click', async () => {
+        if (!inputs.time_slot.value.trim() || !inputs.student_name.value.trim()) {
+          setMessage(document.getElementById('schedule-message'), 'Enter both time and student name.', true);
+          return;
+        }
+        save.disabled = true; save.textContent = 'Saving…';
+        const update = {};
+        fields.forEach(([key]) => update[key] = inputs[key].value.trim());
+        const { error: saveError } = await client.from('teacher_schedule_entries').update(update).eq('id', entry.id);
+        save.disabled = false; save.textContent = 'Save';
+        if (saveError) { setMessage(document.getElementById('schedule-message'), saveError.message, true); return; }
+        setMessage(document.getElementById('schedule-message'), 'Schedule and assessments saved.');
+      });
+      const remove = document.createElement('button');
+      remove.type = 'button'; remove.className = 'button schedule-delete'; remove.textContent = 'Delete';
+      remove.addEventListener('click', async () => {
+        if (!window.confirm('Delete this schedule entry for ' + (entry.student_name || 'this student') + '?')) return;
+        remove.disabled = true;
+        const { error: deleteError } = await client.from('teacher_schedule_entries').delete().eq('id', entry.id);
+        if (deleteError) { remove.disabled = false; setMessage(document.getElementById('schedule-message'), deleteError.message, true); return; }
+        setMessage(document.getElementById('schedule-message'), 'Schedule entry deleted.');
+        await loadTeacherSchedule();
+      });
+      actionsCell.append(save, remove); row.appendChild(actionsCell); body.appendChild(row);
+    });
+  }
+
+  async function addTeacherScheduleEntry(event) {
+    event.preventDefault();
+    const form = document.getElementById('schedule-add-form');
+    const time = document.getElementById('schedule-time').value.trim();
+    const student = document.getElementById('schedule-student').value.trim();
+    const button = form.querySelector('button[type="submit"]');
+    if (!time || !student) return;
+    button.disabled = true; button.textContent = 'Adding…';
+    const { error } = await client.from('teacher_schedule_entries').insert({
+      time_slot: time, student_name: student,
+      writing_score: '', reading_score: '', listening_score: '', speaking_score: '', notes: ''
+    });
+    button.disabled = false; button.textContent = 'Add to schedule';
+    if (error) { setMessage(document.getElementById('schedule-message'), error.message, true); return; }
+    form.reset();
+    setMessage(document.getElementById('schedule-message'), 'Student added to your schedule.');
+    await loadTeacherSchedule();
   }
 
   async function loadTeacherStudents() {
@@ -532,6 +624,8 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
   });
   document.getElementById('create-invite-btn')?.addEventListener('click', createTeacherInvite);
   document.getElementById('refresh-students-btn')?.addEventListener('click', loadTeacherStudents);
+  document.getElementById('schedule-add-form')?.addEventListener('submit', addTeacherScheduleEntry);
+  document.getElementById('schedule-refresh-btn')?.addEventListener('click', loadTeacherSchedule);
   client.auth.onAuthStateChange(() => { void renderSession(); });
   void renderSession();
 })();
