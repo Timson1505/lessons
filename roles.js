@@ -397,25 +397,6 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     result.append(intro, linkBox, actions);
 
     if (contact) {
-      const send = document.createElement('button');
-      send.type = 'button';
-      send.className = 'button button-light';
-      send.style.marginTop = '.5rem';
-      send.textContent = contact.includes('@') ? 'Open email draft' : 'Open text message';
-      send.addEventListener('click', () => {
-        const messageText = 'You are invited to join Timson’s English Lessons. Open this link to sign up and connect with your teacher: ' + link;
-        const destination = contact.includes('@')
-          ? 'mailto:' + encodeURIComponent(contact) + '?subject=' + encodeURIComponent('Your English Lessons invitation') + '&body=' + encodeURIComponent(messageText)
-          : 'sms:' + encodeURIComponent(contact) + '?body=' + encodeURIComponent(messageText);
-        window.location.href = destination;
-      });
-      result.appendChild(send);
-      const note = document.createElement('p');
-      note.textContent = 'Choose “Open email draft” or “Open text message” to prepare a message. It will not send automatically.';
-      result.appendChild(note);
-    }
-
-    if (contact) {
       const channel = contact.includes('@') ? 'email' : 'sms';
       const deliveryStatus = document.createElement('p');
       deliveryStatus.textContent = 'Sending invitation by ' + (channel === 'email' ? 'email' : 'SMS') + '…';
