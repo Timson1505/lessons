@@ -269,7 +269,16 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       setMessage(result, 'The database did not return an invite code.', true);
       return;
     }
-    const link = new URL('account.html?invite=' + encodeURIComponent(inviteCode) + '#signup', window.location.href).href;
+    const contact = document.getElementById('teacher-invite-contact')?.value.trim() || '';
+    if (contact && !contact.includes('@') && !/^[+()0-9\s.-]{7,30}$/.test(contact)) {
+      setMessage(result, 'Enter a valid email address or phone number.', true);
+      return;
+    }
+    const inviteUrl = new URL('account.html', window.location.href);
+    inviteUrl.searchParams.set('invite', inviteCode);
+    if (contact) inviteUrl.searchParams.set(contact.includes('@') ? 'invite_email' : 'invite_phone', contact);
+    inviteUrl.hash = 'signup';
+    const link = inviteUrl.href;
     result.replaceChildren();
     const text = document.createElement('span');
     text.textContent = 'Share this link with your students: ';
@@ -291,6 +300,23 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       }
     });
     result.append(text, anchor, document.createElement('br'), copy);
+    if (contact) {
+      const send = document.createElement('button');
+      send.type = 'button';
+      send.className = 'button button-primary';
+      send.style.marginLeft = '.5rem';
+      const emailContact = contact.includes('@');
+      send.textContent = emailContact ? 'Open email draft' : 'Open text message';
+      send.addEventListener('click', () => {
+        const message = 'You are invited to join English Lessons. Open this link to sign up: ' + link;
+        const destination = emailContact
+          ? 'mailto:' + encodeURIComponent(contact) + '?subject=' + encodeURIComponent('Your English Lessons invitation') + '&body=' + encodeURIComponent(message)
+          : 'sms:' + encodeURIComponent(contact) + '?body=' + encodeURIComponent(message);
+        window.location.href = destination;
+      });
+      result.appendChild(send);
+      setMessage(result, 'Invitation link created for ' + contact + '. Use the button to open your email or messaging app; the message is not sent automatically.');
+    }
     await loadTeacherStudents();
   }
 
@@ -422,7 +448,15 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       }
       if (!code) throw new Error('Supabase did not return an invitation code. Please try again.');
       const param = role === 'teacher' ? 'role_invite' : 'invite';
-      const link = new URL('account.html?' + param + '=' + encodeURIComponent(code) + '#signup', window.location.href).href;
+      const contact = document.getElementById('admin-invite-contact')?.value.trim() || '';
+      if (contact && !contact.includes('@') && !/^[+()0-9\s.-]{7,30}$/.test(contact)) {
+        throw new Error('Enter a valid email address or phone number.');
+      }
+      const inviteUrl = new URL('account.html', window.location.href);
+      inviteUrl.searchParams.set(param, code);
+      if (contact) inviteUrl.searchParams.set(contact.includes('@') ? 'invite_email' : 'invite_phone', contact);
+      inviteUrl.hash = 'signup';
+      const link = inviteUrl.href;
       result.replaceChildren();
       const label = document.createElement('span');
       const selectedTeacher = document.getElementById('admin-invite-teacher');
@@ -448,7 +482,23 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
         }
       });
       result.append(label, anchor, document.createElement('br'), copy);
-      setMessage(result, '');
+      if (contact) {
+        const send = document.createElement('button');
+        send.type = 'button';
+        send.className = 'button button-primary';
+        send.style.marginLeft = '.5rem';
+        const emailContact = contact.includes('@');
+        send.textContent = emailContact ? 'Open email draft' : 'Open text message';
+        send.addEventListener('click', () => {
+          const message = 'You are invited to join English Lessons. Open this link to sign up: ' + link;
+          const destination = emailContact
+            ? 'mailto:' + encodeURIComponent(contact) + '?subject=' + encodeURIComponent('Your English Lessons invitation') + '&body=' + encodeURIComponent(message)
+            : 'sms:' + encodeURIComponent(contact) + '?body=' + encodeURIComponent(message);
+          window.location.href = destination;
+        });
+        result.appendChild(send);
+      }
+      setMessage(result, contact ? 'Invitation link created for ' + contact + '. Use the button to open your email or messaging app; the message is not sent automatically.' : '');
     } catch (error) {
       console.error('Invitation generation failed:', error);
       setMessage(result, error?.message || 'Invitation could not be generated. Check your connection and try again.', true);
