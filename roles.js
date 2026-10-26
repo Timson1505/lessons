@@ -213,6 +213,48 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     await loadTeacherSchedule();
   }
 
+  let teacherStudentsCache = [];
+
+  function renderTeacherStudents() {
+    const body = document.getElementById('teacher-students-body');
+    if (!body) return;
+    const search = (document.getElementById('teacher-student-search')?.value || '').trim().toLocaleLowerCase();
+    const selectedLevel = document.getElementById('teacher-student-level')?.value || '';
+    const filtered = teacherStudentsCache.filter(student => {
+      const name = String(student.full_name || 'Student').toLocaleLowerCase();
+      const email = String(student.email || '').toLocaleLowerCase();
+      const levels = Array.isArray(student.levels) ? student.levels : [];
+      return (!search || name.includes(search) || email.includes(search)) && (!selectedLevel || levels.includes(selectedLevel));
+    });
+    body.replaceChildren();
+    const resultLabel = document.getElementById('teacher-student-results');
+    if (resultLabel) resultLabel.textContent = 'Showing ' + filtered.length + ' of ' + teacherStudentsCache.length + ' connected student' + (teacherStudentsCache.length === 1 ? '' : 's') + '.';
+    if (!filtered.length) {
+      const row = document.createElement('tr');
+      const cell = document.createElement('td');
+      cell.colSpan = 4;
+      cell.textContent = teacherStudentsCache.length ? 'No students match your search or level filter.' : 'No students have accepted your invitation links yet. Create an invite above to get started.';
+      row.appendChild(cell);
+      body.appendChild(row);
+      return;
+    }
+    filtered.forEach(student => {
+      const row = document.createElement('tr');
+      [
+        student.full_name || 'Student',
+        student.email || 'Email not available',
+        student.joined_at ? new Date(student.joined_at).toLocaleDateString() : '—',
+        (Array.isArray(student.levels) ? student.levels : []).join(', ') || 'No levels'
+      ].forEach((value, index) => {
+        const cell = document.createElement('td');
+        cell.textContent = value;
+        if (index === 0) cell.style.fontWeight = '700';
+        row.appendChild(cell);
+      });
+      body.appendChild(row);
+    });
+  }
+
   async function loadTeacherStudents() {
     const body = document.getElementById('teacher-students-body');
     if (!body) return;
@@ -223,25 +265,20 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       setMessage(dashboardMessage, error.message, true);
       return;
     }
-    body.replaceChildren();
-    if (!data || !data.length) {
-      body.innerHTML = '<tr><td colspan="4">No students have joined your links yet.</td></tr>';
-      return;
+    teacherStudentsCache = Array.isArray(data) ? data : [];
+    const count = document.getElementById('teacher-student-count');
+    const levelCount = document.getElementById('teacher-level-count');
+    if (count) count.textContent = String(teacherStudentsCache.length);
+    const levels = [...new Set(teacherStudentsCache.flatMap(student => Array.isArray(student.levels) ? student.levels : []))].sort();
+    if (levelCount) levelCount.textContent = String(levels.length);
+    const select = document.getElementById('teacher-student-level');
+    if (select) {
+      const current = select.value;
+      select.replaceChildren(new Option('All levels', ''));
+      levels.forEach(level => select.add(new Option(level, level)));
+      if (levels.includes(current)) select.value = current;
     }
-    data.forEach(student => {
-      const row = document.createElement('tr');
-      [
-        student.full_name || 'Student',
-        student.email || '—',
-        student.joined_at ? new Date(student.joined_at).toLocaleDateString() : '—',
-        (student.levels || []).join(', ') || 'No levels'
-      ].forEach(value => {
-        const cell = document.createElement('td');
-        cell.textContent = value;
-        row.appendChild(cell);
-      });
-      body.appendChild(row);
-    });
+    renderTeacherStudents();
   }
 
   async function createTeacherInvite() {
@@ -733,6 +770,8 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
   void loadInviteTeachers();
   document.getElementById('create-invite-btn')?.addEventListener('click', createTeacherInvite);
   document.getElementById('refresh-students-btn')?.addEventListener('click', loadTeacherStudents);
+  document.getElementById('teacher-student-search')?.addEventListener('input', renderTeacherStudents);
+  document.getElementById('teacher-student-level')?.addEventListener('change', renderTeacherStudents);
   document.getElementById('schedule-add-form')?.addEventListener('submit', addTeacherScheduleEntry);
   document.getElementById('schedule-refresh-btn')?.addEventListener('click', loadTeacherSchedule);
   client.auth.onAuthStateChange(() => { void renderSession(); });
