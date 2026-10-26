@@ -415,6 +415,28 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       result.appendChild(note);
     }
 
+    if (contact) {
+      const channel = contact.includes('@') ? 'email' : 'sms';
+      const deliveryStatus = document.createElement('p');
+      deliveryStatus.textContent = 'Sending invitation by ' + (channel === 'email' ? 'email' : 'SMS') + '…';
+      result.appendChild(deliveryStatus);
+      const { data: delivery, error: deliveryError } = await client.functions.invoke('send-student-invitation', {
+        body: { inviteCode, inviteUrl: link, recipient: contact, channel }
+      });
+      if (deliveryError || delivery?.error || !delivery?.ok) {
+        const reason = delivery?.error || deliveryError?.message || 'Unknown delivery error';
+        deliveryStatus.textContent = 'Link created, but sending failed: ' + reason + ' You can still copy and share the link manually.';
+        deliveryStatus.classList.add('error');
+      } else {
+        deliveryStatus.textContent = 'Invitation sent successfully by ' + (channel === 'email' ? 'email' : 'SMS') + ' to ' + contact + '.';
+        deliveryStatus.classList.add('success');
+      }
+    } else {
+      const note = document.createElement('p');
+      note.textContent = 'Enter a student email or phone number above to send the invitation automatically.';
+      result.appendChild(note);
+    }
+
     await loadTeacherStudents();
   }
 
