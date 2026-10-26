@@ -82,7 +82,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     setMessage(authMessage, '');
     setMessage(dashboardMessage, 'Signed in as ' + (profile.name || session.user.email) + '.');
 
-    if (requiredRole === 'admin') { await loadAdminProfiles(); await loadAdminAccess(); }
+    if (requiredRole === 'admin') { await loadAdminProfiles(); await loadAdminAccess(); await loadAdminAccounts(); await loadAdminRatings(); }
     if (requiredRole === 'teacher') { await loadTeacherStudents(); }
   }
 
@@ -200,6 +200,65 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     });
     result.append(text, anchor, document.createElement('br'), copy);
     await loadTeacherStudents();
+  }
+
+
+  async function loadAdminAccounts() {
+    const body = document.getElementById('accounts-body');
+    if (!body) return;
+    body.innerHTML = '<tr><td colspan="8">Loading accounts…</td></tr>';
+    const { data, error } = await client.rpc('admin_list_all_accounts');
+    if (error) { body.innerHTML = '<tr><td colspan="8">Could not load accounts.</td></tr>'; setMessage(document.getElementById('accounts-message'), error.message, true); return; }
+    body.replaceChildren();
+    if (!data?.length) { body.innerHTML = '<tr><td colspan="8">No accounts found.</td></tr>'; return; }
+    data.forEach(user => {
+      const row = document.createElement('tr');
+      [user.full_name || '—', user.email || '—', user.phone || '—', user.role || 'unassigned',
+       user.created_at ? new Date(user.created_at).toLocaleDateString() : '—',
+       (user.approved_levels || []).join(', ') || '—', user.access_status || 'none',
+       user.payment_confirmed ? 'Confirmed' : 'Not confirmed'].forEach(value => {
+        const cell = document.createElement('td'); cell.textContent = value; row.appendChild(cell);
+      });
+      body.appendChild(row);
+    });
+  }
+
+  async function loadAdminRatings() {
+    const body = document.getElementById('ratings-body');
+    if (!body) return;
+    body.innerHTML = '<tr><td colspan="6">Loading ratings…</td></tr>';
+    const { data, error } = await client.rpc('admin_list_student_ratings');
+    if (error) { body.innerHTML = '<tr><td colspan="6">Could not load ratings.</td></tr>'; setMessage(document.getElementById('ratings-message'), error.message, true); return; }
+    body.replaceChildren();
+    if (!data?.length) { body.innerHTML = '<tr><td colspan="6">No student ratings have been recorded yet.</td></tr>'; return; }
+    data.forEach(item => {
+      const row = document.createElement('tr');
+      [item.student_name || '—', item.student_email || '—', String(item.rating), item.note || '—',
+       item.rated_by_name || '—', item.created_at ? new Date(item.created_at).toLocaleDateString() : '—'].forEach(value => {
+        const cell = document.createElement('td'); cell.textContent = value; row.appendChild(cell);
+      });
+      body.appendChild(row);
+    });
+  }
+
+  async function createAdminInvite() {
+    const button = document.getElementById('admin-create-invite-btn');
+    const result = document.getElementById('admin-invite-result');
+    const levels = [...document.querySelectorAll('#admin-invite-levels input:checked')].map(input => input.value);
+    if (!levels.length) { setMessage(result, 'Select at least one lesson level.', true); return; }
+    button.disabled = true; button.textContent = 'Creating link…';
+    const { data, error } = await client.rpc('admin_create_invite', { p_levels: levels, p_expires_at: null });
+    button.disabled = false; button.textContent = 'Create invitation link';
+    if (error) { setMessage(result, error.message, true); return; }
+    const code = data?.[0]?.invite_code;
+    if (!code) { setMessage(result, 'The database did not return an invitation code.', true); return; }
+    const link = new URL('account.html?invite=' + encodeURIComponent(code) + '#signup', window.location.href).href;
+    result.replaceChildren();
+    const label = document.createElement('span'); label.textContent = 'Share this link with the student: ';
+    const anchor = document.createElement('a'); anchor.href = link; anchor.textContent = link; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer';
+    const copy = document.createElement('button'); copy.type = 'button'; copy.className = 'button button-light'; copy.textContent = 'Copy link';
+    copy.addEventListener('click', async () => { try { await navigator.clipboard.writeText(link); copy.textContent = 'Copied!'; } catch (_) { setMessage(result, 'Copy was blocked. Select and copy the link manually.', true); } });
+    result.append(label, anchor, document.createElement('br'), copy);
   }
 
   const LESSON_LEVELS = [
@@ -387,6 +446,9 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
 
   document.getElementById('refresh-btn')?.addEventListener('click', loadAdminProfiles);
   document.getElementById('access-refresh-btn')?.addEventListener('click', loadAdminAccess);
+  document.getElementById('accounts-refresh-btn')?.addEventListener('click', loadAdminAccounts);
+  document.getElementById('ratings-refresh-btn')?.addEventListener('click', loadAdminRatings);
+  document.getElementById('admin-create-invite-btn')?.addEventListener('click', createAdminInvite);
   document.getElementById('create-invite-btn')?.addEventListener('click', createTeacherInvite);
   document.getElementById('refresh-students-btn')?.addEventListener('click', loadTeacherStudents);
   client.auth.onAuthStateChange(() => { void renderSession(); });
