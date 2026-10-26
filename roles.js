@@ -544,8 +544,32 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       save.type = 'button';
       save.className = 'button button-primary';
       save.textContent = 'Save access';
-      save.addEventListener('click', async () => {
-        const approvedLevels = [...levelsBox.querySelectorAll('input:checked')].map(input => input.value);
+      const approve = document.createElement('button');
+      approve.type = 'button';
+      approve.className = 'button button-primary';
+      approve.textContent = 'Approve access';
+      approve.style.marginBottom = '.4rem';
+
+      async function saveAccess(approveNow = false, button = save) {
+        let approvedLevels = [...levelsBox.querySelectorAll('input:checked')].map(input => input.value);
+        if (approveNow) {
+          // If the admin has not selected levels manually, grant the standard levels for the chosen plan.
+          if (!approvedLevels.length) {
+            const planLevels = {
+              beginner: ['Beginner-1', 'Beginner-2', 'Beginner-3'],
+              elementary: ['Elementary-1', 'Elementary-2', 'Elementary-3'],
+              all_lessons: LESSON_LEVELS
+            };
+            approvedLevels = [...(planLevels[plan.value] || planLevels.beginner)];
+            levelsBox.querySelectorAll('input').forEach(input => { input.checked = approvedLevels.includes(input.value); });
+          }
+          status.value = 'approved';
+          pill.textContent = 'approved';
+          if (!payment.checked) {
+            setMessage(document.getElementById('access-message'), 'Confirm the payment checkbox before approving ' + (user.email || 'this user') + '.', true);
+            return;
+          }
+        }
         if (status.value === 'approved' && !payment.checked) {
           setMessage(document.getElementById('access-message'), 'Confirm the payment before approving ' + (user.email || 'this user') + '.', true);
           return;
@@ -554,8 +578,9 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
           setMessage(document.getElementById('access-message'), 'Choose at least one lesson level before approving access.', true);
           return;
         }
-        save.disabled = true;
-        save.textContent = 'Saving…';
+        button.disabled = true;
+        const originalText = button.textContent;
+        button.textContent = approveNow ? 'Approving…' : 'Saving…';
         const expiryValue = expiry.value ? new Date(expiry.value + 'T23:59:59').toISOString() : null;
         const { error: saveError } = await client.rpc('admin_update_lesson_access', {
           p_user_id: user.user_id,
@@ -567,16 +592,18 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
           p_expires_at: expiryValue,
           p_admin_note: note.value.trim() || null
         });
-        save.disabled = false;
-        save.textContent = 'Save access';
+        button.disabled = false;
+        button.textContent = originalText;
         if (saveError) {
           setMessage(document.getElementById('access-message'), saveError.message, true);
           return;
         }
-        setMessage(document.getElementById('access-message'), 'Saved access settings for ' + (user.email || user.user_id) + '.');
+        setMessage(document.getElementById('access-message'), (approveNow ? 'Approved access for ' : 'Saved access settings for ') + (user.email || user.user_id) + '.');
         await loadAdminAccess();
-      });
-      actionCell.appendChild(save);
+      }
+      save.addEventListener('click', () => saveAccess(false, save));
+      approve.addEventListener('click', () => saveAccess(true, approve));
+      actionCell.append(approve, document.createElement('br'), save);
       const remove = document.createElement('button');
       remove.type = 'button';
       remove.className = 'button button-danger';
