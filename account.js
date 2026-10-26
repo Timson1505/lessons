@@ -97,12 +97,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const name = signUpForm.elements.name.value.trim();
     const email = signUpForm.elements.email.value.trim();
     const phone = signUpForm.elements.phone.value.trim();
+    const requestedRole = signUpForm.elements.requested_role.value;
     const password = signUpForm.elements.password.value;
+
+    if (!['student', 'teacher'].includes(requestedRole)) {
+      setBusy(signUpForm, false);
+      setMessage('Please choose Student or Teacher.', true);
+      return;
+    }
 
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { name, phone } }
+      options: { data: { name, phone, requested_role: requestedRole } }
     });
     setBusy(signUpForm, false);
 
@@ -111,10 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const chosenRole = requestedRole === 'teacher' ? 'Teacher' : 'Student';
     if (data.session) {
-      setMessage('Account created. If your profile is ready, sign in to continue. The administrator must assign your student or teacher role.');
+      setMessage(`Account created as a ${chosenRole} request. Your actual role and access must be approved by the administrator before you can use the role dashboard.`);
     } else {
-      setMessage('Registration submitted. Check your email for a confirmation link. After confirmation, the administrator must assign your role.');
+      setMessage(`Registration submitted as a ${chosenRole} request. Check your email for a confirmation link. The administrator must approve your role before dashboard access is granted.`);
     }
     signUpForm.reset();
   });
