@@ -7,7 +7,7 @@
   <link rel="icon" href="timson_icon.png">
   <link rel="stylesheet" href="roles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="roles.js?v=20261026-contact-invites"></script>
+  <script defer src="roles.js?v=20261027-student-directory"></script>
 
 <style>
 .schedule-add-form{display:grid;grid-template-columns:minmax(140px,.8fr) minmax(180px,1.3fr) auto;gap:12px;align-items:end;margin:18px 0 22px}
@@ -21,7 +21,7 @@
 .schedule-table .schedule-actions .button{padding:8px 10px;min-height:36px;font-size:12px}
 .schedule-delete{background:#b42318;color:#fff}
 @media(max-width:720px){.schedule-add-form{grid-template-columns:1fr}.schedule-add-form .button{width:100%}}
-</style>
+ .student-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0}.student-summary{padding:16px;border:1px solid var(--line);border-radius:12px;background:#f8f9ff;display:grid;gap:4px}.student-summary span{font-size:13px;color:var(--muted)}.student-summary strong{font:800 28px Manrope,sans-serif;color:var(--brand-dark)}.student-filters{display:grid;grid-template-columns:minmax(220px,1fr) minmax(180px,.6fr);gap:8px 14px;align-items:center;margin:20px 0 10px}.student-filters label{font-weight:700;font-size:13px}.student-filters input,.student-filters select{width:100%;min-height:44px;border:1px solid #d5dce8;border-radius:10px;padding:10px 12px;font:inherit;background:#fff;color:var(--ink)}@media(max-width:600px){.student-filters{grid-template-columns:1fr}.student-summary-grid{grid-template-columns:1fr}}</style>
 </head>
 <body data-required-role="teacher">
   <header class="topbar"><a class="brand" href="index.html">Timson's <span>English Lessons</span></a><div class="top-actions"><span id="session-email" class="session-email"></span><button id="logout-btn" class="button button-light hidden" type="button">Log out</button></div></header>
@@ -49,7 +49,11 @@
         <div class="table-wrap schedule-table-wrap"><table class="schedule-table"><thead><tr><th>Time</th><th>Student name</th><th>Writing</th><th>Reading</th><th>Listening</th><th>Speaking</th><th>Notes</th><th>Actions</th></tr></thead><tbody id="schedule-body"><tr><td colspan="8">Loading schedule…</td></tr></tbody></table></div>
         <p id="schedule-message" class="message" role="status"></p>
       </section>
-      <section class="panel"><div class="section-heading"><div><h2>My students</h2><p class="muted">Only students who joined using your invitation links appear here.</p></div><button id="refresh-students-btn" class="button button-light" type="button">Refresh students</button></div>
+      <section class="panel" id="my-students-panel">
+        <div class="section-heading"><div><p class="eyebrow">YOUR CLASSROOM</p><h2>My students</h2><p class="muted">Students who accepted an invitation to study with you. Search by name or email, or filter by course level.</p></div><button id="refresh-students-btn" class="button button-light" type="button">Refresh students</button></div>
+        <div class="student-summary-grid"><article class="student-summary"><span>Connected students</span><strong id="teacher-student-count">—</strong></article><article class="student-summary"><span>Levels represented</span><strong id="teacher-level-count">—</strong></article></div>
+        <div class="student-filters"><label for="teacher-student-search">Find a student</label><input id="teacher-student-search" type="search" placeholder="Search name or email…" autocomplete="off"><label for="teacher-student-level">Filter by level</label><select id="teacher-student-level"><option value="">All levels</option></select></div>
+        <p id="teacher-student-results" class="muted" aria-live="polite">Loading your students…</p>
         <div class="table-wrap"><table><thead><tr><th>Student</th><th>Email</th><th>Joined</th><th>Accessible levels</th></tr></thead><tbody id="teacher-students-body"><tr><td colspan="4">Loading students…</td></tr></tbody></table></div>
         <p id="dashboard-message" class="message" role="status"></p>
       </section>
