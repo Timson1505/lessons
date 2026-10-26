@@ -203,14 +203,31 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
   }
 
 
+
+  async function deleteAdminUser(userId, email, button) {
+    if (!userId || !window.confirm('Permanently delete account ' + (email || userId) + '? This cannot be undone.')) return;
+    if (button) { button.disabled = true; button.textContent = 'Deleting…'; }
+    const { error } = await client.rpc('admin_delete_user', { p_user_id: userId });
+    if (error) {
+      if (button) { button.disabled = false; button.textContent = 'Delete user'; }
+      setMessage(document.getElementById('accounts-message') || document.getElementById('access-message'), error.message, true);
+      return;
+    }
+    setMessage(document.getElementById('accounts-message') || document.getElementById('access-message'), 'Deleted account: ' + (email || userId) + '.');
+    await loadAdminAccounts();
+    await loadAdminAccess();
+    await loadAdminProfiles();
+    await loadAdminRatings();
+  }
+
   async function loadAdminAccounts() {
     const body = document.getElementById('accounts-body');
     if (!body) return;
-    body.innerHTML = '<tr><td colspan="8">Loading accounts…</td></tr>';
+    body.innerHTML = '<tr><td colspan="9">Loading accounts…</td></tr>';
     const { data, error } = await client.rpc('admin_list_all_accounts');
-    if (error) { body.innerHTML = '<tr><td colspan="8">Could not load accounts.</td></tr>'; setMessage(document.getElementById('accounts-message'), error.message, true); return; }
+    if (error) { body.innerHTML = '<tr><td colspan="9">Could not load accounts.</td></tr>'; setMessage(document.getElementById('accounts-message'), error.message, true); return; }
     body.replaceChildren();
-    if (!data?.length) { body.innerHTML = '<tr><td colspan="8">No accounts found.</td></tr>'; return; }
+    if (!data?.length) { body.innerHTML = '<tr><td colspan="9">No accounts found.</td></tr>'; return; }
     data.forEach(user => {
       const row = document.createElement('tr');
       [user.full_name || '—', user.email || '—', user.phone || '—', user.role || 'unassigned',
@@ -219,6 +236,14 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
        user.payment_confirmed ? 'Confirmed' : 'Not confirmed'].forEach(value => {
         const cell = document.createElement('td'); cell.textContent = value; row.appendChild(cell);
       });
+      const actionCell = document.createElement('td');
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'button button-danger';
+      remove.textContent = 'Delete user';
+      remove.addEventListener('click', () => deleteAdminUser(user.user_id, user.email, remove));
+      actionCell.appendChild(remove);
+      row.appendChild(actionCell);
       body.appendChild(row);
     });
   }
@@ -460,6 +485,13 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
         await loadAdminAccess();
       });
       actionCell.appendChild(save);
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'button button-danger';
+      remove.style.marginTop = '.4rem';
+      remove.textContent = 'Delete user';
+      remove.addEventListener('click', () => deleteAdminUser(user.user_id, user.email, remove));
+      actionCell.appendChild(remove);
       row.appendChild(actionCell);
       body.appendChild(row);
     });
