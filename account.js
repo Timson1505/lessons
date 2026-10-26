@@ -121,6 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const hasInvite = inviteFromUrl || (() => { try { return Boolean(localStorage.getItem('lesson_invite_code')); } catch (_) { return false; } })();
+    if (hasInvite) {
+      const joined = await applyPendingInvite();
+      if (!joined) return;
+    }
     const destinations = { admin: 'admin.html', teacher: 'teacher.html', student: 'student.html' };
     if (destinations[profile.role]) {
       window.location.replace(destinations[profile.role]);
