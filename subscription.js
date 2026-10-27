@@ -10,10 +10,12 @@
   };
 
   function init() {
-    if (!window.supabase?.createClient) return;
-    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-    });
+    // Build the payment modal even if Supabase's CDN is unavailable; the QR must still open.
+    const client = window.supabase?.createClient
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+          auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+        })
+      : null;
     const style = document.createElement('style');
     style.textContent = `
       .subscription-modal[hidden]{display:none!important}
@@ -57,6 +59,12 @@
       </section>`;
     document.body.appendChild(modal);
 
+    const qr = modal.querySelector('.subscription-qr');
+    qr.addEventListener('error', () => {
+      const note = modal.querySelector('.subscription-qr-wrap .subscription-note');
+      note.textContent = 'The QR image could not load. Please contact the administrator.';
+      note.classList.add('error');
+    });
     const close = () => { modal.hidden = true; document.body.style.overflow = ''; };
     modal.querySelector('.subscription-close').addEventListener('click', close);
     modal.addEventListener('click', event => { if (event.target === modal) close(); });
@@ -79,6 +87,12 @@
         document.getElementById('subscription-signin').hidden = true;
         modal.hidden = false;
         document.body.style.overflow = 'hidden';
+        if (!client) {
+          document.getElementById('subscription-status').textContent = 'Payment QR is shown, but account services could not load. Refresh the page to submit a request.';
+          document.getElementById('subscription-status').classList.add('error');
+          document.getElementById('subscription-submit').disabled = true;
+          return;
+        }
         const { data: { session } } = await client.auth.getSession();
         if (!session) {
           document.getElementById('subscription-status').textContent = 'Sign in with your teacher account before submitting a payment request.';
@@ -100,6 +114,11 @@
     document.getElementById('subscription-submit').addEventListener('click', async () => {
       const button = document.getElementById('subscription-submit');
       const status = document.getElementById('subscription-status');
+      if (!client) {
+        status.className = 'subscription-status error';
+        status.textContent = 'Account services are unavailable. Refresh the page and try again.';
+        return;
+      }
       button.disabled = true;
       button.textContent = 'Submitting request…';
       status.className = 'subscription-status';
