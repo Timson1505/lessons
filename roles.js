@@ -255,6 +255,42 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     });
   }
 
+  function populateRatingStudentOptions() {
+    const select = document.getElementById('rating-student-id');
+    if (!select) return;
+    const current = select.value;
+    select.replaceChildren(new Option('Choose a student', ''));
+    teacherStudentsCache.forEach(student => {
+      const id = student.student_id || student.id || student.user_id;
+      if (!id) return;
+      const label = (student.full_name || student.name || 'Student') + (student.email ? ' — ' + student.email : '');
+      select.add(new Option(label, id));
+    });
+    if ([...select.options].some(option => option.value === current)) select.value = current;
+  }
+
+  async function saveStudentRating(event) {
+    event.preventDefault();
+    const form = document.getElementById('student-rating-form');
+    const button = document.getElementById('save-student-rating');
+    const message = document.getElementById('student-rating-message');
+    const studentId = document.getElementById('rating-student-id').value;
+    const skill = document.getElementById('rating-skill').value;
+    const rating = Number(document.getElementById('rating-score').value);
+    const note = document.getElementById('rating-note').value.trim();
+    if (!studentId) { setMessage(message, 'Choose one of your connected students.', true); return; }
+    if (!Number.isFinite(rating) || rating < 0 || rating > 100) { setMessage(message, 'Enter a rating from 0 to 100.', true); return; }
+    button.disabled = true; button.textContent = 'Saving…';
+    const { error } = await client.rpc('teacher_save_student_rating', {
+      p_student_id: studentId, p_skill: skill, p_rating: rating, p_note: note
+    });
+    button.disabled = false; button.textContent = 'Save rating';
+    if (error) { setMessage(message, error.message, true); return; }
+    setMessage(message, 'Saved ' + skill + ' rating (' + rating + '/100). The student can now see it on their dashboard.');
+    form.reset();
+    await loadTeacherStudents();
+  }
+
   async function loadTeacherStudents() {
     const body = document.getElementById('teacher-students-body');
     if (!body) return;
@@ -279,6 +315,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       if (levels.includes(current)) select.value = current;
     }
     renderTeacherStudents();
+    populateRatingStudentOptions();
   }
 
   async function createTeacherInvite() {
@@ -833,6 +870,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
   void loadInviteTeachers();
   document.getElementById('create-invite-btn')?.addEventListener('click', createTeacherInvite);
   document.getElementById('refresh-students-btn')?.addEventListener('click', loadTeacherStudents);
+  document.getElementById('student-rating-form')?.addEventListener('submit', saveStudentRating);
   document.getElementById('teacher-student-search')?.addEventListener('input', renderTeacherStudents);
   document.getElementById('teacher-student-level')?.addEventListener('change', renderTeacherStudents);
   document.getElementById('schedule-add-form')?.addEventListener('submit', addTeacherScheduleEntry);
