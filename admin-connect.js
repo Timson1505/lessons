@@ -23,14 +23,14 @@
     const {data,error}=await client.rpc('admin_list_all_accounts');
     if(error){msg('assignment-message','Could not load accounts: '+error.message,true);return;}
     accounts=Array.isArray(data)?data:[];
-    const teachers=accounts.filter(a=>a.role==='teacher');
+    const teachers=accounts.filter(a=>['teacher','admin'].includes(a.role));
     const students=accounts.filter(a=>['student','user'].includes(a.role));
     const studentSelect=$('student'),teacherSelect=$('teacher');
     studentSelect.replaceChildren(new Option('Choose a student…',''));
     students.forEach(a=>studentSelect.add(new Option((a.full_name||'Unnamed student')+' — '+(a.email||a.user_id),a.user_id)));
     teacherSelect.replaceChildren(new Option('Choose a teacher…',''));
-    teachers.forEach(a=>teacherSelect.add(new Option((a.full_name||'Unnamed teacher')+' — '+(a.email||a.user_id),a.user_id)));
-    if(!teachers.length) msg('assignment-message','No teacher accounts found. Assign the teacher role first.',true);
+    teachers.forEach(a=>teacherSelect.add(new Option((a.role==='admin'?'Administrator':'Teacher')+': '+(a.full_name||'Unnamed '+(a.role==='admin'?'administrator':'teacher'))+' — '+(a.email||a.user_id),a.user_id)));
+    if(!teachers.length) msg('assignment-message','No teacher or administrator accounts found.',true);
     else if(!students.length) msg('assignment-message','No accounts with Student or User role are available to assign.');
     else msg('assignment-message','Accounts loaded. Choose a student and a teacher.');
     await loadConnections();
@@ -64,13 +64,13 @@
     if(studentId===teacherId){msg('assignment-message','A student cannot be their own teacher.',true);return;}
     const student=accounts.find(a=>a.user_id===studentId),teacher=accounts.find(a=>a.user_id===teacherId);
     const previous=connections[studentId];
-    const prompt=previous&&previous!=='Not connected'?'This student is currently connected to '+previous+'. Reassign to '+(teacher.full_name||teacher.email)+'?':'Connect '+(student.full_name||student.email)+' to '+(teacher.full_name||teacher.email)+'?';
+    const prompt=previous&&previous!=='Not connected'?'This student is currently connected to '+previous+'. Reassign to '+(teacher.role==='admin'?'Administrator':'teacher')+' '+(teacher.full_name||teacher.email)+'?':'Connect '+(student.full_name||student.email)+' to '+(teacher.role==='admin'?'Administrator':'teacher')+' '+(teacher.full_name||teacher.email)+'?';
     if(!window.confirm(prompt))return;
     const button=$('connect');button.disabled=true;button.textContent='Connecting…';
     const {data,error}=await client.rpc('admin_assign_student_to_teacher',{p_student_id:studentId,p_teacher_id:teacherId});
     button.disabled=false;button.textContent='Connect student to teacher';
     if(error){msg('assignment-message','Assignment failed: '+error.message,true);return;}
-    msg('assignment-message','Student successfully connected to the selected teacher.');
+    msg('assignment-message','Student successfully connected to the selected '+(teacher.role==='admin'?'administrator.':'teacher.'));
     await load();
   });
   client.auth.onAuthStateChange(()=>{void session();});
