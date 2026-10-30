@@ -209,12 +209,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         setMessage('Account created. Opening your student dashboard…');
         await goToRoleDashboard(data.user);
-      } else {
-        setMessage('Your account is saved. Your teacher role request must be approved by the administrator before the teacher dashboard is available.');
+      } else if (requestedRole === 'teacher') {
+        setMessage('Teacher account created. Opening your dashboard to choose a monthly subscription…');
+        window.location.replace('teacher.html');
       }
     } else {
       const roleLabel = requestedRole === 'teacher' ? 'teacher' : 'student';
-      setMessage(`Registration saved as a ${roleLabel} request. Check your email to confirm the account. After confirmation, sign in to open your assigned dashboard. Teacher access requires administrator approval.`);
+      setMessage(`Registration saved as a ${roleLabel} account. Check your email to confirm the account. After confirmation, sign in to open your dashboard. Students do not need approval; lesson access follows their connected teacher. Teachers can choose a monthly subscription from the website.`);
     }
   });
 
