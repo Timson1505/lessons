@@ -7,7 +7,7 @@
   <link rel="icon" href="timson_icon.png">
   <link rel="stylesheet" href="roles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="roles.js?v=20261027-skill-rating"></script>
+  <script defer src="roles.js?v=20261102-cabinet-refresh"></script>
 
 <style>
 .schedule-add-form{display:grid;grid-template-columns:minmax(140px,.8fr) minmax(180px,1.3fr) auto;gap:12px;align-items:end;margin:18px 0 22px}
@@ -21,7 +21,14 @@
 .schedule-table .schedule-actions .button{padding:8px 10px;min-height:36px;font-size:12px}
 .schedule-delete{background:#b42318;color:#fff}
 @media(max-width:720px){.schedule-add-form{grid-template-columns:1fr}.schedule-add-form .button{width:100%}}
- .student-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0}.student-summary{padding:16px;border:1px solid var(--line);border-radius:12px;background:#f8f9ff;display:grid;gap:4px}.student-summary span{font-size:13px;color:var(--muted)}.student-summary strong{font:800 28px Manrope,sans-serif;color:var(--brand-dark)}.student-filters{display:grid;grid-template-columns:minmax(220px,1fr) minmax(180px,.6fr);gap:8px 14px;align-items:center;margin:20px 0 10px}.student-filters label{font-weight:700;font-size:13px}.student-filters input,.student-filters select{width:100%;min-height:44px;border:1px solid #d5dce8;border-radius:10px;padding:10px 12px;font:inherit;background:#fff;color:var(--ink)}@media(max-width:600px){.student-filters{grid-template-columns:1fr}.student-summary-grid{grid-template-columns:1fr}}</style>
+ .student-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0}.student-summary{padding:16px;border:1px solid var(--line);border-radius:12px;background:#f8f9ff;display:grid;gap:4px}.student-summary span{font-size:13px;color:var(--muted)}.student-summary strong{font:800 28px Manrope,sans-serif;color:var(--brand-dark)}.student-filters{display:grid;grid-template-columns:minmax(220px,1fr) minmax(180px,.6fr);gap:8px 14px;align-items:center;margin:20px 0 10px}.student-filters label{font-weight:700;font-size:13px}.student-filters input,.student-filters select{width:100%;min-height:44px;border:1px solid #d5dce8;border-radius:10px;padding:10px 12px;font:inherit;background:#fff;color:var(--ink)}@media(max-width:600px){.student-filters{grid-template-columns:1fr}.student-summary-grid{grid-template-columns:1fr}}body{background:radial-gradient(ellipse at top right,#e8edff 0,transparent 40%),var(--bg)}
+.topbar{box-shadow:0 8px 28px rgba(31,42,68,.04)}
+.welcome{padding:clamp(24px,5vw,40px);border-radius:26px;background:linear-gradient(125deg,#172554,#3f52a6 58%,#7186e8);color:#fff;box-shadow:0 22px 60px rgba(43,63,142,.2)}
+.welcome .eyebrow{color:#dce4ff}.welcome p:not(.eyebrow){color:#eef2ff}.welcome .role-chip{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.22)}
+.panel{border-radius:20px;box-shadow:0 12px 34px rgba(31,42,68,.055)}#teacher-level-options{padding:14px;background:#f7f8ff;border:1px solid var(--line);border-radius:14px}
+.schedule-table-wrap{border-radius:14px;overflow:hidden}.student-summary{border-radius:15px;background:linear-gradient(145deg,#f7f8ff,#fff)}
+@media(max-width:720px){.welcome{border-radius:20px}}
+</style>
 </head>
 <body data-required-role="teacher">
   <header class="topbar"><a class="brand" href="index.html">Timson's <span>English Lessons</span></a><div class="top-actions"><span id="session-email" class="session-email"></span><button id="logout-btn" class="button button-light hidden" type="button">Log out</button></div></header>
@@ -48,17 +55,6 @@
         </form>
         <div class="table-wrap schedule-table-wrap"><table class="schedule-table"><thead><tr><th>Time</th><th>Student name</th><th>Writing</th><th>Reading</th><th>Listening</th><th>Speaking</th><th>Notes</th><th>Actions</th></tr></thead><tbody id="schedule-body"><tr><td colspan="8">Loading schedule…</td></tr></tbody></table></div>
         <p id="schedule-message" class="message" role="status"></p>
-      </section>
-      <section class="panel" id="student-rating-panel">
-        <div class="section-heading"><div><p class="eyebrow">ASSESSMENT</p><h2>Assign student skill ratings</h2><p class="muted">Choose one of your connected students, select a skill, and enter a score from 0 to 100. Saving a new score updates the student's latest rating and preserves rating history.</p></div></div>
-        <form id="student-rating-form" class="schedule-add-form">
-          <label>Student <select id="rating-student-id" required><option value="">Choose a student</option></select></label>
-          <label>Skill <select id="rating-skill" required><option value="reading">Reading</option><option value="speaking">Speaking</option><option value="writing">Writing</option><option value="listening">Listening</option></select></label>
-          <label>Rating (0–100) <input id="rating-score" type="number" min="0" max="100" step="1" required placeholder="e.g. 85"></label>
-          <label>Teacher's note <input id="rating-note" type="text" maxlength="1000" placeholder="Feedback or next steps (optional)"></label>
-          <button id="save-student-rating" class="button button-primary" type="submit">Save rating</button>
-        </form>
-        <p id="student-rating-message" class="message" role="status"></p>
       </section>
       <section class="panel" id="my-students-panel">
         <div class="section-heading"><div><p class="eyebrow">YOUR CLASSROOM</p><h2>My students</h2><p class="muted">Students who accepted an invitation to study with you. Search by name or email, or filter by course level.</p></div><button id="refresh-students-btn" class="button button-light" type="button">Refresh students</button></div>
