@@ -20,3 +20,20 @@
 .account-panel > .message { padding:0 25px 22px; }
 .account-security { text-align:center; color:var(--muted); font-size:12px; line-height:1.6; }
 @media(max-width:560px) { .account-shell { margin-top:32px; } .account-form { padding:21px; } .account-panel > .message { padding:0 21px 20px; } }
+
+
+/* Modern role cabinets */
+body[data-required-role]{background:radial-gradient(ellipse at top left,#edf0ff 0,transparent 40%),var(--bg)}
+body[data-required-role] .topbar{box-shadow:0 8px 28px rgba(31,42,68,.04)}
+body[data-required-role] .welcome{padding:clamp(24px,5vw,40px);border-radius:26px;background:linear-gradient(125deg,#1e1b4b,#4338a8 58%,#7c83e8);color:#fff;box-shadow:0 22px 60px rgba(55,48,163,.18)}
+body[data-required-role="teacher"] .welcome{background:linear-gradient(125deg,#172554,#3f52a6 58%,#7186e8);box-shadow:0 22px 60px rgba(43,63,142,.18)}
+body[data-required-role="student"] .welcome{background:linear-gradient(125deg,#312e81,#5656d8 58%,#8b9cff);box-shadow:0 22px 60px rgba(67,66,180,.18)}
+body[data-required-role] .welcome .eyebrow{color:#e0e4ff}
+body[data-required-role] .welcome p:not(.eyebrow){color:#eef0ff}
+body[data-required-role] .welcome .role-chip{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.22)}
+body[data-required-role] .panel,body[data-required-role] .stat-card{border-radius:20px;box-shadow:0 12px 34px rgba(31,42,68,.055)}
+body[data-required-role] .panel h2{font-size:22px}
+body[data-required-role] th{background:#f6f7ff}
+body[data-required-role] .button{transition:transform .18s ease,box-shadow .18s ease}
+body[data-required-role] .button-primary:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(79,70,229,.2)}
+@media(max-width:720px){body[data-required-role] .welcome{border-radius:20px}}
