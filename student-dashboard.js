@@ -25,15 +25,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const info=Array.isArray(data)?data[0]:data, teacher=document.getElementById('teacher-details');
     if(info.teacher){teacher.replaceChildren();const box=document.createElement('div');box.className='teacher-card';const avatar=document.createElement('div');avatar.className='teacher-avatar';avatar.textContent='♟';const detail=document.createElement('div');const name=document.createElement('strong');name.textContent=info.teacher.name||'Your teacher';const email=document.createElement('p');email.className='muted';email.textContent=info.teacher.email||'';detail.append(name,email);box.append(avatar,detail);teacher.append(box);}
     else teacher.textContent='No teacher has been assigned yet. Contact the administrator or use your teacher’s invitation link.';
-    const access=info.access||{},levels=Array.isArray(access.levels)?access.levels:[],accessBox=document.getElementById('access-summary');
+    const levels=['Beginner-1','Beginner-2','Beginner-3','Elementary-1','Elementary-2','Elementary-3','Intermediate','Upper-Intermediate','Advanced'],accessBox=document.getElementById('access-summary');
     if(levels.length){accessBox.replaceChildren();const heading=document.createElement('p');heading.innerHTML='<strong>Available levels</strong>';const ul=document.createElement('ul');ul.className='level-list';levels.forEach(l=>{const li=document.createElement('li');li.textContent=l;ul.append(li);});accessBox.append(heading,ul);}
-    else accessBox.textContent='Your teacher does not currently have an active approved subscription, or you have not been linked to a teacher yet.';
+    else accessBox.textContent='Students have full access to all lesson levels.';
     const ratings=info.ratings||[];ratings.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));await renderChart(ratings);
     const latest=ratings[0],summary=document.getElementById('progress-summary');summary.replaceChildren();const metric=document.createElement('div');metric.className='metric';metric.textContent=latest?Number(latest.rating).toFixed(0)+'/100':'—';const sub=document.createElement('p');sub.className='muted';sub.textContent=latest?'Latest '+latest.skill+' rating · '+new Date(latest.created_at).toLocaleDateString():'No ratings yet.';summary.append(metric,sub);
     const body=document.getElementById('rating-history-body');body.replaceChildren();
     if(!ratings.length)body.innerHTML='<tr><td colspan="4">No ratings yet. They will appear after your teacher assesses your work.</td></tr>';
     else ratings.forEach(r=>{const tr=document.createElement('tr');[new Date(r.created_at).toLocaleDateString(),r.skill,Number(r.rating).toFixed(0)+'/100',r.note||'—'].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td);});body.append(tr);});
-    msg(document.getElementById('student-message'),'Dashboard updated.');
+    msg(document.getElementById('student-message'),'Dashboard updated. Full lesson access is included with student accounts.');
   }
   async function renderSession(){
     const {data:{session},error}=await client.auth.getSession();if(error||!session){signedOut(error?.message||'');return;}
