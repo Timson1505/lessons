@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="timson_icon.png">
   <link rel="stylesheet" href="roles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="account.js?v=20261030-role-flow"></script>
+  <script defer src="account.js?v=20261102-three-day-trial"></script>
 </head>
 <body class="account-page">
   <header class="topbar">
@@ -48,7 +48,7 @@
           <option value="student" selected>Student</option>
           <option value="teacher">Teacher</option>
         </select>
-        <p class="account-hint">Students can start immediately and receive only the lesson levels of their connected teacher. Teachers can open their dashboard after sign-up, choose a monthly subscription, and receive lesson access after payment is confirmed. Administrator accounts cannot be self-created.</p>
+        <p class="account-hint">Every new student and teacher receives free access to all lesson levels for 3 days from registration. After the 3-day trial, teacher lesson access closes automatically. Student accounts keep full access to all lesson levels. Administrator accounts cannot be self-created.</p>
         <label for="signup-password">Create password</label>
         <input id="signup-password" name="password" type="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters">
         <button class="button button-primary" type="submit">Create account</button>
