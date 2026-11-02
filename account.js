@@ -207,15 +207,15 @@ document.addEventListener('DOMContentLoaded', () => {
           const joined = await applyPendingInvite();
           if (!joined) return;
         }
-        setMessage('Account created. Opening your student dashboard…');
+        setMessage('Account created. Your 3-day free trial includes all lesson levels. Opening your student dashboard…');
         await goToRoleDashboard(data.user);
       } else if (requestedRole === 'teacher') {
-        setMessage('Teacher account created. Opening your dashboard to choose a monthly subscription…');
+        setMessage('Teacher account created. Your 3-day free trial includes all lesson levels. Opening your dashboard…');
         window.location.replace('teacher.html');
       }
     } else {
       const roleLabel = requestedRole === 'teacher' ? 'teacher' : 'student';
-      setMessage(`Registration saved as a ${roleLabel} account. Check your email to confirm the account. After confirmation, sign in to open your dashboard. Students do not need approval; lesson access follows their connected teacher. Teachers can choose a monthly subscription from the website.`);
+      setMessage(`Registration saved as a ${roleLabel} account. Check your email to confirm it, then sign in. New teachers and students receive 3 days of free access to all lesson levels. After the trial, teacher lesson access closes automatically; students keep full access.`);
     }
   });
 
