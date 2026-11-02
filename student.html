@@ -12,6 +12,16 @@ body{background:radial-gradient(ellipse at top left,#eef0ff 0,transparent 42%),v
 .metric{font-size:38px;letter-spacing:-1px}.panel{border-radius:20px;box-shadow:0 12px 34px rgba(31,42,68,.055)}
 .level-list li{background:#eef2ff;color:#3730a3;border:1px solid #dfe4ff}#chart-container{padding:12px 0}.rating-history th{background:#f6f7ff}
 @media(max-width:800px){.student-grid{grid-template-columns:1fr}.welcome{border-radius:20px}}
+body{background:radial-gradient(ellipse at top left,#eef0ff 0,transparent 42%),var(--bg)}
+.topbar{box-shadow:0 8px 28px rgba(31,42,68,.04)}
+.welcome{padding:clamp(24px,5vw,42px);border-radius:26px;background:linear-gradient(125deg,#312e81,#5656d8 58%,#8b9cff);color:#fff;box-shadow:0 22px 60px rgba(67,66,180,.22)}
+.welcome .eyebrow{color:#dfe3ff}.welcome p:not(.eyebrow){color:#eef0ff}.welcome h1{font-size:clamp(30px,5vw,44px)}
+.welcome .role-chip{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.22)}
+.student-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:22px 0}
+.student-card{border:1px solid rgba(220,225,242,.9);border-radius:20px;box-shadow:0 12px 34px rgba(31,42,68,.055);padding:22px}
+.metric{font-size:38px;letter-spacing:-1px}.panel{border-radius:20px;box-shadow:0 12px 34px rgba(31,42,68,.055)}
+.level-list li{background:#eef2ff;color:#3730a3;border:1px solid #dfe4ff}#chart-container{padding:12px 0}.rating-history th{background:#f6f7ff}
+@media(max-width:800px){.student-grid{grid-template-columns:1fr}.welcome{border-radius:20px}}
 </style></head>
 <body data-required-role="student"><header class="topbar"><a class="brand" href="index.html">Timson's <span>English Lessons</span></a><div class="top-actions"><span id="session-email" class="session-email"></span><button id="logout-btn" class="button button-light hidden" type="button">Log out</button></div></header>
 <main class="page-shell"><section class="welcome"><div><p class="eyebrow">STUDENT SPACE</p><h1>Your learning dashboard</h1><p>Track your progress, meet your teacher and continue learning at your level.</p></div><div class="role-chip">Student</div></section>
