@@ -81,6 +81,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     dashboardPanel?.classList.remove('hidden');
     setMessage(authMessage, '');
     setMessage(dashboardMessage, 'Signed in as ' + (profile.name || session.user.email) + '.');
+    if (requiredRole === 'admin') { setupAdminProfile(profile, session.user); renderAdminCalendar(); await loadAdminSchedule(); await loadAdminStudentOverview(); }
 
     if (requiredRole === 'admin') { await loadAdminProfiles(); await loadAdminAccess(); await loadAdminAccounts(); await loadAdminRatings(); }
     if (requiredRole === 'teacher') { await loadTeacherStudents(); await loadTeacherSchedule(); }
@@ -103,6 +104,12 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       return;
     }
     if (count) count.textContent = String(data.length);
+    const students = data.filter(p => p.role === 'student').length;
+    const teachers = data.filter(p => p.role === 'teacher').length;
+    const studentCount = document.getElementById('admin-student-count');
+    const teacherCount = document.getElementById('admin-teacher-count');
+    if (studentCount) studentCount.textContent = String(students);
+    if (teacherCount) teacherCount.textContent = String(teachers);
     if (!data.length) {
       body.innerHTML = '<tr><td colspan="4">No profiles found.</td></tr>';
       return;
@@ -135,6 +142,8 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       return;
     }
     body.replaceChildren();
+    const ratingCount = document.getElementById('admin-rating-count');
+    if (ratingCount) ratingCount.textContent = String((data || []).length);
     if (!data || !data.length) {
       body.innerHTML = '<tr><td colspan="8">Your schedule is empty. Add your first student above.</td></tr>';
       return;
@@ -830,6 +839,84 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       body.appendChild(row);
     });
   }
+
+
+  let adminCalendarDate = new Date();
+  let adminSelectedDate = new Date();
+  let adminScheduleEntries = [];
+  function setupAdminProfile(profile, user) {
+    const name = profile.name || user.email || 'Administrator';
+    ['admin-display-name','admin-profile-name'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=name; });
+    const avatar = document.getElementById('admin-avatar');
+    if (avatar && user.user_metadata?.avatar_url) avatar.src = user.user_metadata.avatar_url;
+    const input = document.getElementById('admin-avatar-input');
+    input?.addEventListener('change', async () => {
+      const file = input.files?.[0]; if (!file) return;
+      if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 2*1024*1024) {
+        setMessage(document.getElementById('avatar-message'),'Choose a JPG, PNG or WebP image up to 2 MB.',true); input.value=''; return;
+      }
+      const buttonMessage=document.getElementById('avatar-message');
+      setMessage(buttonMessage,'Uploading photo…');
+      const path=user.id+'/profile-'+Date.now()+'.'+file.name.split('.').pop().toLowerCase();
+      const {error:uploadError}=await client.storage.from('admin-avatars').upload(path,file,{upsert:true,contentType:file.type});
+      if(uploadError){setMessage(buttonMessage,uploadError.message,true);return;}
+      const {data:{publicUrl}}=client.storage.from('admin-avatars').getPublicUrl(path);
+      const {error:updateError}=await client.auth.updateUser({data:{avatar_url:publicUrl}});
+      if(updateError){setMessage(buttonMessage,updateError.message,true);return;}
+      if(avatar) avatar.src=publicUrl;
+      setMessage(buttonMessage,'Profile photo updated.');
+    });
+  }
+  function sameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
+  function renderAdminCalendar(){
+    const grid=document.getElementById('admin-calendar-grid'); if(!grid)return;
+    const year=adminCalendarDate.getFullYear(),month=adminCalendarDate.getMonth();
+    document.getElementById('calendar-month').textContent=adminCalendarDate.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    const first=new Date(year,month,1), offset=(first.getDay()+6)%7, days=new Date(year,month+1,0).getDate();
+    grid.replaceChildren();
+    for(let i=0;i<offset;i++){const blank=document.createElement('span');blank.className='calendar-empty';grid.appendChild(blank);}
+    for(let day=1;day<=days;day++){
+      const date=new Date(year,month,day),button=document.createElement('button');button.type='button';button.textContent=String(day);
+      if(sameDay(date,new Date()))button.classList.add('today');
+      if(sameDay(date,adminSelectedDate))button.classList.add('selected');
+      if(adminScheduleEntries.some(e=>String(e.time_slot||'').slice(0,10)===date.toISOString().slice(0,10)))button.classList.add('has-event');
+      button.addEventListener('click',()=>{adminSelectedDate=date;renderAdminCalendar();renderAdminSchedulePreview();});
+      grid.appendChild(button);
+    }
+    document.getElementById('schedule-selected-date').textContent=adminSelectedDate.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  }
+  async function loadAdminSchedule(){
+    const {data,error}=await client.from('teacher_schedule_entries').select('id,teacher_id,time_slot,student_name,writing_score,reading_score,listening_score,speaking_score,notes').order('time_slot',{ascending:true}).limit(200);
+    const preview=document.getElementById('admin-schedule-preview');if(!preview)return;
+    if(error){preview.textContent='Schedule is unavailable for this admin account. Check the teacher_schedule_entries SELECT policy.';return;}
+    adminScheduleEntries=data||[];renderAdminCalendar();renderAdminSchedulePreview();
+  }
+  function renderAdminSchedulePreview(){
+    const preview=document.getElementById('admin-schedule-preview');if(!preview)return;
+    const dayKey=adminSelectedDate.toISOString().slice(0,10);
+    const entries=adminScheduleEntries.filter(e=>String(e.time_slot||'').slice(0,10)===dayKey);
+    preview.replaceChildren();
+    if(!entries.length){const p=document.createElement('p');p.className='muted';p.textContent='No scheduled lessons for this date.';preview.appendChild(p);return;}
+    entries.forEach(e=>{const item=document.createElement('div');item.className='schedule-item';const time=document.createElement('strong');time.textContent=String(e.time_slot).includes('T')?new Date(e.time_slot).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):e.time_slot;const name=document.createElement('span');name.textContent=e.student_name||'Student';item.append(time,name);preview.appendChild(item);});
+  }
+  async function loadAdminStudentOverview(){
+    const body=document.getElementById('admin-student-overview-body');if(!body)return;
+    const [{data:profiles,error:pError},{data:ratings,error:rError}]=await Promise.all([
+      client.from('profiles').select('id,name').eq('role','student').order('name').limit(100),
+      client.from('student_ratings').select('*').order('created_at',{ascending:false}).limit(300)
+    ]);
+    body.replaceChildren();
+    if(pError||rError){const row=document.createElement('tr');const cell=document.createElement('td');cell.colSpan=4;cell.textContent='Student overview unavailable. Review admin SELECT permissions for profiles and student ratings.';row.appendChild(cell);body.appendChild(row);return;}
+    if(!profiles?.length){body.innerHTML='<tr><td colspan="4">No students found.</td></tr>';return;}
+    profiles.forEach(student=>{
+      const rating=(ratings||[]).find(r=>r.student_id===student.id);
+      const row=document.createElement('tr');
+      [student.name||'Student',rating?.student_email||'—',rating?.score??rating?.rating??'Not rated',rating?.notes||rating?.note||'—'].forEach(value=>{const cell=document.createElement('td');cell.textContent=String(value);row.appendChild(cell);});
+      body.appendChild(row);
+    });
+  }
+  document.getElementById('calendar-prev')?.addEventListener('click',()=>{adminCalendarDate=new Date(adminCalendarDate.getFullYear(),adminCalendarDate.getMonth()-1,1);renderAdminCalendar();});
+  document.getElementById('calendar-next')?.addEventListener('click',()=>{adminCalendarDate=new Date(adminCalendarDate.getFullYear(),adminCalendarDate.getMonth()+1,1);renderAdminCalendar();});
 
   loginForm?.addEventListener('submit', async event => {
     event.preventDefault();
