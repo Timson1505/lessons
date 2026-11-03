@@ -903,13 +903,13 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     const body=document.getElementById('admin-student-overview-body');if(!body)return;
     const [{data:profiles,error:pError},{data:ratings,error:rError}]=await Promise.all([
       client.from('profiles').select('id,name').eq('role','student').order('name').limit(100),
-      client.from('student_ratings').select('*').order('created_at',{ascending:false}).limit(300)
+      client.rpc('admin_list_student_ratings')
     ]);
     body.replaceChildren();
     if(pError||rError){const row=document.createElement('tr');const cell=document.createElement('td');cell.colSpan=4;cell.textContent='Student overview unavailable. Review admin SELECT permissions for profiles and student ratings.';row.appendChild(cell);body.appendChild(row);return;}
     if(!profiles?.length){body.innerHTML='<tr><td colspan="4">No students found.</td></tr>';return;}
     profiles.forEach(student=>{
-      const rating=(ratings||[]).find(r=>r.student_id===student.id);
+      const rating=(ratings||[]).find(r=>r.student_name===student.name);
       const row=document.createElement('tr');
       [student.name||'Student',rating?.student_email||'—',rating?.score??rating?.rating??'Not rated',rating?.notes||rating?.note||'—'].forEach(value=>{const cell=document.createElement('td');cell.textContent=String(value);row.appendChild(cell);});
       body.appendChild(row);
