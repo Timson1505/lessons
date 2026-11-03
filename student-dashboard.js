@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('student-save-profile')?.addEventListener('click',async()=>{
       const name=input.value.trim();if(!name){msg(message,'Please enter your name.',true);return;}
       const {error}=await client.from('profiles').update({name,phone:phone?.value.trim()||null}).eq('id',user.id);
-      if(error){msg(message,error.message,true);return;}msg(message,'Profile information saved.');
+      if(error){msg(message,error.message,true);return;}const identityName=document.getElementById('account-identity-name');if(identityName)identityName.textContent=name;msg(message,'Profile information saved.');
       const title=document.querySelector('.welcome h1');if(title)title.textContent='Welcome, '+name;
     });
     document.getElementById('student-avatar-input')?.addEventListener('change',async e=>{
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const {error}=await client.storage.from('profile-photos').upload(path,file,{upsert:true,contentType:file.type});
       if(error){msg(message,error.message,true);return;}const {data}=client.storage.from('profile-photos').getPublicUrl(path);
       const {error:updateError}=await client.auth.updateUser({data:{avatar_url:data.publicUrl}});
-      if(updateError){msg(message,updateError.message,true);return;}avatar.src=data.publicUrl;msg(message,'Profile photo updated.');
+      if(updateError){msg(message,updateError.message,true);return;}avatar.src=data.publicUrl;const identityPhoto=document.getElementById('account-identity-photo');if(identityPhoto)identityPhoto.src=data.publicUrl;msg(message,'Profile photo updated.');
     });
     document.getElementById('student-remove-avatar')?.addEventListener('click',async()=>{
       const url=user.user_metadata?.avatar_url;if(!url){avatar.src=defaultPhoto;msg(message,'No profile photo to remove.');return;}
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const marker='/storage/v1/object/public/profile-photos/',idx=url.indexOf(marker);
       if(idx>=0)await client.storage.from('profile-photos').remove([url.slice(idx+marker.length).split('?')[0]]);
       const {error}=await client.auth.updateUser({data:{avatar_url:null}});
-      if(error){msg(message,error.message,true);return;}user.user_metadata.avatar_url=null;avatar.src=defaultPhoto;msg(message,'Profile photo removed.');
+      if(error){msg(message,error.message,true);return;}user.user_metadata.avatar_url=null;avatar.src=defaultPhoto;const identityPhoto=document.getElementById('account-identity-photo');if(identityPhoto)identityPhoto.src='https://placehold.co/80x80?text=User';msg(message,'Profile photo removed.');
     });
   }
   function setupStudentInvite(){
@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('session-email').textContent=session.user.email||'';logout.classList.remove('hidden');
     const {data:profile,error:profileError}=await client.from('profiles').select('id,name,role').eq('id',session.user.id).maybeSingle();
     if(profileError||profile?.role!=='student'){await client.auth.signOut();signedOut('This dashboard is only available to student accounts.');return;}
+    const identityPhoto=document.getElementById('account-identity-photo'),identityName=document.getElementById('account-identity-name');if(identityPhoto)identityPhoto.src=session.user.user_metadata?.avatar_url||'https://placehold.co/80x80?text=User';if(identityName)identityName.textContent=profile.name||session.user.user_metadata?.full_name||session.user.email||'My account';
     authPanel.classList.add('hidden');dashboard.classList.remove('hidden');setupStudentProfile(profile,session.user);setupStudentInvite();await loadDashboard();
   }
   document.getElementById('login-form').addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget;const {error}=await client.auth.signInWithPassword({email:form.email.value.trim(),password:form.password.value});if(error){msg(authMessage,error.message,true);return;}await renderSession();});
