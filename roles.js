@@ -84,7 +84,29 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     if (requiredRole === 'admin') { setupAdminProfile(profile, session.user); renderAdminCalendar(); await loadAdminSchedule(); await loadAdminStudentOverview(); }
 
     if (requiredRole === 'admin') { await loadAdminProfiles(); await loadAdminAccess(); await loadAdminAccounts(); await loadAdminRatings(); }
-    if (requiredRole === 'teacher') { await loadTeacherStudents(); await loadTeacherSchedule(); }
+    if (requiredRole === 'teacher') { setupTeacherProfile(profile, session.user); await loadTeacherStudents(); await loadTeacherSchedule(); }
+  }
+
+
+  function setupTeacherProfile(profile,user){
+    const input=document.getElementById('teacher-name-input'),avatar=document.getElementById('teacher-avatar'),message=document.getElementById('teacher-profile-message');
+    if(!input||!avatar)return;input.value=profile.name||user.user_metadata?.full_name||'';
+    if(user.user_metadata?.avatar_url)avatar.src=user.user_metadata.avatar_url;
+    document.getElementById('teacher-save-profile')?.addEventListener('click',async()=>{
+      const name=input.value.trim();if(!name){setMessage(message,'Please enter your name.',true);return;}
+      const {error}=await client.from('profiles').update({name}).eq('id',user.id);
+      if(error){setMessage(message,error.message,true);return;}setMessage(message,'Your name has been updated.');
+      const title=document.querySelector('.welcome h1');if(title)title.textContent='Welcome, '+name;
+    });
+    document.getElementById('teacher-avatar-input')?.addEventListener('change',async e=>{
+      const file=e.target.files?.[0];if(!file)return;
+      if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>2097152){setMessage(message,'Choose JPG, PNG or WebP up to 2 MB.',true);return;}
+      setMessage(message,'Uploading photo…');const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg',path=user.id+'/profile-'+Date.now()+'.'+ext;
+      const {error}=await client.storage.from('profile-photos').upload(path,file,{upsert:true,contentType:file.type});
+      if(error){setMessage(message,error.message,true);return;}const {data}=client.storage.from('profile-photos').getPublicUrl(path);
+      const {error:updateError}=await client.auth.updateUser({data:{avatar_url:data.publicUrl}});
+      if(updateError){setMessage(message,updateError.message,true);return;}avatar.src=data.publicUrl;setMessage(message,'Profile picture updated.');
+    });
   }
 
   async function loadAdminProfiles() {
