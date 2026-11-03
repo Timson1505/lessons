@@ -9,6 +9,36 @@ document.addEventListener('DOMContentLoaded', () => {
   const client = createClient(STUDENT_SUPABASE_URL, STUDENT_SUPABASE_KEY, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   const msg = (el,text,error=false) => { el.textContent=text||''; el.classList.toggle('error',!!error); el.classList.toggle('success',!!text&&!error); };
   function signedOut(text='') { authPanel.classList.remove('hidden'); dashboard.classList.add('hidden'); logout.classList.add('hidden'); msg(authMessage,text,!!text); }
+
+  function setupStudentProfile(profile,user){
+    const input=document.getElementById('student-name-input'),avatar=document.getElementById('student-avatar'),message=document.getElementById('student-profile-message');
+    if(!input||!avatar)return;input.value=profile.name||user.user_metadata?.full_name||'';
+    if(user.user_metadata?.avatar_url)avatar.src=user.user_metadata.avatar_url;
+    document.getElementById('student-save-profile')?.addEventListener('click',async()=>{
+      const name=input.value.trim();if(!name){msg(message,'Please enter your name.',true);return;}
+      const {error}=await client.from('profiles').update({name}).eq('id',user.id);
+      if(error){msg(message,error.message,true);return;}msg(message,'Your name has been updated.');
+      const title=document.querySelector('.welcome h1');if(title)title.textContent='Welcome, '+name;
+    });
+    document.getElementById('student-avatar-input')?.addEventListener('change',async e=>{
+      const file=e.target.files?.[0];if(!file)return;
+      if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>2097152){msg(message,'Choose JPG, PNG or WebP up to 2 MB.',true);return;}
+      msg(message,'Uploading photo…');const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg',path=user.id+'/profile-'+Date.now()+'.'+ext;
+      const {error}=await client.storage.from('profile-photos').upload(path,file,{upsert:true,contentType:file.type});
+      if(error){msg(message,error.message,true);return;}const {data}=client.storage.from('profile-photos').getPublicUrl(path);
+      const {error:updateError}=await client.auth.updateUser({data:{avatar_url:data.publicUrl}});
+      if(updateError){msg(message,updateError.message,true);return;}avatar.src=data.publicUrl;msg(message,'Profile picture updated.');
+    });
+  }
+  function setupStudentInvite(){
+    const input=document.getElementById('student-invite-link');if(!input)return;
+    input.value=new URL('account.html#signup',window.location.href).href;
+    document.getElementById('student-copy-invite')?.addEventListener('click',async()=>{
+      try{await navigator.clipboard.writeText(input.value);msg(document.getElementById('student-invite-message'),'Invitation link copied.');}
+      catch(_){input.focus();input.select();msg(document.getElementById('student-invite-message'),'Select the link and copy it.');}
+    });
+  }
+
   async function renderChart(ratings) {
     const skills = ['writing','speaking','reading'], latest = {};
     ratings.forEach(r => { if (skills.includes(r.skill) && !latest[r.skill]) latest[r.skill]=r; });
@@ -38,9 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
   async function renderSession(){
     const {data:{session},error}=await client.auth.getSession();if(error||!session){signedOut(error?.message||'');return;}
     document.getElementById('session-email').textContent=session.user.email||'';logout.classList.remove('hidden');
-    const {data:profile,error:profileError}=await client.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
+    const {data:profile,error:profileError}=await client.from('profiles').select('id,name,role').eq('id',session.user.id).maybeSingle();
     if(profileError||profile?.role!=='student'){await client.auth.signOut();signedOut('This dashboard is only available to student accounts.');return;}
-    authPanel.classList.add('hidden');dashboard.classList.remove('hidden');await loadDashboard();
+    authPanel.classList.add('hidden');dashboard.classList.remove('hidden');setupStudentProfile(profile,session.user);setupStudentInvite();await loadDashboard();
   }
   document.getElementById('login-form').addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget;const {error}=await client.auth.signInWithPassword({email:form.email.value.trim(),password:form.password.value});if(error){msg(authMessage,error.message,true);return;}await renderSession();});
   logout.addEventListener('click',async()=>{await client.auth.signOut();signedOut('You have signed out.');});
