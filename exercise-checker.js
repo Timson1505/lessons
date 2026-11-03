@@ -1,4 +1,44 @@
 (() => {
+  // Answer controls are locked until the signed-in user's database role is verified.
+  // Students and signed-out visitors cannot run checks or reveal answer keys.
+  async function configureTeacherOnlyControls() {
+    const controls = () => document.querySelectorAll(".check-answers, .show-answer-key");
+    const lock = () => controls().forEach(button => {
+      button.disabled = true;
+      button.setAttribute("aria-disabled", "true");
+      button.title = "Only teachers can use answer checking and answer keys.";
+    });
+    const unlock = () => controls().forEach(button => {
+      button.disabled = false;
+      button.removeAttribute("aria-disabled");
+      button.removeAttribute("title");
+    });
+    lock();
+    try {
+      if (!window.supabase?.createClient) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+      const client = window.supabase.createClient(
+        "https://dtgspwsxwslntlayqcbe.supabase.co",
+        "sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf",
+        { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
+      );
+      const { data: { user } } = await client.auth.getUser();
+      if (!user) return;
+      const { data: profile, error } = await client
+        .from("profiles").select("role").eq("id", user.id).maybeSingle();
+      if (!error && profile && ["teacher", "admin"].includes(profile.role)) unlock();
+    } catch (error) {
+      console.warn("Could not verify teacher permissions; answer controls remain locked.", error);
+    }
+  }
+
   const inputClass = "word-answer";
 
   // Answer keys are attached to exercises in document order. Add more entries here
@@ -1027,7 +1067,7 @@
     main.appendChild(display);
   }
 
-  function escapeHtml(value) {
+  void configureTeacherOnlyControls();\n\n  function escapeHtml(value) {
     return value.replace(/[&<>"']/g, char => ({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
     })[char]);
