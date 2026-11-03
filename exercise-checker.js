@@ -33,7 +33,7 @@
       if (!user) return;
       const { data: profile, error } = await client
         .from("profiles").select("role").eq("id", user.id).maybeSingle();
-      if (!error && profile && ["teacher", "admin"].includes(profile.role)) unlock();
+      if (!error && profile && profile.role === "teacher") unlock();
     } catch (error) {
       console.warn("Could not verify teacher permissions; answer controls remain locked.", error);
     }
