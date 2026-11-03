@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Teacher Dashboard | Timson's English Lessons</title>
   <link rel="icon" href="timson_icon.png">
-  <link rel="stylesheet" href="roles.css?v=20261102-cabinet-refresh">
+  <link rel="stylesheet" href="roles.css?v=20261104-account-identity">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="roles.js?v=20261102-cabinet-refresh"></script>
+  <script defer src="roles.js?v=20261104-account-identity"></script>
 
 <style>
 .schedule-add-form{display:grid;grid-template-columns:minmax(140px,.8fr) minmax(180px,1.3fr) auto;gap:12px;align-items:end;margin:18px 0 22px}
@@ -31,7 +31,7 @@
 </style>
 </head>
 <body data-required-role="teacher">
-  <header class="topbar"><a class="brand" href="index.html">Timson's <span>English Lessons</span></a><div class="top-actions"><span id="session-email" class="session-email"></span><button id="logout-btn" class="button button-light hidden" type="button">Log out</button></div></header>
+  <header class="topbar"><a class="brand" href="index.html">Timson's <span>English Lessons</span></a><div class="top-actions"><div class="account-identity" id="account-identity"><img id="account-identity-photo" src="https://placehold.co/80x80?text=User" alt="Profile photo"><span id="account-identity-name">My account</span></div><span id="session-email" class="session-email"></span><button id="logout-btn" class="button button-light hidden" type="button">Log out</button></div></header>
   <main class="page-shell">
     <section class="welcome"><div><p class="eyebrow">TEACHER SPACE</p><h1>Your teaching dashboard</h1><p><a class="button button-primary inline-button" href="students-assessments.html">Open My Students & Assessments →</a></p><p>Keep track of your assigned students and their progress.</p></div><div class="role-chip">Teacher</div></section>
     <section id="auth-panel" class="panel auth-panel"><h2>Sign in</h2><p class="muted">Sign in with the teacher account assigned by the administrator.</p><form id="login-form"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="username" required placeholder="you@example.com"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required placeholder="Your password"><button class="button button-primary" type="submit">Sign in securely</button><p id="auth-message" class="message" role="status"></p></form></section>
