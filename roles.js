@@ -88,24 +88,43 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
   }
 
 
+  
   function setupTeacherProfile(profile,user){
-    const input=document.getElementById('teacher-name-input'),avatar=document.getElementById('teacher-avatar'),message=document.getElementById('teacher-profile-message');
-    if(!input||!avatar)return;input.value=profile.name||user.user_metadata?.full_name||'';
-    if(user.user_metadata?.avatar_url)avatar.src=user.user_metadata.avatar_url;
+    const name=document.getElementById('teacher-name-input'),phone=document.getElementById('teacher-phone-input'),avatar=document.getElementById('teacher-avatar'),message=document.getElementById('teacher-profile-message');
+    if(!avatar)return;
+    if(name)name.value=profile.name||user.user_metadata?.full_name||'';
+    if(phone)phone.value=profile.phone||'';
+    const defaultPhoto='https://placehold.co/120x120?text=Photo';
+    const photoUrl=user.user_metadata?.avatar_url;if(photoUrl)avatar.src=photoUrl;
     document.getElementById('teacher-save-profile')?.addEventListener('click',async()=>{
-      const name=input.value.trim();if(!name){setMessage(message,'Please enter your name.',true);return;}
-      const {error}=await client.from('profiles').update({name}).eq('id',user.id);
-      if(error){setMessage(message,error.message,true);return;}setMessage(message,'Your name has been updated.');
-      const title=document.querySelector('.welcome h1');if(title)title.textContent='Welcome, '+name;
+      const newName=name?.value.trim()||'',newPhone=phone?.value.trim()||'';
+      if(!newName){setMessage(message,'Please enter your name.',true);return;}
+      const {error}=await client.from('profiles').update({name:newName,phone:newPhone||null}).eq('id',user.id);
+      if(error){setMessage(message,error.message,true);return;}
+      setMessage(message,'Profile information saved.');
+      const title=document.querySelector('.welcome h1');if(title)title.textContent='Welcome, '+newName;
+      const adminName=document.getElementById('admin-profile-name');if(adminName)adminName.textContent=newName;
     });
     document.getElementById('teacher-avatar-input')?.addEventListener('change',async e=>{
       const file=e.target.files?.[0];if(!file)return;
-      if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>2097152){setMessage(message,'Choose JPG, PNG or WebP up to 2 MB.',true);return;}
+      if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>2097152){setMessage(message,'Choose JPG, PNG or WebP up to 2 MB.',true);e.target.value='';return;}
       setMessage(message,'Uploading photo…');const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg',path=user.id+'/profile-'+Date.now()+'.'+ext;
       const {error}=await client.storage.from('profile-photos').upload(path,file,{upsert:true,contentType:file.type});
-      if(error){setMessage(message,error.message,true);return;}const {data}=client.storage.from('profile-photos').getPublicUrl(path);
+      if(error){setMessage(message,error.message,true);return;}
+      const {data}=client.storage.from('profile-photos').getPublicUrl(path);
       const {error:updateError}=await client.auth.updateUser({data:{avatar_url:data.publicUrl}});
-      if(updateError){setMessage(message,updateError.message,true);return;}avatar.src=data.publicUrl;setMessage(message,'Profile picture updated.');
+      if(updateError){setMessage(message,updateError.message,true);return;}
+      avatar.src=data.publicUrl;setMessage(message,'Profile photo updated.');
+    });
+    document.getElementById('teacher-remove-avatar')?.addEventListener('click',async()=>{
+      const current=user.user_metadata?.avatar_url;
+      if(!current){avatar.src=defaultPhoto;setMessage(message,'There is no profile photo to remove.');return;}
+      if(!window.confirm('Remove your profile photo?'))return;
+      const marker='/storage/v1/object/public/profile-photos/',idx=current.indexOf(marker);
+      if(idx>=0){const path=current.slice(idx+marker.length).split('?')[0];await client.storage.from('profile-photos').remove([path]);}
+      const {error}=await client.auth.updateUser({data:{avatar_url:null}});
+      if(error){setMessage(message,error.message,true);return;}
+      user.user_metadata.avatar_url=null;avatar.src=defaultPhoto;setMessage(message,'Profile photo removed.');
     });
   }
 
@@ -866,29 +885,38 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
   let adminCalendarDate = new Date();
   let adminSelectedDate = new Date();
   let adminScheduleEntries = [];
-  function setupAdminProfile(profile, user) {
-    const name = profile.name || user.email || 'Administrator';
-    ['admin-display-name','admin-profile-name'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=name; });
-    const avatar = document.getElementById('admin-avatar');
-    if (avatar && user.user_metadata?.avatar_url) avatar.src = user.user_metadata.avatar_url;
-    const input = document.getElementById('admin-avatar-input');
-    input?.addEventListener('change', async () => {
-      const file = input.files?.[0]; if (!file) return;
-      if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 2*1024*1024) {
-        setMessage(document.getElementById('avatar-message'),'Choose a JPG, PNG or WebP image up to 2 MB.',true); input.value=''; return;
-      }
-      const buttonMessage=document.getElementById('avatar-message');
-      setMessage(buttonMessage,'Uploading photo…');
-      const path=user.id+'/profile-'+Date.now()+'.'+file.name.split('.').pop().toLowerCase();
-      const {error:uploadError}=await client.storage.from('admin-avatars').upload(path,file,{upsert:true,contentType:file.type});
-      if(uploadError){setMessage(buttonMessage,uploadError.message,true);return;}
-      const {data:{publicUrl}}=client.storage.from('admin-avatars').getPublicUrl(path);
-      const {error:updateError}=await client.auth.updateUser({data:{avatar_url:publicUrl}});
-      if(updateError){setMessage(buttonMessage,updateError.message,true);return;}
-      if(avatar) avatar.src=publicUrl;
-      setMessage(buttonMessage,'Profile photo updated.');
+  
+  function setupAdminProfile(profile,user){
+    const name=document.getElementById('admin-name-input'),phone=document.getElementById('admin-phone-input'),avatar=document.getElementById('admin-avatar'),message=document.getElementById('avatar-message');
+    const defaultPhoto=avatar?.dataset.defaultSrc||avatar?.src;
+    if(name)name.value=profile.name||user.email||'';
+    if(phone)phone.value=profile.phone||'';
+    if(user.user_metadata?.avatar_url&&avatar)avatar.src=user.user_metadata.avatar_url;
+    document.getElementById('admin-save-profile')?.addEventListener('click',async()=>{
+      const n=name?.value.trim()||'';if(!n){setMessage(message,'Enter your name.',true);return;}
+      const {error}=await client.from('profiles').update({name:n,phone:phone?.value.trim()||null}).eq('id',user.id);
+      if(error){setMessage(message,error.message,true);return;}
+      const label=document.getElementById('admin-profile-name');if(label)label.textContent=n;setMessage(message,'Profile information saved.');
+    });
+    document.getElementById('admin-avatar-input')?.addEventListener('change',async()=>{
+      const file=document.getElementById('admin-avatar-input').files?.[0];if(!file)return;
+      if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>2097152){setMessage(message,'Choose JPG, PNG or WebP up to 2 MB.',true);return;}
+      setMessage(message,'Uploading photo…');const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg',path=user.id+'/profile-'+Date.now()+'.'+ext;
+      const {error}=await client.storage.from('profile-photos').upload(path,file,{upsert:true,contentType:file.type});
+      if(error){setMessage(message,error.message,true);return;}const {data}=client.storage.from('profile-photos').getPublicUrl(path);
+      const {error:updateError}=await client.auth.updateUser({data:{avatar_url:data.publicUrl}});
+      if(updateError){setMessage(message,updateError.message,true);return;}avatar.src=data.publicUrl;setMessage(message,'Profile photo updated.');
+    });
+    document.getElementById('admin-remove-avatar')?.addEventListener('click',async()=>{
+      const url=user.user_metadata?.avatar_url;if(!url){avatar.src=defaultPhoto;setMessage(message,'No profile photo to remove.');return;}
+      if(!confirm('Remove your profile photo?'))return;
+      const marker='/storage/v1/object/public/profile-photos/',idx=url.indexOf(marker);
+      if(idx>=0)await client.storage.from('profile-photos').remove([url.slice(idx+marker.length).split('?')[0]]);
+      const {error}=await client.auth.updateUser({data:{avatar_url:null}});
+      if(error){setMessage(message,error.message,true);return;}user.user_metadata.avatar_url=null;avatar.src=defaultPhoto;setMessage(message,'Profile photo removed.');
     });
   }
+
   function sameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
   function renderAdminCalendar(){
     const grid=document.getElementById('admin-calendar-grid'); if(!grid)return;
