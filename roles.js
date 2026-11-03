@@ -77,6 +77,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       return;
     }
 
+    renderAccountIdentity(profile,session.user);
     authPanel?.classList.add('hidden');
     dashboardPanel?.classList.remove('hidden');
     setMessage(authMessage, '');
@@ -89,6 +90,8 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
 
 
   
+  function renderAccountIdentity(profile,user){const img=document.getElementById('account-identity-photo'),label=document.getElementById('account-identity-name');if(img)img.src=user.user_metadata?.avatar_url||'https://placehold.co/80x80?text=User';if(label)label.textContent=profile.name||user.user_metadata?.full_name||user.email||'My account';}
+
   function setupTeacherProfile(profile,user){
     const name=document.getElementById('teacher-name-input'),phone=document.getElementById('teacher-phone-input'),avatar=document.getElementById('teacher-avatar'),message=document.getElementById('teacher-profile-message');
     if(!avatar)return;
@@ -101,7 +104,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       if(!newName){setMessage(message,'Please enter your name.',true);return;}
       const {error}=await client.from('profiles').update({name:newName,phone:newPhone||null}).eq('id',user.id);
       if(error){setMessage(message,error.message,true);return;}
-      setMessage(message,'Profile information saved.');
+      setMessage(message,'Profile information saved.');const identityName=document.getElementById('account-identity-name');if(identityName)identityName.textContent=newName;
       const title=document.querySelector('.welcome h1');if(title)title.textContent='Welcome, '+newName;
       const adminName=document.getElementById('admin-profile-name');if(adminName)adminName.textContent=newName;
     });
@@ -114,7 +117,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       const {data}=client.storage.from('profile-photos').getPublicUrl(path);
       const {error:updateError}=await client.auth.updateUser({data:{avatar_url:data.publicUrl}});
       if(updateError){setMessage(message,updateError.message,true);return;}
-      avatar.src=data.publicUrl;setMessage(message,'Profile photo updated.');
+      avatar.src=data.publicUrl;const identityPhoto=document.getElementById('account-identity-photo');if(identityPhoto)identityPhoto.src=data.publicUrl;setMessage(message,'Profile photo updated.');
     });
     document.getElementById('teacher-remove-avatar')?.addEventListener('click',async()=>{
       const current=user.user_metadata?.avatar_url;
@@ -124,7 +127,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       if(idx>=0){const path=current.slice(idx+marker.length).split('?')[0];await client.storage.from('profile-photos').remove([path]);}
       const {error}=await client.auth.updateUser({data:{avatar_url:null}});
       if(error){setMessage(message,error.message,true);return;}
-      user.user_metadata.avatar_url=null;avatar.src=defaultPhoto;setMessage(message,'Profile photo removed.');
+      user.user_metadata.avatar_url=null;avatar.src=defaultPhoto;const identityPhoto=document.getElementById('account-identity-photo');if(identityPhoto)identityPhoto.src='https://placehold.co/80x80?text=User';setMessage(message,'Profile photo removed.');
     });
   }
 
@@ -896,7 +899,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       const n=name?.value.trim()||'';if(!n){setMessage(message,'Enter your name.',true);return;}
       const {error}=await client.from('profiles').update({name:n,phone:phone?.value.trim()||null}).eq('id',user.id);
       if(error){setMessage(message,error.message,true);return;}
-      const label=document.getElementById('admin-profile-name');if(label)label.textContent=n;setMessage(message,'Profile information saved.');
+      const label=document.getElementById('admin-profile-name');if(label)label.textContent=n;const identityName=document.getElementById('account-identity-name');if(identityName)identityName.textContent=n;setMessage(message,'Profile information saved.');
     });
     document.getElementById('admin-avatar-input')?.addEventListener('change',async()=>{
       const file=document.getElementById('admin-avatar-input').files?.[0];if(!file)return;
@@ -905,7 +908,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       const {error}=await client.storage.from('profile-photos').upload(path,file,{upsert:true,contentType:file.type});
       if(error){setMessage(message,error.message,true);return;}const {data}=client.storage.from('profile-photos').getPublicUrl(path);
       const {error:updateError}=await client.auth.updateUser({data:{avatar_url:data.publicUrl}});
-      if(updateError){setMessage(message,updateError.message,true);return;}avatar.src=data.publicUrl;setMessage(message,'Profile photo updated.');
+      if(updateError){setMessage(message,updateError.message,true);return;}avatar.src=data.publicUrl;const identityPhoto=document.getElementById('account-identity-photo');if(identityPhoto)identityPhoto.src=data.publicUrl;setMessage(message,'Profile photo updated.');
     });
     document.getElementById('admin-remove-avatar')?.addEventListener('click',async()=>{
       const url=user.user_metadata?.avatar_url;if(!url){avatar.src=defaultPhoto;setMessage(message,'No profile photo to remove.');return;}
@@ -913,7 +916,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
       const marker='/storage/v1/object/public/profile-photos/',idx=url.indexOf(marker);
       if(idx>=0)await client.storage.from('profile-photos').remove([url.slice(idx+marker.length).split('?')[0]]);
       const {error}=await client.auth.updateUser({data:{avatar_url:null}});
-      if(error){setMessage(message,error.message,true);return;}user.user_metadata.avatar_url=null;avatar.src=defaultPhoto;setMessage(message,'Profile photo removed.');
+      if(error){setMessage(message,error.message,true);return;}user.user_metadata.avatar_url=null;avatar.src=defaultPhoto;const identityPhoto=document.getElementById('account-identity-photo');if(identityPhoto)identityPhoto.src='https://placehold.co/80x80?text=User';setMessage(message,'Profile photo removed.');
     });
   }
 
