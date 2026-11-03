@@ -10,24 +10,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const msg = (el,text,error=false) => { el.textContent=text||''; el.classList.toggle('error',!!error); el.classList.toggle('success',!!text&&!error); };
   function signedOut(text='') { authPanel.classList.remove('hidden'); dashboard.classList.add('hidden'); logout.classList.add('hidden'); msg(authMessage,text,!!text); }
 
+  
   function setupStudentProfile(profile,user){
-    const input=document.getElementById('student-name-input'),avatar=document.getElementById('student-avatar'),message=document.getElementById('student-profile-message');
-    if(!input||!avatar)return;input.value=profile.name||user.user_metadata?.full_name||'';
-    if(user.user_metadata?.avatar_url)avatar.src=user.user_metadata.avatar_url;
+    const input=document.getElementById('student-name-input'),phone=document.getElementById('student-phone-input'),avatar=document.getElementById('student-avatar'),message=document.getElementById('student-profile-message');
+    if(!avatar)return;input.value=profile.name||user.user_metadata?.full_name||'';if(phone)phone.value=profile.phone||'';
+    const defaultPhoto='https://placehold.co/120x120?text=Photo';if(user.user_metadata?.avatar_url)avatar.src=user.user_metadata.avatar_url;
     document.getElementById('student-save-profile')?.addEventListener('click',async()=>{
       const name=input.value.trim();if(!name){msg(message,'Please enter your name.',true);return;}
-      const {error}=await client.from('profiles').update({name}).eq('id',user.id);
-      if(error){msg(message,error.message,true);return;}msg(message,'Your name has been updated.');
+      const {error}=await client.from('profiles').update({name,phone:phone?.value.trim()||null}).eq('id',user.id);
+      if(error){msg(message,error.message,true);return;}msg(message,'Profile information saved.');
       const title=document.querySelector('.welcome h1');if(title)title.textContent='Welcome, '+name;
     });
     document.getElementById('student-avatar-input')?.addEventListener('change',async e=>{
       const file=e.target.files?.[0];if(!file)return;
-      if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>2097152){msg(message,'Choose JPG, PNG or WebP up to 2 MB.',true);return;}
+      if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>2097152){msg(message,'Choose JPG, PNG or WebP up to 2 MB.',true);e.target.value='';return;}
       msg(message,'Uploading photo…');const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg',path=user.id+'/profile-'+Date.now()+'.'+ext;
       const {error}=await client.storage.from('profile-photos').upload(path,file,{upsert:true,contentType:file.type});
       if(error){msg(message,error.message,true);return;}const {data}=client.storage.from('profile-photos').getPublicUrl(path);
       const {error:updateError}=await client.auth.updateUser({data:{avatar_url:data.publicUrl}});
-      if(updateError){msg(message,updateError.message,true);return;}avatar.src=data.publicUrl;msg(message,'Profile picture updated.');
+      if(updateError){msg(message,updateError.message,true);return;}avatar.src=data.publicUrl;msg(message,'Profile photo updated.');
+    });
+    document.getElementById('student-remove-avatar')?.addEventListener('click',async()=>{
+      const url=user.user_metadata?.avatar_url;if(!url){avatar.src=defaultPhoto;msg(message,'No profile photo to remove.');return;}
+      if(!confirm('Remove your profile photo?'))return;
+      const marker='/storage/v1/object/public/profile-photos/',idx=url.indexOf(marker);
+      if(idx>=0)await client.storage.from('profile-photos').remove([url.slice(idx+marker.length).split('?')[0]]);
+      const {error}=await client.auth.updateUser({data:{avatar_url:null}});
+      if(error){msg(message,error.message,true);return;}user.user_metadata.avatar_url=null;avatar.src=defaultPhoto;msg(message,'Profile photo removed.');
     });
   }
   function setupStudentInvite(){
