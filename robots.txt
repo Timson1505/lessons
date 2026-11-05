@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Private account and dashboard routes
+Disallow: /account.html
+Disallow: /admin.html
+Disallow: /teacher.html
+Disallow: /student.html
+Disallow: /students-assessments.html
+Disallow: /teacher-profile.html
+
+# Course materials require account-level access; do not include them in search.
+Disallow: /Beginner-1/
+Disallow: /Beginner-2/
+Disallow: /Beginner-3/
+Disallow: /Elementary-1/
+Disallow: /Elementary-2/
+Disallow: /Elementary-3/
+
+Sitemap: https://timson1505.github.io/lessons/sitemap.xml
