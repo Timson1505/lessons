@@ -1,19 +1,23 @@
 (() => {
-  // Answer controls are locked until the signed-in user's database role is verified.
-  // Students and signed-out visitors cannot run checks or reveal answer keys.
-  async function configureTeacherOnlyControls() {
-    const controls = () => document.querySelectorAll(".check-answers, .show-answer-key");
-    const lock = () => controls().forEach(button => {
-      button.disabled = true;
-      button.setAttribute("aria-disabled", "true");
-      button.title = "Only teachers can use answer checking and answer keys.";
+  // Students may check their own work. Only teachers and admins see the
+  // dedicated answer-key controls. This UI gate is not a security boundary:
+  // answerKeys below are still delivered to the browser and must be moved to
+  // a server-side grading endpoint before answer keys can be treated as secret.
+  async function configureExerciseControls() {
+    const checkButtons = () => document.querySelectorAll(".check-answers");
+    const keyButtons = () => document.querySelectorAll(".show-answer-key");
+    const setEnabled = (buttons, enabled, reason) => buttons.forEach(button => {
+      button.disabled = !enabled;
+      if (enabled) {
+        button.removeAttribute("aria-disabled");
+        button.removeAttribute("title");
+      } else {
+        button.setAttribute("aria-disabled", "true");
+        button.title = reason;
+      }
     });
-    const unlock = () => controls().forEach(button => {
-      button.disabled = false;
-      button.removeAttribute("aria-disabled");
-      button.removeAttribute("title");
-    });
-    lock();
+    setEnabled(checkButtons(), false, "Sign in as a student, teacher or administrator to check answers.");
+    setEnabled(keyButtons(), false, "Answer keys are available to teachers and administrators.");
     try {
       if (!window.supabase?.createClient) {
         await new Promise((resolve, reject) => {
@@ -33,9 +37,13 @@
       if (!user) return;
       const { data: profile, error } = await client
         .from("profiles").select("role").eq("id", user.id).maybeSingle();
-      if (!error && profile && profile.role === "teacher") unlock();
+      if (error || !profile) return;
+      const canCheck = ["student", "teacher", "admin"].includes(profile.role);
+      const canSeeKeys = ["teacher", "admin"].includes(profile.role);
+      setEnabled(checkButtons(), canCheck, "Sign in with a student, teacher or administrator account.");
+      setEnabled(keyButtons(), canSeeKeys, "Only teachers and administrators can open answer keys.");
     } catch (error) {
-      console.warn("Could not verify teacher permissions; answer controls remain locked.", error);
+      console.warn("Could not verify exercise permissions; controls remain locked.", error);
     }
   }
 
@@ -1067,7 +1075,7 @@
     main.appendChild(display);
   }
 
-  void configureTeacherOnlyControls();\n\n  function escapeHtml(value) {
+  void configureExerciseControls();\n\n  function escapeHtml(value) {
     return value.replace(/[&<>"']/g, char => ({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
     })[char]);
