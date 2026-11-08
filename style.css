@@ -1677,13 +1677,19 @@ i.fab, i.fa-brands, i.fab::before, i.fa-brands::before {
 body { font-size: 18px; line-height: 1.65; }
 .aside .nav li a { font-family: "Times New Roman", Times, serif !important; font-size: 17px; font-weight: 600; letter-spacing: .01em; line-height: 1.45; }
 .aside .logo a, .aside .logo a span { font-family: "Times New Roman", Times, serif !important; }
-@media (max-width: 640px) { body { font-size: 16px; line-height: 1.6; } .aside .nav li a { font-size: 16px; } }
+@media (max-width: 640px) { body { font-size: 15px; line-height: 1.55; } .aside .nav li a { font-size: 15px; } }
 
 
 /* Brand typography: requested Times New Roman body and sidebar */
-body { font-family: "Times New Roman", Times, serif; }
+/* Refined, more compact typography while preserving Times New Roman. */
+body { font-family: "Times New Roman", Times, serif; font-size: 15px; }
 .aside, .aside * { font-family: "Times New Roman", Times, serif; }
-.aside .nav li a { font-size: 17px; line-height: 1.45; letter-spacing: .01em; }
+.aside .nav li a { font-size: 15px; line-height: 1.4; letter-spacing: 0; }
+.sidebar-auth-btn { font-family: "Times New Roman", Times, serif !important; font-size: 14px; }
+.sidebar-auth-btn[hidden] { display: none !important; }
+.sidebar-cabinet { color: #fff; background: var(--skin-color); }
+.sidebar-cabinet:hover { color: #fff; filter: brightness(.96); }
+.sidebar-auth-btn i { font-family: "Font Awesome 6 Free" !important; font-weight: 900; }
 
 
 /* ===== Professional English school presentation ===== */
