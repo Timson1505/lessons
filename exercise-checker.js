@@ -63,7 +63,8 @@
     const wordBanks=Array.isArray(bankResult.data)?bankResult.data:[];
     exercises.forEach(({container,index,fields})=>{
       const bank=wordBanks[index];
-      if(Array.isArray(bank)&&bank.length){
+      const hasKeyWords=Array.isArray(bank)&&bank.length>0;
+      if(hasKeyWords){
         const panel=document.createElement("div");panel.className="key-words";
         const heading=document.createElement("strong");heading.textContent="Key words";
         panel.appendChild(heading);
@@ -73,13 +74,14 @@
       }
       let feedback=container.querySelector(".answer-feedback");
       if(!feedback){feedback=document.createElement("p");feedback.className="answer-feedback";feedback.setAttribute("aria-live","polite");container.appendChild(feedback);}
+      if(!hasKeyWords){feedback.textContent="Answer key and Key words are being prepared for this exercise. It is not included in the automatic Writing rating yet.";feedback.style.color="#765b20";}
       const oldCheck=container.querySelector(".check-answers");
       const check=oldCheck?oldCheck.cloneNode(true):document.createElement("button");
-      check.type="button";check.className="check-answers";check.textContent="Check the answer";check.disabled=!canCheck;
+      check.type="button";check.className="check-answers";check.textContent="Check the answer";check.disabled=!canCheck||!hasKeyWords;
       if(oldCheck)oldCheck.replaceWith(check);else container.appendChild(check);
       const oldKey=container.querySelector(".show-answer-key");
       const keyButton=oldKey?oldKey.cloneNode(true):document.createElement("button");
-      keyButton.type="button";keyButton.className="show-answer-key";keyButton.textContent="Show answer key";keyButton.disabled=!canSeeKeys;
+      keyButton.type="button";keyButton.className="show-answer-key";keyButton.textContent="Show answer key";keyButton.disabled=!canSeeKeys||!hasKeyWords;
       if(oldKey)oldKey.replaceWith(keyButton);else container.appendChild(keyButton);
       let display=container.querySelector(".answer-key-display");
       if(!display){display=document.createElement("div");display.className="answer-key-display";display.hidden=true;container.appendChild(display);}
@@ -137,7 +139,7 @@
         }catch(error){display.textContent=error.message||"Could not load answer key.";display.hidden=false;}
         finally{keyButton.disabled=false;}
       });
-      check.disabled=!canCheck;keyButton.disabled=!canSeeKeys;
+      check.disabled=!canCheck||!hasKeyWords;keyButton.disabled=!canSeeKeys||!hasKeyWords;
     });
   }
 
