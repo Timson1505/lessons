@@ -348,43 +348,7 @@
       </script>
       
 
-      <script>
-        (function () {
-          const answerKey = {
-            "exercise2-check": ["am", "are", "am", "are", "am", "is", "am", "are", "is", "am"],
-            "homework-check": ["I", "you", "your", "my", "you", "you", "you", "am", "is", "you", "am"]
-          };
-
-          document.querySelectorAll(".check-answers").forEach(function (button) {
-            button.addEventListener("click", function () {
-              const exercise = document.getElementById(button.dataset.check);
-              const inputs = Array.from(exercise.querySelectorAll("input.word-answer"));
-              const answers = answerKey[button.dataset.check];
-              let correct = 0;
-
-              inputs.forEach(function (input, index) {
-                const isCorrect = input.value.trim().toLowerCase() === answers[index].toLowerCase();
-                input.classList.toggle("correct", isCorrect);
-                input.classList.toggle("incorrect", !isCorrect);
-                input.setAttribute("aria-invalid", String(!isCorrect));
-                if (isCorrect) correct++;
-              });
-
-              const feedback = exercise.querySelector(".answer-feedback");
-              feedback.textContent = "Your score: " + correct + " / " + answers.length +
-                (correct === answers.length ? " — Excellent! All answers are correct." : " — Correct the answers marked in red and try again.");
-              feedback.style.color = correct === answers.length ? "#24834b" : "#b52f2f";
-            });
-          });
-
-          document.querySelectorAll("input.word-answer").forEach(function (input) {
-            input.addEventListener("input", function () {
-              input.classList.remove("correct", "incorrect");
-              input.removeAttribute("aria-invalid");
-            });
-          });
-        })();
-      </script>
+      
 
       <script src="script.js"></script>
       <script src="style.switcher.js"></script>
