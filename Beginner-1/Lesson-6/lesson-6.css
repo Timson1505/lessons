@@ -24,8 +24,8 @@ body.dark {
 }
 body {
     line-height: 1.5;
-    font-family: 'Popoins' sans-serif;
-    font-size: 22px;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+
 }
 * {
     font-size: 22px;
@@ -506,4 +506,42 @@ td {
         display: flex;
         flex-direction: column;
     }
+}
+
+
+/* ===== Typography refresh: readable lesson body + refined sidebar ===== */
+body {
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.68;
+  letter-spacing: 0.005em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body * { font-family: inherit; }
+.aside .nav li a {
+  font-family: Manrope, "Segoe UI", Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1.45;
+  padding: 9px 15px;
+  transition: color .2s ease, background-color .2s ease;
+}
+.aside .nav li a:hover,
+.aside .nav li a:focus-visible {
+  color: var(--skin-color);
+}
+.aside .nav li a i { font-size: 17px; }
+.aside .logo a {
+  font-family: Manrope, "Segoe UI", Arial, sans-serif;
+  letter-spacing: .12em;
+}
+.main-content { font-family: Inter, "Segoe UI", Arial, sans-serif; }
+.main-content p, .main-content li, .main-content td {
+  line-height: 1.7;
+}
+@media (max-width: 640px) {
+  body { font-size: 16px; line-height: 1.62; }
+  .aside .nav li a { font-size: 15px; }
 }
