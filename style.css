@@ -1736,3 +1736,78 @@ body { font-size: 18px; line-height: 1.65; }
   .level-title-content { gap: 9px; }
   .lesson-link-icon { flex-basis: 13px; }
 }
+
+
+/* ===== Sidebar appearance controls ===== */
+.aside .sidebar-appearance {
+  width: 100%;
+  margin-top: 12px;
+  padding: 13px 12px;
+  border: 1px solid var(--bg-black-50);
+  border-radius: 12px;
+  background: var(--bg-black-900);
+}
+.sidebar-appearance-title {
+  margin: 0 0 10px;
+  color: var(--text-black-700);
+  font-size: 15px;
+  font-weight: 700;
+}
+.sidebar-appearance-title i { color: var(--skin-color); margin-right: 7px; }
+.sidebar-theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--bg-black-50);
+  border-radius: 8px;
+  background: var(--bg-black-100);
+  color: var(--text-black-900);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: left;
+}
+.sidebar-theme-toggle i { width: 18px; color: var(--skin-color); text-align: center; }
+.sidebar-theme-toggle:hover,
+.sidebar-theme-toggle:focus-visible { border-color: var(--skin-color); }
+.sidebar-color-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 11px;
+}
+.sidebar-color-label { margin-right: auto; color: var(--text-black-700); font-size: 14px; }
+.sidebar-color-swatch {
+  width: 23px;
+  height: 23px;
+  padding: 0;
+  border: 2px solid var(--bg-black-100);
+  outline: 1px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.sidebar-color-swatch[aria-pressed="true"] { outline-color: var(--text-black-900); }
+.color-swatch-blue { background: #4fadc0; }
+.color-swatch-red { background: #ec1839; }
+.color-swatch-green { background: #37b182; }
+
+/* Contact section icon polish */
+.contact-heading-icon { color: var(--skin-color); margin-right: 9px; }
+.contact-info-item .icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 12px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--skin-color) 12%, transparent);
+  color: var(--skin-color);
+}
+.contact-info-item .icon i { font-size: 21px; }
+.contact-form .btn i { margin-right: 8px; }
+@media (max-width: 767px) {
+  .aside .sidebar-appearance { margin-top: 4px; }
+  .aside .nav { margin-bottom: 8px; }
+}
