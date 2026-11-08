@@ -7,7 +7,8 @@
   <link rel="icon" href="timson_icon.png">
   <link rel="stylesheet" href="roles.css?v=20261104-account-identity">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="roles.js?v=20261104-account-identity"></script>
+  <script defer src="roles.js?v=20261109-analytics"></script>
+  <script defer src="admin-analytics.js?v=20261109-analytics"></script>
 <style>
 .access-help{margin:0 0 1rem;padding:1rem;border-radius:10px;background:#f2f5fa;color:#354052;line-height:1.5}
 .access-table{min-width:1450px}.access-table select,.access-table input[type="date"],.access-table input[type="text"]{max-width:180px;padding:.45rem;border:1px solid #ccd3df;border-radius:6px}
@@ -27,6 +28,7 @@
         <div class="sidebar-brand"><span class="sidebar-mark">T</span><div><strong>Timson’s</strong><small>School control</small></div></div>
         <p class="sidebar-label">WORKSPACE</p>
         <a class="sidebar-link active" href="#overview">▦ <span>Dashboard</span></a>
+        <a class="sidebar-link" href="#admin-analytics">▥ <span>Admin Analytics</span></a>
         <a class="sidebar-link" href="admin-profile.html">♙ <span>My profile</span></a>
         <a class="sidebar-link" href="admin-students.html">♙ <span>My students</span></a>
         <a class="sidebar-link" href="admin-connect.html">↔ <span>Student connection</span></a>
@@ -37,6 +39,26 @@
         <div class="sidebar-bottom"><a class="sidebar-link" href="students-assessments.html">★ <span>Student ratings</span></a><a class="sidebar-link" href="index.html">↗ <span>Learning website</span></a></div>
       </aside>
       <div class="admin-main-content" id="overview">
+
+        <section class="admin-analytics-section" id="admin-analytics">
+          <div class="analytics-heading"><div><p class="eyebrow">SCHOOL INTELLIGENCE</p><h2>Admin Analytics</h2><p>Operational overview based on records currently stored in Supabase.</p></div><button id="analytics-refresh" class="button button-light" type="button">Refresh analytics</button></div>
+          <div class="analytics-kpis">
+            <article><span>Connected students</span><strong id="analytics-students">—</strong><small>Students linked to a teacher</small></article>
+            <article><span>Teaching team</span><strong id="analytics-teachers">—</strong><small>Teachers with linked students</small></article>
+            <article><span>Confirmed payments</span><strong id="analytics-paid">—</strong><small>Payment confirmations on file</small></article>
+            <article><span>Lesson completions</span><strong id="analytics-completions">—</strong><small>Progress records saved</small></article>
+          </div>
+          <div class="analytics-grid">
+            <article class="analytics-card"><div class="analytics-card-head"><div><h3>Monthly registrations</h3><p>New student and teacher profiles</p></div></div><div id="analytics-registration-chart" class="analytics-bars"><p class="muted">Loading chart…</p></div></article>
+            <article class="analytics-card"><div class="analytics-card-head"><div><h3>Lesson usage</h3><p>Completions by course level</p></div></div><div id="analytics-lessons-chart" class="analytics-bars"><p class="muted">Loading lesson data…</p></div></article>
+          </div>
+          <div class="analytics-grid">
+            <article class="analytics-card"><div class="analytics-card-head"><div><h3>Subscriptions &amp; payments</h3><p>Current request and confirmation status</p></div><a href="#manage-access">Manage access →</a></div><div class="analytics-payment-grid"><div><span>Requests</span><strong id="analytics-requests">—</strong></div><div><span>Pending</span><strong id="analytics-pending">—</strong></div><div><span>Approved</span><strong id="analytics-approved">—</strong></div></div><div class="analytics-revenue"><span>Monthly revenue</span><strong id="analytics-revenue">Not available</strong><p id="analytics-revenue-note">A verified payment ledger with amount, currency and paid date is not configured. Confirmed-payment flags are not revenue.</p></div></article>
+            <article class="analytics-card"><div class="analytics-card-head"><div><h3>Assessment performance</h3><p>Average scores by skill</p></div><a href="students-assessments.html">Open assessments →</a></div><div id="analytics-skills" class="analytics-bars"><p class="muted">Loading assessments…</p></div></article>
+          </div>
+          <article class="analytics-card analytics-teacher-card"><div class="analytics-card-head"><div><h3>Teacher performance reports</h3><p>Based on recorded teacher assessments; not a complete measure of teaching quality.</p></div></div><div class="table-wrap"><table><thead><tr><th>Teacher</th><th>Assessments recorded</th><th>Average score</th></tr></thead><tbody id="analytics-teacher-performance"><tr><td colspan="3">Loading reports…</td></tr></tbody></table></div></article>
+          <p id="analytics-message" class="message" role="status"></p>
+        </section>
         <section class="admin-stats-grid" data-nav-group="overview">
           <article class="admin-stat"><span>Registered profiles</span><strong id="profile-count">—</strong><small>Across your platform</small></article>
           <article class="admin-stat"><span>Students</span><strong id="admin-student-count">—</strong><small>Visible student accounts</small></article>
