@@ -130,7 +130,7 @@
     const canCheck=["student","teacher","admin"].includes(role);
     const canSeeKeys=["teacher","admin"].includes(role);
     const path=decodeURI(location.pathname).replace(/^\/lessons\//,"").replace(/^\//,"");
-    const exercises=Array.from(document.querySelectorAll(".ex-1k,.exercise,.question"))
+    const exercises=Array.from(document.querySelectorAll(".ex-1k,.ex-2,.ex1k,.exercise,.question"))
       .map(container=>({container,fields:Array.from(container.querySelectorAll("input."+inputClass))}))
       .filter(item=>item.fields.length>0)
       .map((item,index)=>({...item,index}));
