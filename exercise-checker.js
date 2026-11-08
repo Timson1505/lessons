@@ -53,8 +53,10 @@
     const canCheck=["student","teacher","admin"].includes(role);
     const canSeeKeys=["teacher","admin"].includes(role);
     const path=decodeURI(location.pathname).replace(/^\/lessons\//,"").replace(/^\//,"");
-    const containers=Array.from(document.querySelectorAll(".ex-1k,.exercise,.question"));
-    const exercises=containers.map((container,index)=>({container,index,fields:Array.from(container.querySelectorAll("input."+inputClass))})).filter(item=>item.fields.length>0);
+    const exercises=Array.from(document.querySelectorAll(".ex-1k,.exercise,.question"))
+      .map(container=>({container,fields:Array.from(container.querySelectorAll("input."+inputClass))}))
+      .filter(item=>item.fields.length>0)
+      .map((item,index)=>({...item,index}));
     if(!exercises.length)return;
 
     const bankResult=canCheck?await client.rpc("get_writing_word_bank",{p_lesson_path:path}):{data:[],error:null};
@@ -86,7 +88,7 @@
         check.disabled=true;feedback.textContent="Checking answers…";
         try{
           if(role==="student"){
-            const payload=containers.map(c=>Array.from(c.querySelectorAll("input."+inputClass)).map(f=>f.value.trim()));
+            const payload=exercises.map(item=>item.fields.map(f=>f.value.trim()));
             const {data,error}=await client.rpc("grade_writing_lesson",{p_lesson_path:path,p_answers:payload});
             if(error)throw error;
             (data.exercises||[]).forEach(result=>{
