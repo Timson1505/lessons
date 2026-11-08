@@ -17,7 +17,7 @@
       cabinet = document.createElement('a');
       cabinet.className = 'sidebar-auth-btn sidebar-cabinet';
       cabinet.href = 'account.html';
-      cabinet.innerHTML = '<i class="fa fa-user-circle"></i> My Cabinet';
+      cabinet.innerHTML = '<i class="fa fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span>';
       cabinet.hidden = true;
       actions.appendChild(cabinet);
     }
