@@ -25,6 +25,8 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
   });
 
+  window.TimsonsSupabase = client;
+
   function setMessage(element, message, isError = false) {
     if (!element) return;
     element.textContent = message || '';
@@ -86,6 +88,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
 
     if (requiredRole === 'admin') { await loadAdminProfiles(); await loadAdminAccess(); await loadAdminAccounts(); await loadAdminRatings(); }
     if (requiredRole === 'teacher') { setupTeacherProfile(profile, session.user); await loadTeacherStudents(); await loadTeacherSchedule(); }
+    window.dispatchEvent(new CustomEvent('timsons:role-ready', { detail: { role: requiredRole, userId: session.user.id } }));
   }
 
 
@@ -188,6 +191,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     body.replaceChildren();
     const ratingCount = document.getElementById('admin-rating-count');
     if (ratingCount) ratingCount.textContent = String((data || []).length);
+    const overviewSchedule=document.getElementById('teacher-overview-schedule');if(overviewSchedule)overviewSchedule.textContent=String((data||[]).length);
     if (!data || !data.length) {
       body.innerHTML = '<tr><td colspan="8">Your schedule is empty. Add your first student above.</td></tr>';
       return;
@@ -358,8 +362,10 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     const count = document.getElementById('teacher-student-count');
     const levelCount = document.getElementById('teacher-level-count');
     if (count) count.textContent = String(teacherStudentsCache.length);
+    const overviewStudents=document.getElementById('teacher-overview-students');if(overviewStudents)overviewStudents.textContent=String(teacherStudentsCache.length);
     const levels = [...new Set(teacherStudentsCache.flatMap(student => Array.isArray(student.levels) ? student.levels : []))].sort();
     if (levelCount) levelCount.textContent = String(levels.length);
+    const overviewLevels=document.getElementById('teacher-overview-levels');if(overviewLevels)overviewLevels.textContent=String(levels.length);
     const select = document.getElementById('teacher-student-level');
     if (select) {
       const current = select.value;
