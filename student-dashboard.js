@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const LEVEL_CATALOG = {
     'Beginner-1':10,'Beginner-2':12,'Beginner-3':10,
-    'Elementary-1':11,'Elementary-2':12,'Elementary-3':12
+    'Elementary-1':11,'Elementary-2':11,'Elementary-3':11
   };
   const SKILLS = ['writing','reading','speaking','listening'];
   const titleCase = value => String(value||'').replace(/^./,c=>c.toUpperCase());
