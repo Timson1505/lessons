@@ -71,68 +71,8 @@
     background: #37b182;
     cursor: pointer;
 }
-.style-switcher.css
-.Displaying index.html.
-
-/* Sidebar icons: use the same Font Awesome set as the main homepage.
-   These rules are stored in each lesson's local stylesheet because lesson
-   pages load their own directory-level style-switcher.css. */
-@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css");
-@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/v4-shims.min.css");
-
-.nav li a i.bx,
-.nav li a i[class^="bx-"],
-.nav li a i[class*=" bx-"] {
-    display: inline-block;
-    width: 1.45em;
-    min-width: 1.45em;
-    margin-right: 8px;
-    text-align: center;
-    font-family: "Font Awesome 6 Free" !important;
-    font-style: normal !important;
-    font-weight: 900 !important;
-    line-height: 1;
-    speak: never;
-}
-.nav li a i.bx-home::before { content: "\\f015" !important; }
-.nav li a i.bx-user::before { content: "\\f007" !important; }
-.nav li a i.bx-list-ul::before { content: "\\f03a" !important; }
-.nav li a i.bx-briefcase::before { content: "\\f0b1" !important; }
-.nav li a i.bx-message-dots::before { content: "\\f086" !important; }
-.nav li a i.bx-book::before { content: "\\f02d" !important; }
-.nav li a i.bx-book-open::before { content: "\\f518" !important; }
-.nav li a i.bx-home-alt::before { content: "\\f015" !important; }
-.nav li a i.bx-envelope::before { content: "\\f0e0" !important; }
-.nav li a i.bx-user-circle::before { content: "\\f2bd" !important; }
-.nav li a i.bx-log-in::before { content: "\\f2f6" !important; }
-.nav li a i.bx-log-out::before { content: "\\f2f5" !important; }
-.nav li a i.bx-group::before { content: "\\f0c0" !important; }
-.nav li a i.bx-message::before { content: "\\f086" !important; }
-.nav li a i.bx-calendar::before { content: "\\f073" !important; }
-.nav li a i.bx-check-circle::before { content: "\\f058" !important; }
-.nav li a i.bx-star::before { content: "\\f005" !important; }
-.nav li a i.bx-trophy::before { content: "\\f091" !important; }
-.nav li a i.bx-cog::before { content: "\\f013" !important; }
-.nav li a i.bx-info-circle::before { content: "\\f05a" !important; }
-.nav li a i.bx-phone::before { content: "\\f095" !important; }
-.nav li a i.bx-user-plus::before { content: "\\f234" !important; }
-.nav li a i.bx-chevron-right::before { content: "\\f054" !important; }
-.nav li a i.bx-right-arrow-alt::before { content: "\\f061" !important; }
-
-/* Sidebar icons: same Font Awesome icon set and glyphs as the homepage. */
-.nav li a i.bx,
-.nav li a i[class^="bx-"],
-.nav li a i[class*=" bx-"] {
-    display: inline-block;
-    width: 1.45em;
-    min-width: 1.45em;
-    margin-right: 8px;
-    text-align: center;
-    font-family: "Font Awesome 6 Free" !important;
-    font-style: normal !important;
-    font-weight: 900 !important;
-    line-height: 1;
-}
+/* Sidebar icons: Font Awesome glyphs matching the homepage. */
+.nav li a i.bx, .nav li a i[class^="bx-"], .nav li a i[class*=" bx-"] { display:inline-block; width:1.45em; min-width:1.45em; margin-right:8px; text-align:center; font-family:"Font Awesome 6 Free" !important; font-style:normal !important; font-weight:900 !important; line-height:1; }
 .nav li a i.bx-home::before { content: "\f015" !important; }
 .nav li a i.bx-user::before { content: "\f007" !important; }
 .nav li a i.bx-list-ul::before { content: "\f03a" !important; }
