@@ -511,6 +511,18 @@ td {
 
 /* Timson's typography: classic Times New Roman */
 body, body * { font-family: "Times New Roman", Times, serif !important; }
+
+/* Keep Font Awesome glyphs on lesson sidebars; the global Times New Roman rule must not override icon fonts. */
+.aside .nav li a i.fa,
+.aside .nav li a i.fas,
+.aside .nav li a i.far,
+.aside .nav li a i.fab {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900;
+    font-style: normal;
+    display: inline-block;
+}
+.aside .nav li a i.fab { font-family: "Font Awesome 6 Brands" !important; font-weight: 400; }
 body { font-size: 18px; line-height: 1.65; }
 .aside .nav li a { font-family: "Times New Roman", Times, serif !important; font-size: 17px; font-weight: 600; letter-spacing: .01em; line-height: 1.45; }
 .aside .logo a, .aside .logo a span { font-family: "Times New Roman", Times, serif !important; }
