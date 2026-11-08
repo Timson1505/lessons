@@ -1661,3 +1661,78 @@ body { font-size: 18px; line-height: 1.65; }
 .aside .nav li a { font-family: "Times New Roman", Times, serif !important; font-size: 17px; font-weight: 600; letter-spacing: .01em; line-height: 1.45; }
 .aside .logo a, .aside .logo a span { font-family: "Times New Roman", Times, serif !important; }
 @media (max-width: 640px) { body { font-size: 16px; line-height: 1.6; } .aside .nav li a { font-size: 16px; } }
+
+
+/* ===== Main page icon system ===== */
+.home-heading-icon {
+  color: var(--skin-color);
+  margin-right: 9px;
+  font-size: .88em;
+  vertical-align: .04em;
+}
+.home-info .hire-me i,
+.students-cta i,
+.students-bottom-cta .btn i { margin-right: 8px; }
+.dropdown-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.level-title-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+.level-title-content > i {
+  width: 22px;
+  text-align: center;
+  font-size: 1.05em;
+}
+.level-chevron {
+  font-size: .82em;
+  transition: transform .25s ease;
+}
+.dropdown:has(.child.open) .level-chevron { transform: rotate(180deg); }
+.level-link a {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+}
+.lesson-link-icon {
+  color: var(--skin-color);
+  font-size: .88em;
+  flex: 0 0 15px;
+}
+.students-section .student-panel h3 > i,
+.students-section .student-level-guide h3 > i,
+.students-bottom-cta h3 > i {
+  color: var(--skin-color);
+  margin-right: 8px;
+}
+.students-section .student-card-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--skin-color) 12%, transparent);
+  color: var(--skin-color);
+  font-size: 23px;
+  margin-bottom: 14px;
+}
+.students-section .student-card-icon i { line-height: 1; }
+.teacher-plan-icon {
+  display: grid;
+  place-items: center;
+}
+.teacher-plan-icon i { font-size: 1.35em; }
+.contact-info-item .icon {
+  display: grid;
+  place-items: center;
+}
+.contact-info-item .icon i { font-size: 1.2em; }
+@media (max-width: 767px) {
+  .level-title-content { gap: 9px; }
+  .lesson-link-icon { flex-basis: 13px; }
+}
