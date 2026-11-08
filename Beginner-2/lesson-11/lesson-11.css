@@ -502,3 +502,12 @@ td {
         flex-direction: column;
     }
 }
+
+
+/* Timson's typography: classic Times New Roman */
+body, body * { font-family: "Times New Roman", Times, serif !important; }
+body { font-size: 18px; line-height: 1.65; }
+.aside .nav li a { font-family: "Times New Roman", Times, serif !important; font-size: 17px; font-weight: 600; letter-spacing: .01em; line-height: 1.45; }
+.aside .logo a, .aside .logo a span { font-family: "Times New Roman", Times, serif !important; }
+.main-content { font-family: "Times New Roman", Times, serif !important; }
+@media (max-width: 640px) { body { font-size: 16px; line-height: 1.6; } .aside .nav li a { font-size: 16px; } }
