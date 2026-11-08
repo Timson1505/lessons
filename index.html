@@ -8,7 +8,7 @@
         <link href="color-1.css" rel="stylesheet" type="text/css">
         <link href="color-3.css" rel="stylesheet" type="text/css">
 		<link rel="icon" type="image/png" sizes="512x512" href="./timson_icon.png">
-		<link rel="apple-touch-icon" href="./timson_icon.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="./timson_icon.png">
 		<meta property="og:image" content="./timson_icon.png">
         <link href="style-switcher.css" rel="stylesheet" type="text/css">
         <!--======== Style Switcher =======-->
@@ -76,6 +76,18 @@
                 <li><a href="#for-students"><i class="fa fa-briefcase"></i>For Students</a></li>
                 <li><a href="#contact"><i class="fa fa-comments"></i> Contact</a></li>
             </ul>
+            <div class="sidebar-appearance" aria-label="Appearance settings">
+                <p class="sidebar-appearance-title"><i class="fas fa-sliders-h" aria-hidden="true"></i> Appearance</p>
+                <button class="sidebar-theme-toggle" type="button" aria-pressed="false">
+                    <i class="fas fa-moon" aria-hidden="true"></i><span>Dark mode</span>
+                </button>
+                <div class="sidebar-color-controls" role="group" aria-label="Choose accent color">
+                    <span class="sidebar-color-label">Theme color</span>
+                    <button type="button" class="sidebar-color-swatch color-swatch-blue" data-theme-color="color-1" aria-label="Blue theme" aria-pressed="false"></button>
+                    <button type="button" class="sidebar-color-swatch color-swatch-red" data-theme-color="color-2" aria-label="Red theme" aria-pressed="false"></button>
+                    <button type="button" class="sidebar-color-swatch color-swatch-green" data-theme-color="color-3" aria-label="Green theme" aria-pressed="false"></button>
+                </div>
+            </div>
             <div class="sidebar-auth-list-item">
                 <div class="sidebar-auth-actions" aria-label="Account actions">
                     <a class="sidebar-auth-btn sidebar-signin" href="account.html#signin"><i class="fa fa-sign-in-alt"></i> Sign in</a>
@@ -346,7 +358,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="section-title padd-15">
-                            <h2>Contacts</h2>
+                            <h2><i class="fas fa-address-card contact-heading-icon" aria-hidden="true"></i> Contact</h2>
                         </div>
                     </div>
                     <h3 class="contact-title">Have You Any Questions?</h3>
@@ -354,28 +366,28 @@
                     <div class="row">
                         <!-- Contact Info Item-->
                         <div class="contact-info-item padd-15">
-                            <div class="icon"><i class="fa fa-phone"></i></div>
+                            <div class="icon"><i class="fas fa-phone-alt" aria-hidden="true"></i></div>
                             <h4>Call Us On</h4>
                             <p>+996 990 350 590</p>
                         </div>
                         <!-- Contact Info Item End-->
                         <!-- Contact Info Item-->
                         <div class="contact-info-item padd-15">
-                            <div class="icon"><i class="fa fa-map-marker-alt"></i></div>
+                            <div class="icon"><i class="fas fa-map-marker-alt" aria-hidden="true"></i></div>
                             <h4>Office</h4>
                             <p>Budapest</p>
                         </div>
                         <!-- Contact Info Item End-->
                         <!-- Contact Info Item-->
                         <div class="contact-info-item padd-15">
-                            <div class="icon"><i class="fa fa-envelope"></i></div>
+                            <div class="icon"><i class="fas fa-envelope" aria-hidden="true"></i></div>
                             <h4>E-mail</h4>
                             <p>timson1505@gmail.com</p>
                         </div>
                         <!-- Contact Info Item End-->
                         <!-- Contact Info Item-->
                         <div class="contact-info-item padd-15">
-                            <div class="icon"><i class="fa fa-globe-europe"></i></div>
+                            <div class="icon"><i class="fas fa-globe-europe" aria-hidden="true"></i></div>
                             <h4>Website</h4>
                             <p>www.timson.com</p>
                         </div>
@@ -404,7 +416,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-item col-12 padd-15">
-                                        <button type="submit" class="btn">Send Massage</button>
+                                        <button type="submit" class="btn"><i class="fas fa-paper-plane" aria-hidden="true"></i> Send Message</button>
                                     </div>
                                 </div>
                             </div>
