@@ -1,7 +1,7 @@
 (function(){
   const SUPABASE_URL='https://dtgspwsxwslntlayqcbe.supabase.co';
   const SUPABASE_KEY='sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf';
-  const path=decodeURI(location.pathname).replace(/^\\/lessons\\//,'').replace(/^\\/+/, '');
+  const rawPath=location.pathname;const marker='/lessons/';const path=rawPath.includes(marker)?rawPath.slice(rawPath.indexOf(marker)+marker.length):rawPath.split('/').filter(Boolean).join('/');
   const parts=path.split('/').filter(Boolean);
   if(parts.length<2||parts.some(p=>p.toLowerCase()==='test'))return;
   const level=parts[0],lessonPath=parts.join('/');
