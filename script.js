@@ -1,4 +1,4 @@
-const phrases = ["teacher", "programmer"];
+const phrases = ["clear structure", "practical English", "teacher guidance"];
     let index = 0;
     let charIndex = 0;
     let isDeleting = false;
