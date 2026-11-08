@@ -45,16 +45,16 @@
       const months=[];const now=new Date();
       for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleDateString(undefined,{month:'short'}),students:0,teachers:0});}
       profileRows.forEach(p=>{if(!p.created_at)return;const key=String(p.created_at).slice(0,7),m=months.find(x=>x.key===key);if(m&&p.role==='student')m.students++;if(m&&p.role==='teacher')m.teachers++;});
-      renderBars('analytics-registration-chart',months.map(m=>({label:m.label+' · S',value:m.students})).concat(months.map(m=>({label:m.label+' · T',value:m.teachers})), 'label','value');
+      renderBars('analytics-registration-chart',months.map(m=>({label:m.label+' · S',value:m.students})).concat(months.map(m=>({label:m.label+' · T',value:m.teachers}))), 'label','value');
       const levels=new Map();progressRows.forEach(r=>{const key=r.level_slug||'Unassigned';levels.set(key,(levels.get(key)||0)+1);});
       renderBars('analytics-lessons-chart',[...levels].map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value),'label','value');
       const skills=['writing','reading','listening','speaking'].map(skill=>{const values=ratingRows.filter(r=>r.skill===skill).map(r=>Number(r.rating)).filter(Number.isFinite);return {label:skill.charAt(0).toUpperCase()+skill.slice(1),value:values.length?Math.round(values.reduce((a,b)=>a+b,0)/values.length):0};});
       renderBars('analytics-skills',skills,'label','value');
-      const teacherIds=[...new Set(ratingRows.map(r=>r.rated_by).filter(Boolean))];
+      const teacherIds=[...new Set(ratingRows.map(r=>r.rated_by).filter(id=>id&&profileRows.some(p=>p.id===id&&p.role==='teacher')))];
       const teacherProfiles=teacherIds.length?await db.from('profiles').select('id,name').in('id',teacherIds):{data:[],error:null};
       if(teacherProfiles.error)throw teacherProfiles.error;
       const teacherNames=new Map((teacherProfiles.data||[]).map(p=>[p.id,p.name||'Teacher']));
-      const tbody=$('analytics-teacher-performance');if(tbody){tbody.replaceChildren();const byTeacher=new Map();ratingRows.forEach(r=>{if(!r.rated_by)return;const a=byTeacher.get(r.rated_by)||[];a.push(Number(r.rating));byTeacher.set(r.rated_by,a);});
+      const tbody=$('analytics-teacher-performance');if(tbody){tbody.replaceChildren();const byTeacher=new Map();ratingRows.forEach(r=>{if(!r.rated_by||!teacherIds.includes(r.rated_by))return;const a=byTeacher.get(r.rated_by)||[];a.push(Number(r.rating));byTeacher.set(r.rated_by,a);});
         const rows=[...byTeacher].map(([id,values])=>({name:teacherNames.get(id)||'Teacher',count:values.length,avg:Math.round(values.reduce((a,b)=>a+b,0)/values.length)})).sort((a,b)=>b.count-a.count);
         if(!rows.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=3;td.textContent='No teacher assessments recorded yet.';tr.appendChild(td);tbody.appendChild(tr);}
         rows.forEach(r=>{const tr=document.createElement('tr');[r.name,number(r.count),r.avg+'/100'].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td);});tbody.appendChild(tr);});
