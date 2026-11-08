@@ -2,6 +2,83 @@
   const SUPABASE_URL = "https://dtgspwsxwslntlayqcbe.supabase.co";
   const SUPABASE_KEY = "sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf";
   const inputClass = "word-answer";
+
+  // Unified homepage-style sidebar for every lesson and final test.
+  function installLessonNavigation() {
+    const sidebar = document.querySelector(".aside");
+    if (!sidebar || sidebar.dataset.unifiedNavigation === "true") return;
+    const fontAwesome = document.createElement("link");
+    fontAwesome.rel = "stylesheet";
+    fontAwesome.href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css";
+    document.head.appendChild(fontAwesome);
+
+    const css = document.createElement("style");
+    css.textContent = `
+      .main-content { padding-left:270px !important; margin-left:0 !important; }
+      .aside { width:270px !important; height:100vh !important; position:fixed !important; inset:0 auto 0 0 !important; padding:30px !important; display:flex !important; flex-direction:column !important; justify-content:center !important; align-items:stretch !important; background:var(--bg-black-100,#fdf9ff) !important; border-right:1px solid var(--bg-black-50,#e8dfec) !important; z-index:1000 !important; transition:left .25s ease !important; }
+      .aside .logo { position:absolute !important; top:42px !important; left:30px !important; }
+      .aside .logo a { color:var(--text-black-900,#302e4d) !important; font-weight:700 !important; padding:15px 20px !important; font-size:28px !important; letter-spacing:3px !important; }
+      .aside .logo a span { color:var(--skin-color,#2878a8) !important; font-size:40px !important; }
+      .aside .nav { width:100% !important; margin:35px 0 0 !important; padding:0 !important; }
+      .aside .nav li { display:block !important; width:100% !important; margin:0 0 13px !important; }
+      .aside .nav li a { display:flex !important; align-items:center !important; gap:13px !important; width:100% !important; padding:11px 13px !important; border-bottom:1px solid var(--bg-black-50,#e8dfec) !important; color:var(--text-black-900,#302e4d) !important; font-size:16px !important; font-weight:600 !important; line-height:1.35 !important; border-radius:6px !important; }
+      .aside .nav li a:hover,.aside .nav li a:focus-visible { color:var(--skin-color,#2878a8) !important; background:var(--bg-black-50,#e8dfec) !important; }
+      .aside .nav li a i { flex:0 0 20px !important; width:20px !important; margin:0 !important; text-align:center !important; font-size:17px !important; }
+      .aside .sidebar-auth-list-item { margin-top:20px !important; }
+      .aside .sidebar-auth-actions { display:grid !important; gap:10px !important; }
+      .aside .sidebar-auth-btn { display:block !important; padding:10px 13px !important; border:1px solid var(--skin-color,#2878a8) !important; border-radius:24px !important; color:var(--skin-color,#2878a8) !important; text-align:center !important; font-size:15px !important; font-weight:600 !important; }
+      .aside .sidebar-auth-btn:hover { background:var(--skin-color,#2878a8) !important; color:#fff !important; }
+      .lesson-mobile-toggle { display:none; position:fixed; top:16px; left:16px; width:46px; height:44px; border:1px solid var(--bg-black-50,#ddd); border-radius:9px; background:var(--bg-black-100,#fff); color:var(--text-black-900,#222); z-index:1102; cursor:pointer; padding:10px; box-shadow:0 3px 14px #0002; }
+      .lesson-mobile-toggle span { display:block; height:2px; width:22px; margin:4px auto; background:currentColor; border-radius:2px; }
+      .lesson-mobile-overlay { position:fixed; inset:0; z-index:998; background:rgba(12,18,28,.48); }
+      .lesson-mobile-overlay[hidden] { display:none !important; }
+      @media (max-width:1199px) and (min-width:768px) { .aside { left:0 !important; } .main-content { padding-left:270px !important; } }
+      @media (max-width:767px) { .aside { left:-270px !important; } .aside.active { left:0 !important; } .main-content { padding-left:0 !important; padding-top:62px !important; } .lesson-mobile-toggle { display:block; } }
+      @media (min-width:768px) { .lesson-mobile-toggle,.lesson-mobile-overlay { display:none !important; } }
+      body,body * { font-family:"Times New Roman",Times,serif; }
+    `;
+    document.head.appendChild(css);
+
+    sidebar.dataset.unifiedNavigation = "true";
+    sidebar.innerHTML = `
+      <div class="logo"><a href="/lessons/"><span>T</span>imson's</a></div>
+      <ul class="nav" aria-label="Main navigation">
+        <li><a href="/lessons/#home"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a></li>
+        <li><a href="/lessons/#about"><i class="fa fa-user" aria-hidden="true"></i><span>About</span></a></li>
+        <li><a href="/lessons/#project"><i class="fa fa-list" aria-hidden="true"></i><span>Lessons</span></a></li>
+        <li><a href="/lessons/#for-students"><i class="fa fa-briefcase" aria-hidden="true"></i><span>For Students</span></a></li>
+        <li><a href="/lessons/#contact"><i class="fa fa-comments" aria-hidden="true"></i><span>Contact</span></a></li>
+      </ul>
+      <div class="sidebar-auth-list-item"><div class="sidebar-auth-actions" aria-label="Account actions">
+        <a class="sidebar-auth-btn sidebar-signin" href="/lessons/account.html#signin"><i class="fa fa-sign-in-alt" aria-hidden="true"></i> Sign in</a>
+        <a class="sidebar-auth-btn sidebar-signup" href="/lessons/account.html#signup"><i class="fa fa-user-plus" aria-hidden="true"></i> Sign up</a>
+      </div></div>`;
+
+    const toggle = document.createElement("button");
+    toggle.className = "lesson-mobile-toggle";
+    toggle.type = "button";
+    toggle.setAttribute("aria-label", "Open navigation menu");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.innerHTML = "<span></span><span></span><span></span>";
+    document.body.appendChild(toggle);
+    const overlay = document.createElement("div");
+    overlay.className = "lesson-mobile-overlay";
+    overlay.hidden = true;
+    document.body.appendChild(overlay);
+    const setOpen = open => {
+      sidebar.classList.toggle("active", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Close navigation menu" : "Open navigation menu");
+      overlay.hidden = !open;
+    };
+    toggle.addEventListener("click", () => setOpen(toggle.getAttribute("aria-expanded") !== "true"));
+    overlay.addEventListener("click", () => setOpen(false));
+    sidebar.querySelectorAll("a").forEach(link => link.addEventListener("click", () => setOpen(false)));
+    document.addEventListener("keydown", event => { if (event.key === "Escape") setOpen(false); });
+    window.addEventListener("resize", () => { if (window.innerWidth >= 768) setOpen(false); });
+  }
+  installLessonNavigation();
+
   const style = document.createElement("style");
   style.textContent = `
     .word-answer{display:inline-block;width:125px;max-width:38vw;min-height:38px;box-sizing:border-box;margin:3px 5px;padding:7px 9px;border:1px solid #8795a5;border-radius:8px;background:#fff;color:#172033;font:inherit;font-size:.92em;vertical-align:middle}
