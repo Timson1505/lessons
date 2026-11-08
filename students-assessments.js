@@ -28,7 +28,7 @@ function renderStudents(){
   if(Array.isArray(s.levels)&&s.levels.length)identity.append(el('p','Lesson access: '+s.levels.join(', '),'muted'));
   head.append(identity,el('span','Joined '+(s.created_at?new Date(s.created_at).toLocaleDateString():'—'),'muted'));card.append(head);
   const form=el('form',undefined,'grid');form.style.marginTop='14px';
-  const skillLabel=el('label','Skill','field'),skill=document.createElement('select');(role === 'admin' ? [['writing','Writing (admin override)'],['reading','Reading'],['speaking','Speaking']] : [['reading','Reading'],['speaking','Speaking']]).forEach(([v,t])=>skill.add(new Option(t,v)));skillLabel.append(skill);
+  const skillLabel=el('label','Skill','field'),skill=document.createElement('select');(role === 'admin' ? [['writing','Writing (admin override)'],['reading','Reading'],['speaking','Speaking']] : [['reading','Reading'],['speaking','Speaking'],['listening','Listening']]).forEach(([v,t])=>skill.add(new Option(t,v)));skillLabel.append(skill);
   const scoreLabel=el('label','Rating (0–100)','field'),score=document.createElement('input');score.type='number';score.min='0';score.max='100';score.required=true;score.value='';score.placeholder='e.g. 85';scoreLabel.append(score);
   const noteLabel=el('label','Assessment note (optional)','field'),note=document.createElement('input');note.maxLength=1000;note.placeholder='Feedback or next steps';noteLabel.append(note);
   const save=el('button','Save assessment','button primary');save.type='submit';form.append(skillLabel,scoreLabel,noteLabel,save);
