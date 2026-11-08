@@ -1,3 +1,25 @@
+/* Font Awesome icons used in the main site's navigation, shared with every lesson page. */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css");
+
+/* Keep lesson and test navigation icons visually consistent with the homepage. */
+.nav li a i.bx-home::before,
+.nav li a i.bx-user::before,
+.nav li a i.bx-list-ul::before,
+.nav li a i.bx-briefcase::before,
+.nav li a i.bx-message-dots::before {
+    font-family: "Font Awesome 6 Free";
+    font-style: normal;
+    font-weight: 900;
+    display: inline-block;
+    width: 1.35em;
+    text-align: center;
+    line-height: 1;
+}
+.nav li a i.bx-home::before { content: "\\f015"; }
+.nav li a i.bx-user::before { content: "\\f007"; }
+.nav li a i.bx-list-ul::before { content: "\\f03a"; }
+.nav li a i.bx-briefcase::before { content: "\\f0b1"; }
+.nav li a i.bx-message-dots::before { content: "\\f086"; }
 .style-switcher {
     position: fixed;
     right: 0;
