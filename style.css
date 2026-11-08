@@ -1657,6 +1657,23 @@ body * { font-family: inherit; }
 
 /* Global typography: classic Times New Roman */
 body, body * { font-family: "Times New Roman", Times, serif !important; }
+
+/* Keep Font Awesome glyphs on their icon fonts while page text uses Times New Roman. */
+i.fa, i.fas, i.fa-solid, i.fa::before, i.fas::before, i.fa-solid::before {
+  font-family: "Font Awesome 6 Free" !important;
+  font-weight: 900;
+  font-style: normal;
+}
+i.far, i.fa-regular, i.far::before, i.fa-regular::before {
+  font-family: "Font Awesome 6 Free" !important;
+  font-weight: 400;
+  font-style: normal;
+}
+i.fab, i.fa-brands, i.fab::before, i.fa-brands::before {
+  font-family: "Font Awesome 6 Brands" !important;
+  font-weight: 400;
+  font-style: normal;
+}
 body { font-size: 18px; line-height: 1.65; }
 .aside .nav li a { font-family: "Times New Roman", Times, serif !important; font-size: 17px; font-weight: 600; letter-spacing: .01em; line-height: 1.45; }
 .aside .logo a, .aside .logo a span { font-family: "Times New Roman", Times, serif !important; }
