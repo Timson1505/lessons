@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const recommendations=[];
     weak.forEach(r=>recommendations.push({title:'Review '+titleCase(r.skill),body:'Your latest result is '+Math.round(Number(r.rating))+'/100. Repeat the related lesson exercises and practise this skill before the next assessment.'}));
     noted.forEach(r=>recommendations.push({title:titleCase(r.skill)+' — teacher feedback',body:r.note}));
-    if(!recommendations.length){host.append(el('p',Object.keys(latest).length?'Your latest results are on track. Keep practising regularly and complete the next lesson.':'Recommendations will appear after your first skill assessment.','empty-state'));return;}
+    if(!recommendations.length){const empty=document.createElement('p');empty.className='empty-state';empty.textContent=Object.keys(latest).length?'Your latest results are on track. Keep practising regularly and complete the next lesson.':'Recommendations will appear after your first skill assessment.';host.append(empty);return;}
     recommendations.forEach(rec=>{const card=document.createElement('article');card.className='recommendation-item';const title=document.createElement('strong');title.textContent=rec.title;const body=document.createElement('p');body.textContent=rec.body;card.append(title,body);host.append(card);});
   }
   async function loadDashboard(userId) {
