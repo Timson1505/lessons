@@ -33,7 +33,7 @@
       ? '<div class="calendar-grid">'+["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(x=>'<div class="calendar-weekday">'+x+'</div>').join("")+days.map(d=>dayCell(d)).join("")+'</div>'
       : '<div class="calendar-week-grid">'+days.map(d=>weekCell(d)).join("")+'</div>';
     root.innerHTML=`<div class="shared-calendar">
-      <div class="calendar-toolbar"><div class="calendar-controls"><button type="button" id="calendar-prev" aria-label="Previous ${state.view}">‹</button><button type="button" id="calendar-today">Today</button><button type="button" id="calendar-next" aria-label="Next ${state.view}">›</button><strong class="calendar-period">${escape(periodTitle())}</strong></div>
+      <div class="calendar-toolbar"><div class="calendar-controls"><button type="button" id="calendar-prev" class="calendar-nav-button" aria-label="Previous ${state.view}"><span aria-hidden="true">←</span><span>Previous</span></button><button type="button" id="calendar-today" class="calendar-today-button"><span aria-hidden="true">●</span><span>Today</span></button><button type="button" id="calendar-next" class="calendar-nav-button" aria-label="Next ${state.view}"><span>Next</span><span aria-hidden="true">→</span></button><strong class="calendar-period">${escape(periodTitle())}</strong></div>
       <div class="calendar-view-switch"><button type="button" id="calendar-refresh">Refresh</button><button type="button" data-view="week" class="${state.view==="week"?"active":""}">Week</button><button type="button" data-view="month" class="${state.view==="month"?"active":""}">Month</button></div></div>
       ${grid}
       <div class="calendar-lower"><section class="calendar-day-agenda"><h3>${escape(dateTitle(state.selected))}</h3><div id="calendar-agenda">${agendaHtml()}</div></section>
@@ -91,7 +91,7 @@
     if(role==="admin"){
       const [profiles,links]=await Promise.all([client.from("profiles").select("id,name,role").in("role",["teacher","student"]),client.from("teacher_students").select("teacher_id,student_id")]);
       if(profiles.error)throw profiles.error;if(links.error)throw links.error;
-      state.profiles=profiles.data||[];state.teachers=state.profiles.filter(x=>x.role==="teacher");state.students=state.profiles.filter(x=>x.role==="student");state.links=links.data||[];
+      state.profiles=profiles.data||[];state.teachers=state.profiles.filter(x=>x.role==="teacher"||x.role==="admin");state.students=state.profiles.filter(x=>x.role==="student");state.links=links.data||[];
     }
   }
   async function loadEntries(){
