@@ -89,7 +89,7 @@
   async function loadPeople(){
     if(role==="teacher"){const {data,error}=await client.rpc("teacher_list_linked_students");if(error)throw error;state.students=(data||[]).map(x=>({id:x.student_id||x.id,name:x.full_name||x.name||"Student"}));}
     if(role==="admin"){
-      const [profiles,links]=await Promise.all([client.from("profiles").select("id,name,role").in("role",["teacher","student"]),client.from("teacher_students").select("teacher_id,student_id")]);
+      const [profiles,links]=await Promise.all([client.from("profiles").select("id,name,role").in("role",["admin","teacher","student"]),client.from("teacher_students").select("teacher_id,student_id")]);
       if(profiles.error)throw profiles.error;if(links.error)throw links.error;
       state.profiles=profiles.data||[];state.teachers=state.profiles.filter(x=>x.role==="teacher"||x.role==="admin");state.students=state.profiles.filter(x=>x.role==="student");state.links=links.data||[];
     }
