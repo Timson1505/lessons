@@ -34,9 +34,6 @@ for(const href of iconStylesheets){
   const link=doc.createElement("link");link.rel="stylesheet";link.href=href;doc.head.append(link);
  }
 }
-const iconFix=doc.createElement("style");
-iconFix.textContent="/* Keep sidebar and lesson icons visible in the protected viewer. */\\n.sidebar i,.aside i,.nav i,.sidebar a i,.aside a i{display:inline-block;line-height:1;vertical-align:middle;}\\n.sidebar .fa,.aside .fa,.nav .fa{font-style:normal;}";
-doc.head.append(iconFix);
  doc.head.querySelectorAll('meta[name="robots"]').forEach(x=>x.remove());const robots=doc.createElement("meta");robots.name="robots";robots.content="noindex,nofollow,noarchive";doc.head.append(robots);
  const refs=[];
  for(const el of doc.querySelectorAll("[src],[poster]"))for(const attr of ["src","poster"]){const p=resolveMedia(el.getAttribute(attr),dir);if(p)refs.push({el,attr,path:p});}
