@@ -22,7 +22,7 @@
 <main>
   <div class="brand">Timson's English Lessons</div>
   <h1><i class="fa-solid fa-shield-halved"></i> Secure lesson migration</h1>
-  <p>This one-time operation copies every lesson and test HTML page from the public GitHub repository into the private Supabase database. Existing lesson access rules remain in effect.</p>
+  <p>This one-time operation copies every lesson and test HTML page into the private Supabase database and uploads local lesson images, audio, video and PDF files to the private lesson-media bucket. Existing lesson access rules remain in effect.</p>
   <p class="notice"><strong>Important:</strong> Only the administrator can run this operation. The public lesson pages will remain unchanged until the database import has been verified and the secure lesson viewer is deployed.</p>
   <div id="account">Checking your account…</div>
   <button id="run" type="button" disabled>Import all lessons to Supabase</button>
