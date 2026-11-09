@@ -22,6 +22,18 @@ async function run(){
  const {data,error}=await db.rpc("get_lesson_content",{p_lesson_path:path});
  if(error||!Array.isArray(data)||!data.length||!data[0].body_html){message("Нет доступа к этому уроку","Материал не опубликован или не входит в ваш доступ. Обратитесь к своему учителю.");return;}
  const doc=new DOMParser().parseFromString(data[0].body_html,"text/html"),base=doc.createElement("base");base.href=location.origin+ROOT+dir+"/";doc.head.prepend(base);
+// Protected lesson documents are standalone HTML documents, so they must load
+// the same icon fonts as the public lesson catalogue explicitly.
+const iconStylesheets=[
+ "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+ "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/v4-shims.min.css",
+ "https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+];
+for(const href of iconStylesheets){
+ if(![...doc.head.querySelectorAll('link[rel="stylesheet"]')].some(link=>link.href===href)){
+  const link=doc.createElement("link");link.rel="stylesheet";link.href=href;doc.head.append(link);
+ }
+}
  doc.head.querySelectorAll('meta[name="robots"]').forEach(x=>x.remove());const robots=doc.createElement("meta");robots.name="robots";robots.content="noindex,nofollow,noarchive";doc.head.append(robots);
  const refs=[];
  for(const el of doc.querySelectorAll("[src],[poster]"))for(const attr of ["src","poster"]){const p=resolveMedia(el.getAttribute(attr),dir);if(p)refs.push({el,attr,path:p});}
