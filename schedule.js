@@ -34,7 +34,7 @@
       : '<div class="calendar-week-grid">'+days.map(d=>weekCell(d)).join("")+'</div>';
     root.innerHTML=`<div class="shared-calendar">
       <div class="calendar-toolbar"><div class="calendar-controls"><button type="button" id="calendar-prev" aria-label="Previous ${state.view}">‹</button><button type="button" id="calendar-today">Today</button><button type="button" id="calendar-next" aria-label="Next ${state.view}">›</button><strong class="calendar-period">${escape(periodTitle())}</strong></div>
-      <div class="calendar-view-switch"><button type="button" data-view="week" class="${state.view==="week"?"active":""}">Week</button><button type="button" data-view="month" class="${state.view==="month"?"active":""}">Month</button></div></div>
+      <div class="calendar-view-switch"><button type="button" id="calendar-refresh">Refresh</button><button type="button" data-view="week" class="${state.view==="week"?"active":""}">Week</button><button type="button" data-view="month" class="${state.view==="month"?"active":""}">Month</button></div></div>
       ${grid}
       <div class="calendar-lower"><section class="calendar-day-agenda"><h3>${escape(dateTitle(state.selected))}</h3><div id="calendar-agenda">${agendaHtml()}</div></section>
       ${editable?editorHtml():'<section class="calendar-editor"><h3>Lesson details</h3><p class="calendar-readonly">Your teacher or administrator manages your lesson schedule. Select a date to see your assigned lessons.</p></section>'}
@@ -43,6 +43,7 @@
     root.querySelector("#calendar-prev").addEventListener("click",()=>move(-1));
     root.querySelector("#calendar-next").addEventListener("click",()=>move(1));
     root.querySelector("#calendar-today").addEventListener("click",()=>{state.anchor=new Date();state.selected=new Date();render();});
+    root.querySelector("#calendar-refresh").addEventListener("click",async()=>{try{await loadEntries();render();message("Calendar refreshed.");}catch(e){message(e.message,true);}});
     root.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>{state.view=b.dataset.view;render();}));
     root.querySelectorAll("[data-date]").forEach(b=>b.addEventListener("click",()=>{state.selected=dateOf(b.dataset.date);if(state.view==="week"||(state.view==="month"&&state.selected.getMonth()!==state.anchor.getMonth()))state.anchor=new Date(state.selected);render();}));
     if(editable)wireEditor();
@@ -107,7 +108,7 @@
     state.user=session.user;
     const {data:profile}=await client.from("profiles").select("role").eq("id",session.user.id).maybeSingle();if(profile?.role!==role){root.innerHTML='<p class="calendar-empty">This calendar is not available for this account.</p>';return;}
     await loadPeople();await loadEntries();render();
-    client.auth.onAuthStateChange(async(_event,next)=>{if(next?.user?.id!==state.user?.id){if(!next){root.innerHTML='<p class="calendar-empty">Sign in to view your lesson calendar.</p>';return;}state.user=next.user;try{await loadPeople();await loadEntries();render();}catch(e){root.innerHTML='<p class="calendar-empty">Could not load calendar: '+escape(e.message)+'</p>';}}});
+    client.auth.onAuthStateChange(async(_event,next)=>{if(!next){state.user=null;root.innerHTML='<p class="calendar-empty">Sign in to view your lesson calendar.</p>';return;}if(next.user.id!==state.user?.id){state.user=next.user;try{const {data:profile}=await client.from("profiles").select("role").eq("id",next.user.id).maybeSingle();if(profile?.role!==role){root.innerHTML='<p class="calendar-empty">This calendar is not available for this account.</p>';return;}await loadPeople();await loadEntries();render();}catch(e){root.innerHTML='<p class="calendar-empty">Could not load calendar: '+escape(e.message)+'</p>';}}});
   }
   init().catch(e=>{root.innerHTML='<p class="calendar-empty">Could not load calendar: '+escape(e.message||"Please refresh and try again.")+'</p>';});
 })();
