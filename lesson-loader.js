@@ -35,10 +35,7 @@ for(const href of iconStylesheets){
  }
 }
 const iconFix=doc.createElement("style");
-iconFix.textContent='''/* Keep sidebar and lesson icons visible in the protected viewer. */
-.sidebar i,.aside i,.nav i,.sidebar a i,.aside a i{display:inline-block;line-height:1;vertical-align:middle;}
-.sidebar .fa,.aside .fa,.nav .fa{font-style:normal;}
-''';
+iconFix.textContent="/* Keep sidebar and lesson icons visible in the protected viewer. */\\n.sidebar i,.aside i,.nav i,.sidebar a i,.aside a i{display:inline-block;line-height:1;vertical-align:middle;}\\n.sidebar .fa,.aside .fa,.nav .fa{font-style:normal;}";
 doc.head.append(iconFix);
  doc.head.querySelectorAll('meta[name="robots"]').forEach(x=>x.remove());const robots=doc.createElement("meta");robots.name="robots";robots.content="noindex,nofollow,noarchive";doc.head.append(robots);
  const refs=[];
