@@ -74,7 +74,7 @@
       const result = await response.json();
       if (!response.ok || !result.success) throw new Error(result.error || "Import failed.");
       status.className = "success";
-      status.textContent = "Success. Imported " + result.imported + " lesson/test pages (" + (result.total_bytes/1024).toFixed(1) + " KB).\nLevels: " + result.levels.join(", ") + ".\n\nThe original public pages have not been removed yet.";
+      status.textContent = "Success. Imported " + result.imported + " lesson/test pages (" + (result.total_html_bytes/1024).toFixed(1) + " KB HTML) and " + result.media_uploaded + " private media files.\nLevels: " + result.levels.join(", ") + ".\n\nThe original public pages have not been removed yet.";
       button.textContent = "Import completed";
     } catch (error) {
       status.className = "error";
