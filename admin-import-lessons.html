@@ -58,10 +58,10 @@
   button.addEventListener("click", async () => {
     if (!session) return;
     button.disabled = true;
-    button.textContent = "Importing lesson pages…";
+    button.textContent = "Importing…";
     status.className = "";
-    status.textContent = "Downloading and importing the lesson library. Keep this page open.";
-    try {
+    status.textContent = "Step 1 of 2: importing lesson pages in small batches. Keep this page open.";
+    const requestBatch = async (phase, offset) => {
       const response = await fetch(URL + "/functions/v1/import-lessons", {
         method: "POST",
         headers: {
@@ -69,16 +69,39 @@
           "apikey": KEY,
           "Content-Type": "application/json"
         },
-        body: "{}"
+        body: JSON.stringify({phase, offset})
       });
       const result = await response.json();
-      if (!response.ok || !result.success) throw new Error(result.error || "Import failed.");
+      if (!response.ok || !result.success) throw new Error(result.error || ("Import failed during " + phase + " batch at " + offset + "."));
+      return result;
+    };
+    try {
+      let htmlOffset = 0, htmlTotal = 0;
+      while (true) {
+        const result = await requestBatch("html", htmlOffset);
+        htmlTotal = result.total;
+        htmlOffset = result.next_offset;
+        status.textContent = "Step 1 of 2: lesson pages " + htmlOffset + " / " + htmlTotal + ".";
+        if (result.done) break;
+        if (!result.processed) throw new Error("The lesson import stopped without progress.");
+      }
+
+      let mediaOffset = 0, mediaTotal = 0;
+      while (true) {
+        const result = await requestBatch("media", mediaOffset);
+        mediaTotal = result.total;
+        mediaOffset = result.next_offset;
+        status.textContent = "Step 2 of 2: private media files " + mediaOffset + " / " + mediaTotal + ".";
+        if (result.done) break;
+        if (!result.processed) throw new Error("The media import stopped without progress.");
+      }
+
       status.className = "success";
-      status.textContent = "Success. Imported " + result.imported + " lesson/test pages (" + (result.total_html_bytes/1024).toFixed(1) + " KB HTML) and " + result.media_uploaded + " private media files.\nLevels: " + result.levels.join(", ") + ".\n\nThe original public pages have not been removed yet.";
+      status.textContent = "Migration completed successfully.\\nLesson/test pages: " + htmlTotal + ".\\nPrivate media files: " + mediaTotal + ".\\n\\nAll lesson HTML is in the private Supabase database and local lesson media is in the private lesson-media bucket. The original public GitHub files have not been removed yet.";
       button.textContent = "Import completed";
     } catch (error) {
       status.className = "error";
-      status.textContent = error.message || "Import failed. Please try again.";
+      status.textContent = (error.message || "Import failed.") + "\\n\\nYou can safely retry: completed batches are updated or skipped using upsert.";
       button.disabled = false;
       button.textContent = "Retry import";
     }
