@@ -945,6 +945,7 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_squK4xnTjeRDy-I88MuWeQ_V3YUd3cf
     document.getElementById('schedule-selected-date').textContent=adminSelectedDate.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
   }
   async function loadAdminSchedule(){
+    if(document.getElementById('shared-schedule-root')) return; // The shared calendar owns schedule loading on the admin dashboard.
     const {data,error}=await client.from('teacher_schedule_entries').select('id,teacher_id,time_slot,student_name,writing_score,reading_score,listening_score,speaking_score,notes').order('time_slot',{ascending:true}).limit(200);
     const preview=document.getElementById('admin-schedule-preview');if(!preview)return;
     if(error){preview.textContent='Schedule is unavailable for this admin account. Check the teacher_schedule_entries SELECT policy.';return;}
