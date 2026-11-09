@@ -44,7 +44,7 @@
     root.querySelector("#calendar-next").addEventListener("click",()=>move(1));
     root.querySelector("#calendar-today").addEventListener("click",()=>{state.anchor=new Date();state.selected=new Date();render();});
     root.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>{state.view=b.dataset.view;render();}));
-    root.querySelectorAll("[data-date]").forEach(b=>b.addEventListener("click",()=>{state.selected=dateOf(b.dataset.date);if(state.view==="week")state.anchor=new Date(state.selected);render();}));
+    root.querySelectorAll("[data-date]").forEach(b=>b.addEventListener("click",()=>{state.selected=dateOf(b.dataset.date);if(state.view==="week"||(state.view==="month"&&state.selected.getMonth()!==state.anchor.getMonth()))state.anchor=new Date(state.selected);render();}));
     if(editable)wireEditor();
   }
   function move(n){if(state.view==="month")state.anchor=new Date(state.anchor.getFullYear(),state.anchor.getMonth()+n,1,12);else state.anchor=plusDays(state.anchor,n*7);render();}
