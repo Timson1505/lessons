@@ -22,6 +22,23 @@ async function run(){
  const {data,error}=await db.rpc("get_lesson_content",{p_lesson_path:path});
  if(error||!Array.isArray(data)||!data.length||!data[0].body_html){message("Нет доступа к этому уроку","Материал не опубликован или не входит в ваш доступ. Обратитесь к своему учителю.");return;}
  const doc=new DOMParser().parseFromString(data[0].body_html,"text/html"),base=doc.createElement("base");base.href=location.origin+ROOT+dir+"/";doc.head.prepend(base);
+
+ // Compact lesson navigation and provide one consistent My Cabinet entry.
+ const sidebarStyle=doc.createElement("style");
+ sidebarStyle.textContent=".aside .nav li a{font-size:14px!important;line-height:1.35!important;padding-top:11px!important;padding-bottom:11px!important}.aside .nav li a i{font-size:15px!important;width:22px!important}.aside .nav li.cabinet-nav-item{margin-top:10px}.aside .nav li.cabinet-nav-item a{display:flex;align-items:center;gap:8px;border:1px solid var(--skin-color,#2878a8);border-radius:8px;color:var(--skin-color,#2878a8);font-weight:700!important}.aside .nav li.cabinet-nav-item a:hover{background:var(--skin-color,#2878a8);color:#fff}";
+ doc.head.append(sidebarStyle);
+ const lessonNav=doc.querySelector(".aside .nav");
+ if(lessonNav&&!lessonNav.querySelector(".cabinet-nav-item")){
+   const item=doc.createElement("li");
+   item.className="cabinet-nav-item";
+   const link=doc.createElement("a");
+   link.href=ROOT+"account.html";
+   link.innerHTML='<i class="fas fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span>';
+   item.append(link);lessonNav.append(item);
+   const {data:profile}=await db.from("profiles").select("role").eq("id",session.user.id).maybeSingle();
+   const destinations={admin:"admin.html",teacher:"teacher.html",student:"student.html"};
+   if(profile?.role&&destinations[profile.role])link.href=ROOT+destinations[profile.role];
+ }
  doc.head.querySelectorAll('meta[name="robots"]').forEach(x=>x.remove());const robots=doc.createElement("meta");robots.name="robots";robots.content="noindex,nofollow,noarchive";doc.head.append(robots);
  const refs=[];
  for(const el of doc.querySelectorAll("[src],[poster]"))for(const attr of ["src","poster"]){const p=resolveMedia(el.getAttribute(attr),dir);if(p)refs.push({el,attr,path:p});}
