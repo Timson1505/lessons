@@ -23,17 +23,12 @@
     }
 
     async function updateAccountLinks(session) {
-      if (!session?.user) {
-        signIn?.removeAttribute('hidden');
-        signUp?.removeAttribute('hidden');
-        cabinet.hidden = true;
-        return;
-      }
-
+      // Keep a single account entry in the sidebar for both guests and signed-in users.
       if (signIn) signIn.hidden = true;
       if (signUp) signUp.hidden = true;
       cabinet.hidden = false;
       cabinet.href = 'account.html';
+      if (!session?.user) return;
 
       const { data: profile } = await client
         .from('profiles').select('role').eq('id', session.user.id).maybeSingle();
