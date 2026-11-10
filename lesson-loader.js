@@ -43,11 +43,13 @@ async function run(){
  const refs=[];
  for(const el of doc.querySelectorAll("[src],[poster]"))for(const attr of ["src","poster"]){const p=resolveMedia(el.getAttribute(attr),dir);if(p)refs.push({el,attr,path:p});}
  for(const el of doc.querySelectorAll("[srcset]"))for(const part of el.getAttribute("srcset").split(",")){const p=resolveMedia(part.trim().split(/\s+/)[0],dir);if(p)refs.push({el,attr:"srcset-media",path:p});}
- const paths=[...new Set(refs.map(x=>x.path))], blobs=new Map();let cursor=0;
- async function worker(){while(cursor<paths.length){const p=paths[cursor++],{data:file,error:storageError}=await db.storage.from("lesson-media").download(p);if(storageError||!file)throw Error("Защищённый файл недоступен: "+p);blobs.set(p,URL.createObjectURL(file));}}
+ const paths=[...new Set(refs.map(x=>x.path))], blobs=new Map(), missingMedia=[];let cursor=0;
+ // Missing optional media must not prevent the protected lesson itself from rendering.
+ async function worker(){while(cursor<paths.length){const p=paths[cursor++];try{const {data:file,error:storageError}=await db.storage.from("lesson-media").download(p);if(storageError||!file){missingMedia.push(p);blobs.set(p,null);continue;}blobs.set(p,URL.createObjectURL(file));}catch(error){missingMedia.push(p);blobs.set(p,null);console.warn("Lesson media unavailable:",p,error);}}}
  await Promise.all(Array.from({length:Math.min(5,paths.length)},worker));
- for(const r of refs)if(r.attr!=="srcset-media")r.el.setAttribute(r.attr,blobs.get(r.path));
- for(const el of doc.querySelectorAll("[srcset]")){const entries=el.getAttribute("srcset").split(",").map(part=>{const bits=part.trim().split(/\s+/),p=resolveMedia(bits[0],dir);return p?[blobs.get(p),...bits.slice(1)].join(" "):part.trim();});el.setAttribute("srcset",entries.join(", "));}
+ for(const r of refs)if(r.attr!=="srcset-media"){const blob=blobs.get(r.path);if(blob)r.el.setAttribute(r.attr,blob);else{r.el.removeAttribute(r.attr);r.el.dataset.mediaUnavailable="true";if(r.el.tagName==="IMG"&&!r.el.getAttribute("alt"))r.el.setAttribute("alt","Image unavailable");}}
+ for(const el of doc.querySelectorAll("[srcset]")){const entries=el.getAttribute("srcset").split(",").map(part=>{const bits=part.trim().split(/\\s+/),p=resolveMedia(bits[0],dir),blob=p?blobs.get(p):null;return p?(blob?[blob,...bits.slice(1)].join(" "):""):part.trim();}).filter(Boolean);if(entries.length)el.setAttribute("srcset",entries.join(", "));else el.removeAttribute("srcset");}
+ if(missingMedia.length){const notice=doc.createElement("p");notice.className="lesson-media-notice";notice.setAttribute("role","status");notice.textContent="Some lesson media files are temporarily unavailable. The lesson content is still available.";notice.style.cssText="margin:12px auto;padding:8px 12px;max-width:900px;border-radius:8px;background:#fff3cd;color:#664d03;font:14px/1.4 Arial,sans-serif;text-align:center";doc.body.prepend(notice);console.warn("Missing lesson media files:",missingMedia);}
  doc.title=data[0].title||doc.title||"Timson’s English Lessons";
 
  // Add the same theme controls used on the homepage to every protected lesson.
