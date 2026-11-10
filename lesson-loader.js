@@ -38,6 +38,9 @@ async function run(){
  switcherCss.rel="stylesheet";
  switcherCss.href=ROOT+"style-switcher.css";
  doc.head.append(switcherCss);
+ const themeOverrides=doc.createElement("style");
+ themeOverrides.textContent="body.dark{background:#151515!important;color:#ededed!important}body.dark .main-container,body.dark .main-content,body.dark .section,body.dark section,body.dark .aside,body.dark .dropdown,body.dark .child,body.dark table,body.dark .container{background-color:#202020!important;color:#ededed!important}body.dark h1,body.dark h2,body.dark h3,body.dark h4,body.dark h5,body.dark p,body.dark li,body.dark td,body.dark th,body.dark label,body.dark .lesson-name{color:#ededed!important}body.dark a{color:#8fc8ff}body.dark input,body.dark textarea,body.dark select,body.dark button:not(.s-icon):not([data-theme-color]){background-color:#292929;color:#ededed;border-color:#555}body.dark .style-switcher{background:#222;color:#ededed}body.dark .style-switcher h4{color:#ededed}.style-switcher .colors button{display:inline-block;width:30px;height:30px;padding:0;border:0;border-radius:50%;cursor:pointer}.style-switcher .s-icon{padding:0;line-height:38px}";
+ doc.head.append(themeOverrides);
  doc.querySelectorAll('link.alternate-style[title^="color-"]').forEach(link=>{
    link.href=ROOT+link.title+".css";
  });
