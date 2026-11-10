@@ -23,6 +23,20 @@ async function run(){
  if(error||!Array.isArray(data)||!data.length||!data[0].body_html){message("Нет доступа к этому уроку","Материал не опубликован или не входит в ваш доступ. Обратитесь к своему учителю.");return;}
  const doc=new DOMParser().parseFromString(data[0].body_html,"text/html"),base=doc.createElement("base");base.href=location.origin+ROOT+dir+"/";doc.head.prepend(base);
 
+ // Restore shared site assets that were authored as lesson-relative URLs.
+ // The protected viewer has a virtual lesson URL, but shared JS and the site logo live at the site root.
+ doc.querySelectorAll('script[src]').forEach(script=>{
+   const src=script.getAttribute("src")||"";
+   const clean=src.split("?")[0].split("#")[0];
+   if(clean==="script.js"||clean.endsWith("/script.js"))script.setAttribute("src",ROOT+"script.js");
+   // theme.js was removed during the protected-viewer migration; the viewer below supplies theme controls.
+   else if(clean.endsWith("/theme.js")||clean==="theme.js")script.remove();
+ });
+ doc.querySelectorAll('link[rel~="icon"]').forEach(link=>{
+   const href=link.getAttribute("href")||"";
+   if(href.endsWith("media/logo.png"))link.setAttribute("href",ROOT+"media/logo.png");
+ });
+
  // Compact lesson navigation and provide one consistent My Cabinet entry.
  const sidebarStyle=doc.createElement("style");
  sidebarStyle.textContent=".aside .nav li a{font-size:14px!important;line-height:1.35!important;padding-top:11px!important;padding-bottom:11px!important}.aside .nav li a i{font-size:15px!important;width:22px!important}.aside .nav li.cabinet-nav-item{margin-top:10px}.aside .nav li.cabinet-nav-item a{display:flex;align-items:center;gap:8px;border:1px solid var(--skin-color,#2878a8);border-radius:8px;color:var(--skin-color,#2878a8);font-weight:700!important}.aside .nav li.cabinet-nav-item a:hover{background:var(--skin-color,#2878a8);color:#fff}";
