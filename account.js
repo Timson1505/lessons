@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function goToRoleDashboard(user) {
     const { data: profile, error } = await supabase
-      .from('profiles').select('role, phone').eq('id', user.id).maybeSingle();
+      .from('profiles').select('role').eq('id', user.id).maybeSingle();
 
     if (error || !profile) {
       setMessage('Your account exists, but its profile is not ready. Please try again shortly or contact the administrator.', true);
@@ -119,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setBusy(signInForm, true, 'Signing in…');
     setMessage('');
     const email = signInForm.elements.email.value.trim();
-    const phone = signInForm.elements.phone.value.trim();
     const password = signInForm.elements.password.value;
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(signInForm, false);
@@ -130,17 +129,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const { data: profile, error: profileError } = await supabase
-      .from('profiles').select('role, phone').eq('id', data.user.id).maybeSingle();
+      .from('profiles').select('role').eq('id', data.user.id).maybeSingle();
 
     if (profileError || !profile) {
       setMessage('You are signed in, but your profile is not available yet. Contact the administrator.', true);
-      return;
-    }
-
-    const normalizePhone = value => value.replace(/[^+\d]/g, '').replace(/^00/, '+');
-    if (!profile.phone || normalizePhone(profile.phone) !== normalizePhone(phone)) {
-      await supabase.auth.signOut();
-      setMessage('The phone number does not match this account. Please check it or contact the administrator.', true);
       return;
     }
 
