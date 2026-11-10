@@ -32,6 +32,59 @@ async function run(){
  for(const r of refs)if(r.attr!=="srcset-media")r.el.setAttribute(r.attr,blobs.get(r.path));
  for(const el of doc.querySelectorAll("[srcset]")){const entries=el.getAttribute("srcset").split(",").map(part=>{const bits=part.trim().split(/\s+/),p=resolveMedia(bits[0],dir);return p?[blobs.get(p),...bits.slice(1)].join(" "):part.trim();});el.setAttribute("srcset",entries.join(", "));}
  doc.title=data[0].title||doc.title||"Timson’s English Lessons";
+
+ // Add the same theme controls used on the homepage to every protected lesson.
+ const switcherCss=doc.createElement("link");
+ switcherCss.rel="stylesheet";
+ switcherCss.href=ROOT+"style-switcher.css";
+ doc.head.append(switcherCss);
+ doc.querySelectorAll('link.alternate-style[title^="color-"]').forEach(link=>{
+   link.href=ROOT+link.title+".css";
+ });
+ if(!doc.querySelector(".style-switcher")){
+   const switcher=doc.createElement("div");
+   switcher.className="style-switcher";
+   switcher.innerHTML='<button type="button" class="style-switcher-toggler s-icon" aria-label="Open theme settings" aria-expanded="false"><i class="fas fa-cog fa-spin" aria-hidden="true"></i></button><button type="button" class="day-night s-icon" aria-label="Toggle dark mode"><i class="fas fa-moon" aria-hidden="true"></i></button><h4>Theme Colors</h4><div class="colors"><button type="button" class="color-1" data-theme-color="color-1" aria-label="Red theme"></button><button type="button" class="color-2" data-theme-color="color-2" aria-label="Blue theme"></button><button type="button" class="color-3" data-theme-color="color-3" aria-label="Green theme"></button></div>';
+   doc.body.append(switcher);
+ }
+ const themeScript=doc.createElement("script");
+ themeScript.textContent=`
+ (function(){
+   var panel=document.querySelector(".style-switcher");
+   if(!panel || panel.dataset.ready==="true") return;
+   panel.dataset.ready="true";
+   var settings=panel.querySelector(".style-switcher-toggler");
+   var night=panel.querySelector(".day-night");
+   var icon=night.querySelector("i");
+   function applyColor(color){
+     document.querySelectorAll("link.alternate-style[title^='color-']").forEach(function(link){
+       if(link.title===color) link.removeAttribute("disabled");
+       else link.setAttribute("disabled","true");
+     });
+     try{localStorage.setItem("timsons-lesson-theme-color",color);}catch(e){}
+   }
+   function applyDark(enabled){
+     document.body.classList.toggle("dark",enabled);
+     icon.classList.toggle("fa-sun",enabled);
+     icon.classList.toggle("fa-moon",!enabled);
+     night.setAttribute("aria-label",enabled?"Switch to light mode":"Switch to dark mode");
+     try{localStorage.setItem("timsons-lesson-dark",enabled?"1":"0");}catch(e){}
+   }
+   settings.addEventListener("click",function(){
+     var open=panel.classList.toggle("open");
+     settings.setAttribute("aria-expanded",String(open));
+   });
+   night.addEventListener("click",function(){applyDark(!document.body.classList.contains("dark"));});
+   panel.querySelectorAll("[data-theme-color]").forEach(function(button){
+     button.addEventListener("click",function(){applyColor(button.dataset.themeColor);});
+   });
+   var savedColor="color-2",savedDark=false;
+   try{savedColor=localStorage.getItem("timsons-lesson-theme-color")||savedColor;savedDark=localStorage.getItem("timsons-lesson-dark")==="1";}catch(e){}
+   if(!document.querySelector('link.alternate-style[title="'+savedColor+'"]')) savedColor="color-2";
+   applyColor(savedColor);applyDark(savedDark);
+ })();
+ `;
+ doc.body.append(themeScript);
  document.open();document.write("<!doctype html>\n"+doc.documentElement.outerHTML);document.close();
 }
 run().catch(e=>{console.error("Protected lesson viewer",e);message("Не удалось открыть урок",e.message||"Обновите страницу и попробуйте снова.");});
