@@ -58,11 +58,11 @@ async function run(){
  .aside .nav li a{display:block;font-family:"Times New Roman",Times,serif!important;font-size:16px!important;font-style:normal!important;font-weight:600!important;line-height:1.5!important;letter-spacing:normal!important;text-transform:none!important;padding:5px 15px!important}
  .aside .nav li a i{font-size:16px!important;margin-right:15px!important}
  .aside>.sidebar-auth-list-item,.aside .sidebar-auth-actions,.aside a.sidebar-auth-btn{display:none!important}
- .lesson-sidebar-footer{position:fixed;left:20px;width:230px;bottom:18px;display:flex;flex-direction:column;gap:10px;font-family:"Times New Roman",Times,serif;z-index:10020;background:var(--bg-black-100,#fff);padding:10px 0 0;border-top:1px solid var(--bg-black-50,#ddd)}
- .lesson-sidebar-cabinet{display:flex;align-items:center;justify-content:center;gap:9px;padding:11px 14px;border:1px solid var(--skin-color,#2878a8);border-radius:9px;color:var(--skin-color,#2878a8)!important;font-family:"Times New Roman",Times,serif!important;font-size:16px!important;font-weight:600!important;line-height:1.5!important;text-decoration:none;background:var(--bg-black-100,#fff);transition:background .2s,color .2s}
+ .lesson-sidebar-footer{position:fixed;left:20px;width:138px;bottom:18px;display:flex;flex-direction:column;gap:6px;font-family:"Times New Roman",Times,serif;z-index:10020;background:var(--bg-black-100,#fff);padding:6px 0 0;border-top:1px solid var(--bg-black-50,#ddd)}
+ .lesson-sidebar-cabinet{display:flex;width:138px;min-height:0;align-items:center;justify-content:center;gap:5px;padding:7px 8px;border:1px solid var(--skin-color,#2878a8);border-radius:6px;color:var(--skin-color,#2878a8)!important;font-family:"Times New Roman",Times,serif!important;font-size:10px!important;font-weight:600!important;line-height:1.5!important;text-decoration:none;background:var(--bg-black-100,#fff);transition:background .2s,color .2s}
  .lesson-sidebar-cabinet:hover{background:var(--skin-color,#2878a8);color:#fff!important}
  @media(max-height:650px){.aside .nav{margin-top:110px!important;margin-bottom:115px!important;max-height:calc(100vh - 240px)}.lesson-sidebar-footer{bottom:8px}}
- @media(max-width:767px){.lesson-sidebar-footer{left:20px;width:230px;bottom:12px}.aside .nav{margin-bottom:125px!important;max-height:calc(100vh - 220px)}}
+ @media(max-width:767px){.lesson-sidebar-footer{left:20px;width:138px;bottom:12px}.aside .nav{margin-bottom:125px!important;max-height:calc(100vh - 220px)}}
  `;
  doc.head.append(sidebarStyle);
  const aside=doc.querySelector(".aside");
