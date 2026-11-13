@@ -22,7 +22,7 @@ async function run(){
  const {data,error}=await db.rpc("get_lesson_content",{p_lesson_path:path});
  if(error||!Array.isArray(data)||!data.length||!data[0].body_html){message("Нет доступа к этому уроку","Материал не опубликован или не входит в ваш доступ. Обратитесь к своему учителю.");return;}
  const doc=new DOMParser().parseFromString(data[0].body_html,"text/html"),base=doc.createElement("base");base.href=location.origin+ROOT+dir+"/";doc.head.prepend(base);
- const designSystem=doc.createElement("link");designSystem.rel="stylesheet";designSystem.href=ROOT+"design-system.css?v=20261114-sidebar-parity1";doc.head.append(designSystem);
+ const designSystem=doc.createElement("link");designSystem.rel="stylesheet";designSystem.href=ROOT+"design-system.css?v=20261114-cabinet-button1";doc.head.append(designSystem);
  const switcherStyles=doc.createElement("link");switcherStyles.rel="stylesheet";switcherStyles.href=ROOT+"style-switcher.css?v=20261114-sidebar-parity1";doc.head.append(switcherStyles);
 
  // Restore shared site assets that were authored as lesson-relative URLs.
@@ -58,7 +58,7 @@ async function run(){
  .aside .nav li a{display:block;font-family:"Times New Roman",Times,serif!important;font-size:16px!important;font-style:normal!important;font-weight:600!important;line-height:1.5!important;letter-spacing:normal!important;text-transform:none!important;padding:5px 15px!important}
  .aside .nav li a i{font-size:16px!important;margin-right:15px!important}
  .aside>.sidebar-auth-list-item,.aside .sidebar-auth-actions,.aside a.sidebar-auth-btn{display:none!important}
- .lesson-sidebar-footer{position:fixed;left:20px;width:230px;bottom:18px;display:flex;flex-direction:column;gap:10px;font-family:"Times New Roman",Times,serif;z-index:1002;background:var(--bg-black-100,#fff);padding:10px 0 0;border-top:1px solid var(--bg-black-50,#ddd)}
+ .lesson-sidebar-footer{position:fixed;left:20px;width:230px;bottom:18px;display:flex;flex-direction:column;gap:10px;font-family:"Times New Roman",Times,serif;z-index:10020;background:var(--bg-black-100,#fff);padding:10px 0 0;border-top:1px solid var(--bg-black-50,#ddd)}
  .lesson-sidebar-cabinet{display:flex;align-items:center;justify-content:center;gap:9px;padding:11px 14px;border:1px solid var(--skin-color,#2878a8);border-radius:9px;color:var(--skin-color,#2878a8)!important;font-family:"Times New Roman",Times,serif!important;font-size:16px!important;font-weight:600!important;line-height:1.5!important;text-decoration:none;background:var(--bg-black-100,#fff);transition:background .2s,color .2s}
  .lesson-sidebar-cabinet:hover{background:var(--skin-color,#2878a8);color:#fff!important}
  @media(max-height:650px){.aside .nav{margin-top:110px!important;margin-bottom:115px!important;max-height:calc(100vh - 240px)}.lesson-sidebar-footer{bottom:8px}}
@@ -70,19 +70,22 @@ async function run(){
    // Remove the entire legacy authentication block (not only its links).
    aside.querySelectorAll(".sidebar-auth-list-item,.sidebar-auth-actions,.sidebar-signin,.sidebar-signup").forEach(el=>el.remove());
    aside.querySelectorAll('a[href*="account.html"],a[href*="#signin"],a[href*="#signup"]').forEach(el=>el.remove());
-   const oldFooter=aside.querySelector(".lesson-sidebar-footer");if(oldFooter)oldFooter.remove();
-   const footer=doc.createElement("div");footer.className="lesson-sidebar-footer";
-   footer.innerHTML='<a class="lesson-sidebar-cabinet" href="'+ROOT+'account.html"><i class="fas fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span></a>';
-   aside.append(footer);
    const oldSwitcher=doc.querySelector(".style-switcher");if(oldSwitcher)oldSwitcher.remove();
    const switcher=doc.createElement("div");switcher.className="style-switcher";
    switcher.innerHTML='<div class="style-switcher-toggler s-icon"><i class="fas fa-cog fa-spin"></i></div><div class="day-night s-icon"><i class="fas fa-moon"></i></div><h4>Theme Colors</h4><div class="colors"><span class="color-1" data-theme-color="color-2" aria-label="Red accent colour" title="Red accent colour"><i class="fas fa-droplet" aria-hidden="true"></i></span><span class="color-2" data-theme-color="color-1" aria-label="Blue accent colour" title="Blue accent colour"><i class="fas fa-droplet" aria-hidden="true"></i></span><span class="color-3" data-theme-color="color-3" aria-label="Green accent colour" title="Green accent colour"><i class="fas fa-droplet" aria-hidden="true"></i></span></div>';
    doc.body.append(switcher);
-   const cabinet=footer.querySelector(".lesson-sidebar-cabinet");
-   const {data:profile}=await db.from("profiles").select("role").eq("id",session.user.id).maybeSingle();
-   const destinations={admin:"admin.html",teacher:"teacher.html",student:"student.html"};
-   if(profile?.role&&destinations[profile.role])cabinet.href=ROOT+destinations[profile.role];
  }
+ // Always render a persistent My Cabinet shortcut, even if a lesson's sidebar markup
+ // differs from the expected .aside structure. The role-specific destination opens
+ // the correct dashboard; account.html remains the safe fallback.
+ const oldCabinet=doc.querySelector(".lesson-sidebar-footer");if(oldCabinet)oldCabinet.remove();
+ const footer=doc.createElement("div");footer.className="lesson-sidebar-footer";
+ footer.innerHTML='<a class="lesson-sidebar-cabinet" href="'+ROOT+'account.html"><i class="fas fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span></a>';
+ doc.body.append(footer);
+ const cabinet=footer.querySelector(".lesson-sidebar-cabinet");
+ const {data:profile}=await db.from("profiles").select("role").eq("id",session.user.id).maybeSingle();
+ const destinations={admin:"admin.html",teacher:"teacher.html",student:"student.html"};
+ if(profile?.role&&destinations[profile.role])cabinet.href=ROOT+destinations[profile.role];
  doc.head.querySelectorAll('meta[name="robots"]').forEach(x=>x.remove());const robots=doc.createElement("meta");robots.name="robots";robots.content="noindex,nofollow,noarchive";doc.head.append(robots);
  const refs=[];
  for(const el of doc.querySelectorAll("[src],[poster]"))for(const attr of ["src","poster"]){const p=resolveMedia(el.getAttribute(attr),dir);if(p)refs.push({el,attr,path:p});}
