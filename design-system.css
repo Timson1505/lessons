@@ -56,3 +56,44 @@ body.dark .aside {
   outline: 2px solid var(--skin-color, #4fadc0);
   outline-offset: 3px;
 }
+
+
+/* One authoritative sidebar type specification for the homepage and all lesson viewers. */
+.aside,
+.aside .logo,
+.aside .nav,
+.aside .nav li,
+.aside .nav li a,
+.aside .sidebar-auth-list-item,
+.aside .sidebar-auth-actions,
+.aside .sidebar-auth-btn,
+.aside .lesson-sidebar-footer,
+.aside .lesson-sidebar-cabinet {
+  font-family: "Times New Roman", Times, serif !important;
+  font-style: normal !important;
+}
+.aside .nav li {
+  margin-bottom: 20px !important;
+}
+.aside .nav li a {
+  display: block;
+  font-family: "Times New Roman", Times, serif !important;
+  font-size: 16px !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  padding: 5px 15px !important;
+}
+.aside .nav li a i {
+  font-size: 16px !important;
+  margin-right: 15px !important;
+}
+body.dark {
+  --bg-black-900: #151515;
+  --bg-black-100: #222222;
+  --bg-black-50: #393939;
+  --text-black-900: #ffffff;
+  --text-black-700: #e9e9e9;
+}
