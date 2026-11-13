@@ -37,21 +37,38 @@ async function run(){
    if(href.endsWith("media/logo.png"))link.setAttribute("href",ROOT+"media/logo.png");
  });
 
- // Compact lesson navigation and provide one consistent My Cabinet entry.
+ // Match the homepage sidebar typography and create a dedicated bottom area for account/theme controls.
  const sidebarStyle=doc.createElement("style");
- sidebarStyle.textContent=".aside .nav li a{font-size:14px!important;line-height:1.35!important;padding-top:11px!important;padding-bottom:11px!important}.aside .nav li a i{font-size:15px!important;width:22px!important}.aside .nav li.cabinet-nav-item{margin-top:10px}.aside .nav li.cabinet-nav-item a{display:flex;align-items:center;gap:8px;border:1px solid var(--skin-color,#2878a8);border-radius:8px;color:var(--skin-color,#2878a8);font-weight:700!important}.aside .nav li.cabinet-nav-item a:hover{background:var(--skin-color,#2878a8);color:#fff}";
+ sidebarStyle.textContent=`
+ .aside{font-family:"Times New Roman",Times,serif!important}
+ .aside .nav{width:100%;max-height:calc(100vh - 230px);overflow-y:auto;padding-bottom:12px}
+ .aside .nav li a{font-family:"Times New Roman",Times,serif!important;font-size:16px!important;line-height:1.4!important;padding:8px 15px!important}
+ .aside .nav li a i{font-size:16px!important;width:22px!important;margin-right:12px!important}
+ .lesson-sidebar-footer{position:absolute;left:20px;right:20px;bottom:20px;display:flex;flex-direction:column;gap:12px;font-family:"Times New Roman",Times,serif;z-index:20}
+ .lesson-sidebar-theme-row{display:flex;align-items:center;justify-content:center;gap:13px;padding:10px 8px;border-top:1px solid var(--bg-black-50,#ddd)}
+ .lesson-sidebar-theme-row button{width:30px;height:30px;border-radius:50%;border:1px solid var(--bg-black-50,#ccc);background:var(--bg-black-100,#fff);color:var(--text-black-900,#333);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:15px}
+ .lesson-sidebar-theme-row button[aria-pressed="true"]{outline:2px solid var(--skin-color,#4fadc0);outline-offset:2px}
+ .lesson-sidebar-theme-row [data-theme-color="color-1"]{background:#ec1839}
+ .lesson-sidebar-theme-row [data-theme-color="color-2"]{background:#4fadc0}
+ .lesson-sidebar-theme-row [data-theme-color="color-3"]{background:#37b182}
+ .lesson-sidebar-theme-row [data-theme-color]{width:22px;height:22px;border:0}
+ .lesson-sidebar-cabinet{display:flex;align-items:center;justify-content:center;gap:9px;padding:11px 14px;border:1px solid var(--skin-color,#2878a8);border-radius:9px;color:var(--skin-color,#2878a8)!important;font-size:16px;font-weight:700;text-decoration:none;background:var(--bg-black-100,#fff);transition:background .2s,color .2s}
+ .lesson-sidebar-cabinet:hover{background:var(--skin-color,#2878a8);color:#fff!important}
+ body.dark .lesson-sidebar-cabinet{background:#202020}
+ @media(max-width:767px){.aside .nav{max-height:calc(100vh - 220px)}.lesson-sidebar-footer{bottom:14px}}
+ `;
  doc.head.append(sidebarStyle);
- const lessonNav=doc.querySelector(".aside .nav");
- if(lessonNav&&!lessonNav.querySelector(".cabinet-nav-item")){
-   const item=doc.createElement("li");
-   item.className="cabinet-nav-item";
-   const link=doc.createElement("a");
-   link.href=ROOT+"account.html";
-   link.innerHTML='<i class="fas fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span>';
-   item.append(link);lessonNav.append(item);
+ const aside=doc.querySelector(".aside");
+ if(aside){
+   aside.querySelectorAll('a[href*="account.html#signin"],a[href*="account.html#signup"],.sidebar-signin,.sidebar-signup').forEach(el=>el.remove());
+   const oldFooter=aside.querySelector(".lesson-sidebar-footer");if(oldFooter)oldFooter.remove();
+   const footer=doc.createElement("div");footer.className="lesson-sidebar-footer";
+   footer.innerHTML='<div class="lesson-sidebar-theme-row" aria-label="Appearance controls"><button type="button" class="lesson-dark-toggle" aria-label="Switch to dark mode" title="Dark mode"><i class="fas fa-moon" aria-hidden="true"></i></button><button type="button" data-theme-color="color-1" aria-label="Red theme" title="Red theme"></button><button type="button" data-theme-color="color-2" aria-label="Blue theme" title="Blue theme"></button><button type="button" data-theme-color="color-3" aria-label="Green theme" title="Green theme"></button></div><a class="lesson-sidebar-cabinet" href="'+ROOT+'account.html"><i class="fas fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span></a>';
+   aside.append(footer);
+   const cabinet=footer.querySelector(".lesson-sidebar-cabinet");
    const {data:profile}=await db.from("profiles").select("role").eq("id",session.user.id).maybeSingle();
    const destinations={admin:"admin.html",teacher:"teacher.html",student:"student.html"};
-   if(profile?.role&&destinations[profile.role])link.href=ROOT+destinations[profile.role];
+   if(profile?.role&&destinations[profile.role])cabinet.href=ROOT+destinations[profile.role];
  }
  doc.head.querySelectorAll('meta[name="robots"]').forEach(x=>x.remove());const robots=doc.createElement("meta");robots.name="robots";robots.content="noindex,nofollow,noarchive";doc.head.append(robots);
  const refs=[];
@@ -66,36 +83,37 @@ async function run(){
  if(missingMedia.length){const notice=doc.createElement("p");notice.className="lesson-media-notice";notice.setAttribute("role","status");notice.textContent="Some lesson media files are temporarily unavailable. The lesson content is still available.";notice.style.cssText="margin:12px auto;padding:8px 12px;max-width:900px;border-radius:8px;background:#fff3cd;color:#664d03;font:14px/1.4 Arial,sans-serif;text-align:center";doc.body.prepend(notice);console.warn("Missing lesson media files:",missingMedia);}
  doc.title=data[0].title||doc.title||"Timson’s English Lessons";
 
- // Add the same theme controls used on the homepage to every protected lesson.
- const switcherCss=doc.createElement("link");
- switcherCss.rel="stylesheet";
- switcherCss.href=ROOT+"style-switcher.css";
- doc.head.append(switcherCss);
+ // Load all three homepage accent palettes explicitly so color controls work even in older lesson HTML.
  const themeOverrides=doc.createElement("style");
- themeOverrides.textContent="body.dark{background:#151515!important;color:#ededed!important}body.dark .main-container,body.dark .main-content,body.dark .section,body.dark section,body.dark .aside,body.dark .dropdown,body.dark .child,body.dark table,body.dark .container{background-color:#202020!important;color:#ededed!important}body.dark h1,body.dark h2,body.dark h3,body.dark h4,body.dark h5,body.dark p,body.dark li,body.dark td,body.dark th,body.dark label,body.dark .lesson-name{color:#ededed!important}body.dark a{color:#8fc8ff}body.dark input,body.dark textarea,body.dark select,body.dark button:not(.s-icon):not([data-theme-color]){background-color:#292929;color:#ededed;border-color:#555}body.dark .style-switcher{background:#222;color:#ededed}body.dark .style-switcher h4{color:#ededed}.style-switcher .colors button{display:inline-block;width:30px;height:30px;padding:0;border:0;border-radius:50%;cursor:pointer}.style-switcher .s-icon{padding:0;line-height:38px}";
+ themeOverrides.textContent=`
+ body.dark{background:#151515!important;color:#ededed!important}
+ body.dark .main-container,body.dark .main-content,body.dark .section,body.dark section,body.dark .aside,body.dark .dropdown,body.dark .child,body.dark table,body.dark .container{background-color:#202020!important;color:#ededed!important}
+ body.dark h1,body.dark h2,body.dark h3,body.dark h4,body.dark h5,body.dark p,body.dark li,body.dark td,body.dark th,body.dark label,body.dark .lesson-name{color:#ededed!important}
+ body.dark a{color:#8fc8ff}
+ body.dark input,body.dark textarea,body.dark select,body.dark button{background-color:#292929;color:#ededed;border-color:#555}
+ body.dark .lesson-sidebar-theme-row button[data-theme-color]{background:var(--theme-dot)!important}
+ `;
  doc.head.append(themeOverrides);
- doc.querySelectorAll('link.alternate-style[title^="color-"]').forEach(link=>{
-   link.href=ROOT+link.title+".css";
+ ["color-1","color-2","color-3"].forEach(function(color){
+   let link=doc.querySelector('link.alternate-style[title="'+color+'"]');
+   if(!link){link=doc.createElement("link");link.rel="stylesheet";link.className="alternate-style";link.title=color;link.disabled=true;doc.head.append(link);}
+   link.href=ROOT+color+".css";
  });
- if(!doc.querySelector(".style-switcher")){
-   const switcher=doc.createElement("div");
-   switcher.className="style-switcher";
-   switcher.innerHTML='<button type="button" class="style-switcher-toggler s-icon" aria-label="Open theme settings" aria-expanded="false"><i class="fas fa-cog fa-spin" aria-hidden="true"></i></button><button type="button" class="day-night s-icon" aria-label="Toggle dark mode"><i class="fas fa-moon" aria-hidden="true"></i></button><h4>Theme Colors</h4><div class="colors"><button type="button" class="color-1" data-theme-color="color-1" aria-label="Red theme"></button><button type="button" class="color-2" data-theme-color="color-2" aria-label="Blue theme"></button><button type="button" class="color-3" data-theme-color="color-3" aria-label="Green theme"></button></div>';
-   doc.body.append(switcher);
- }
  const themeScript=doc.createElement("script");
  themeScript.textContent=`
  (function(){
-   var panel=document.querySelector(".style-switcher");
-   if(!panel || panel.dataset.ready==="true") return;
-   panel.dataset.ready="true";
-   var settings=panel.querySelector(".style-switcher-toggler");
-   var night=panel.querySelector(".day-night");
+   var controls=document.querySelector(".lesson-sidebar-theme-row");
+   if(!controls || controls.dataset.ready==="true") return;
+   controls.dataset.ready="true";
+   var night=controls.querySelector(".lesson-dark-toggle");
    var icon=night.querySelector("i");
    function applyColor(color){
      document.querySelectorAll("link.alternate-style[title^='color-']").forEach(function(link){
        if(link.title===color) link.removeAttribute("disabled");
        else link.setAttribute("disabled","true");
+     });
+     controls.querySelectorAll("[data-theme-color]").forEach(function(button){
+       button.setAttribute("aria-pressed",String(button.dataset.themeColor===color));
      });
      try{localStorage.setItem("timsons-lesson-theme-color",color);}catch(e){}
    }
@@ -104,19 +122,16 @@ async function run(){
      icon.classList.toggle("fa-sun",enabled);
      icon.classList.toggle("fa-moon",!enabled);
      night.setAttribute("aria-label",enabled?"Switch to light mode":"Switch to dark mode");
+     night.title=enabled?"Light mode":"Dark mode";
      try{localStorage.setItem("timsons-lesson-dark",enabled?"1":"0");}catch(e){}
    }
-   settings.addEventListener("click",function(){
-     var open=panel.classList.toggle("open");
-     settings.setAttribute("aria-expanded",String(open));
-   });
    night.addEventListener("click",function(){applyDark(!document.body.classList.contains("dark"));});
-   panel.querySelectorAll("[data-theme-color]").forEach(function(button){
+   controls.querySelectorAll("[data-theme-color]").forEach(function(button){
      button.addEventListener("click",function(){applyColor(button.dataset.themeColor);});
    });
    var savedColor="color-2",savedDark=false;
    try{savedColor=localStorage.getItem("timsons-lesson-theme-color")||savedColor;savedDark=localStorage.getItem("timsons-lesson-dark")==="1";}catch(e){}
-   if(!document.querySelector('link.alternate-style[title="'+savedColor+'"]')) savedColor="color-2";
+   if(!["color-1","color-2","color-3"].includes(savedColor))savedColor="color-2";
    applyColor(savedColor);applyDark(savedDark);
  })();
  `;
