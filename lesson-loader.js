@@ -45,8 +45,8 @@ async function run(){
  // Match the homepage typography and create a dedicated bottom area for account/theme controls.
  const sidebarStyle=doc.createElement("style");
  sidebarStyle.textContent=`
- body,body *{font-family:"Times New Roman",Times,serif!important}
- body{font-size:15px!important;line-height:1.5!important}
+ body,body *:not(.material-symbols-outlined):not([class*="fa"]):not([class*="bx"]){font-family:"Times New Roman",Times,serif!important}
+ body{font-size:16px!important;line-height:1.5!important}
  i.fa,i.fas,i.fa-solid,i.fa::before,i.fas::before,i.fa-solid::before{font-family:"Font Awesome 6 Free"!important;font-weight:900;font-style:normal}
  i.far,i.fa-regular,i.far::before,i.fa-regular::before{font-family:"Font Awesome 6 Free"!important;font-weight:400;font-style:normal}
  i.fab,i.fa-brands,i.fab::before,i.fa-brands::before{font-family:"Font Awesome 6 Brands"!important;font-weight:400;font-style:normal}
