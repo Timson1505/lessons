@@ -48,8 +48,8 @@ async function run(){
  .lesson-sidebar-theme-row{display:flex;align-items:center;justify-content:center;gap:13px;padding:10px 8px;border-top:1px solid var(--bg-black-50,#ddd)}
  .lesson-sidebar-theme-row button{width:30px;height:30px;border-radius:50%;border:1px solid var(--bg-black-50,#ccc);background:var(--bg-black-100,#fff);color:var(--text-black-900,#333);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:15px}
  .lesson-sidebar-theme-row button[aria-pressed="true"]{outline:2px solid var(--skin-color,#4fadc0);outline-offset:2px}
- .lesson-sidebar-theme-row [data-theme-color="color-1"]{background:#ec1839}
- .lesson-sidebar-theme-row [data-theme-color="color-2"]{background:#4fadc0}
+ .lesson-sidebar-theme-row [data-theme-color="color-1"]{background:#4fadc0}
+ .lesson-sidebar-theme-row [data-theme-color="color-2"]{background:#ec1839}
  .lesson-sidebar-theme-row [data-theme-color="color-3"]{background:#37b182}
  .lesson-sidebar-theme-row [data-theme-color]{width:22px;height:22px;border:0}
  .lesson-sidebar-cabinet{display:flex;align-items:center;justify-content:center;gap:9px;padding:11px 14px;border:1px solid var(--skin-color,#2878a8);border-radius:9px;color:var(--skin-color,#2878a8)!important;font-size:16px;font-weight:700;text-decoration:none;background:var(--bg-black-100,#fff);transition:background .2s,color .2s}
@@ -63,7 +63,7 @@ async function run(){
    aside.querySelectorAll('a[href*="account.html#signin"],a[href*="account.html#signup"],.sidebar-signin,.sidebar-signup').forEach(el=>el.remove());
    const oldFooter=aside.querySelector(".lesson-sidebar-footer");if(oldFooter)oldFooter.remove();
    const footer=doc.createElement("div");footer.className="lesson-sidebar-footer";
-   footer.innerHTML='<div class="lesson-sidebar-theme-row" aria-label="Appearance controls"><button type="button" class="lesson-dark-toggle" aria-label="Switch to dark mode" title="Dark mode"><i class="fas fa-moon" aria-hidden="true"></i></button><button type="button" data-theme-color="color-1" aria-label="Red theme" title="Red theme"></button><button type="button" data-theme-color="color-2" aria-label="Blue theme" title="Blue theme"></button><button type="button" data-theme-color="color-3" aria-label="Green theme" title="Green theme"></button></div><a class="lesson-sidebar-cabinet" href="'+ROOT+'account.html"><i class="fas fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span></a>';
+   footer.innerHTML='<div class="lesson-sidebar-theme-row" aria-label="Appearance controls"><button type="button" class="lesson-dark-toggle" aria-label="Switch to dark mode" title="Dark mode"><i class="fas fa-moon" aria-hidden="true"></i></button><button type="button" data-theme-color="color-1" aria-label="Blue theme" title="Blue theme"></button><button type="button" data-theme-color="color-2" aria-label="Red theme" title="Red theme"></button><button type="button" data-theme-color="color-3" aria-label="Green theme" title="Green theme"></button></div><a class="lesson-sidebar-cabinet" href="'+ROOT+'account.html"><i class="fas fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span></a>';
    aside.append(footer);
    const cabinet=footer.querySelector(".lesson-sidebar-cabinet");
    const {data:profile}=await db.from("profiles").select("role").eq("id",session.user.id).maybeSingle();
