@@ -8,7 +8,7 @@
 html, body {
   font-family: var(--tle-font-family) !important;
 }
-body, body :where(p, li, label, input, textarea, select, button, a, td, th, small, strong, em, span, div) {
+body, body :where(p, li, label, input, textarea, select, button, a, td, th, small, strong, em, span, div):not(.material-symbols-outlined):not([class*="fa"]):not([class*="bx"]) {
   font-family: var(--tle-font-family) !important;
 }
 body { font-size: var(--tle-font-size); line-height: 1.5; }
@@ -26,11 +26,6 @@ body { font-size: var(--tle-font-size); line-height: 1.5; }
 .aside .nav li a .far,
 .aside .nav li a .fab {
   font-size: 17px !important;
-}
-/* Keep icon glyphs in their own icon fonts instead of replacing them with Times. */
-i[class*="fa-"], i[class^="fa"], .fa, .fas, .far, .fab,
-[class^="bx"], [class*=" bx-"], .material-symbols-outlined {
-  font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands", "boxicons", "Material Symbols Outlined" !important;
 }
 body.dark {
   color: #ededed;
