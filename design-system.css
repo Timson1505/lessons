@@ -37,3 +37,22 @@ body.dark .aside {
 @media (max-width: 767px) {
   .aside .nav li a { font-size: 16px !important; }
 }
+
+/* Homepage colour swatches use the same droplet icon language as lesson controls. */
+.style-switcher .colors span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.style-switcher .colors span i {
+  color: rgba(255,255,255,.96);
+  font-size: 14px;
+  pointer-events: none;
+}
+.style-switcher .colors span:focus-visible,
+.style-switcher .day-night:focus-visible,
+.style-switcher .style-switcher-toggler:focus-visible {
+  outline: 2px solid var(--skin-color, #4fadc0);
+  outline-offset: 3px;
+}
