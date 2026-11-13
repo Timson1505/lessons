@@ -30,9 +30,9 @@ jobs:
           test -f index.html
           test -f design-system.css
           test -f lesson-loader.js
-          lesson_files=$(find Beginner-* Elementary-* -type f | grep -E '/[Ll]esson-[^/]+/index[.]html$')
+          lesson_files=$(find Beginner-* Elementary-* -mindepth 2 -maxdepth 2 -type f -name index.html)
           lesson_count=$(printf '%s\n' "$lesson_files" | wc -l | tr -d ' ')
-          echo "Protected lesson shells found: $lesson_count"
+          echo "Protected lesson and test shells found: $lesson_count"
           test "$lesson_count" -eq 71
           grep -q 'get_lesson_content' lesson-loader.js
           grep -q 'lesson-sidebar-theme-row' lesson-loader.js
@@ -40,7 +40,7 @@ jobs:
           grep -q 'design-system.css' lesson-loader.js
           missing_loaders=$(printf '%s\n' "$lesson_files" | xargs grep -L 'lesson-loader.js' || true)
           if [ -n "$missing_loaders" ]; then
-            echo "Lesson shells missing the protected viewer loader:"
+            echo "Protected shells missing the viewer loader:"
             echo "$missing_loaders"
             exit 1
           fi
