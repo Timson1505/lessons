@@ -40,11 +40,14 @@ async function run(){
  // Match the homepage sidebar typography and create a dedicated bottom area for account/theme controls.
  const sidebarStyle=doc.createElement("style");
  sidebarStyle.textContent=`
- .aside{font-family:"Times New Roman",Times,serif!important}
- .aside .nav{width:100%;max-height:calc(100vh - 230px);overflow-y:auto;padding-bottom:12px}
- .aside .nav li a{font-family:"Times New Roman",Times,serif!important;font-size:16px!important;line-height:1.4!important;padding:8px 15px!important}
- .aside .nav li a i{font-size:16px!important;width:22px!important;margin-right:12px!important}
- .lesson-sidebar-footer{position:absolute;left:20px;right:20px;bottom:20px;display:flex;flex-direction:column;gap:12px;font-family:"Times New Roman",Times,serif;z-index:20}
+ .aside{font-family:"Times New Roman",Times,serif!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;overflow-y:auto!important}
+ .aside .nav{width:100%;margin-top:145px!important;margin-bottom:150px!important;max-height:calc(100vh - 330px);overflow-y:auto;padding-bottom:12px}
+ .aside .nav li a{font-family:"Times New Roman",Times,serif!important;font-size:17px!important;line-height:1.45!important;padding:9px 15px!important}
+ .aside .nav li a i{font-size:17px!important;width:22px!important;margin-right:12px!important}
+ .aside > .sidebar-auth-list-item,.aside .sidebar-auth-actions,.aside a.sidebar-auth-btn{display:none!important}
+ .lesson-sidebar-footer{position:fixed;left:20px;width:230px;bottom:18px;display:flex;flex-direction:column;gap:10px;font-family:"Times New Roman",Times,serif;z-index:1002;background:var(--bg-black-100,#fff);padding:10px 0 0;border-top:1px solid var(--bg-black-50,#ddd)}
+ @media(max-height:650px){.aside .nav{margin-top:110px!important;margin-bottom:125px!important;max-height:calc(100vh - 260px)}.lesson-sidebar-footer{bottom:8px}}
+ @media(max-width:767px){.lesson-sidebar-footer{left:20px;width:230px;bottom:12px}.aside .nav{margin-bottom:140px!important}}
  .lesson-sidebar-theme-row{display:flex;align-items:center;justify-content:center;gap:13px;padding:10px 8px;border-top:1px solid var(--bg-black-50,#ddd)}
  .lesson-sidebar-theme-row button{width:30px;height:30px;border-radius:50%;border:1px solid var(--bg-black-50,#ccc);background:var(--bg-black-100,#fff);color:var(--text-black-900,#333);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:15px}
  .lesson-sidebar-theme-row button[aria-pressed="true"]{outline:2px solid var(--skin-color,#4fadc0);outline-offset:2px}
@@ -60,7 +63,9 @@ async function run(){
  doc.head.append(sidebarStyle);
  const aside=doc.querySelector(".aside");
  if(aside){
-   aside.querySelectorAll('a[href*="account.html#signin"],a[href*="account.html#signup"],.sidebar-signin,.sidebar-signup').forEach(el=>el.remove());
+   // Remove the entire legacy authentication block (not only its links).
+   aside.querySelectorAll(".sidebar-auth-list-item,.sidebar-auth-actions,.sidebar-signin,.sidebar-signup").forEach(el=>el.remove());
+   aside.querySelectorAll('a[href*="account.html"],a[href*="#signin"],a[href*="#signup"]').forEach(el=>el.remove());
    const oldFooter=aside.querySelector(".lesson-sidebar-footer");if(oldFooter)oldFooter.remove();
    const footer=doc.createElement("div");footer.className="lesson-sidebar-footer";
    footer.innerHTML='<div class="lesson-sidebar-theme-row" aria-label="Appearance controls"><button type="button" class="lesson-dark-toggle" aria-label="Switch to dark mode" title="Dark mode"><i class="fas fa-moon" aria-hidden="true"></i></button><button type="button" data-theme-color="color-1" aria-label="Blue theme" title="Blue theme"></button><button type="button" data-theme-color="color-2" aria-label="Red theme" title="Red theme"></button><button type="button" data-theme-color="color-3" aria-label="Green theme" title="Green theme"></button></div><a class="lesson-sidebar-cabinet" href="'+ROOT+'account.html"><i class="fas fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span></a>';
