@@ -30,7 +30,7 @@ jobs:
           grep -q 'design-system.css?v=20261114-sidebar-parity1' index.html
           grep -q 'theme-controller.js?v=20261114-sidebar-parity1' index.html
           grep -q 'design-system.css?v=20261114-sidebar-parity1' lesson-loader.js
-          grep -q 'theme-controller.js?v=20261114-deployfix1' lesson-loader.js
+          grep -q 'theme-controller.js?v=20261114-sidebar-parity1' lesson-loader.js
           grep -q 'style-switcher.css?v=20261114-sidebar-parity1' lesson-loader.js
           grep -q 'style-switcher-toggler' lesson-loader.js
           grep -q 'lesson-sidebar-cabinet' lesson-loader.js
