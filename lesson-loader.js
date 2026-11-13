@@ -22,7 +22,7 @@ async function run(){
  const {data,error}=await db.rpc("get_lesson_content",{p_lesson_path:path});
  if(error||!Array.isArray(data)||!data.length||!data[0].body_html){message("Нет доступа к этому уроку","Материал не опубликован или не входит в ваш доступ. Обратитесь к своему учителю.");return;}
  const doc=new DOMParser().parseFromString(data[0].body_html,"text/html"),base=doc.createElement("base");base.href=location.origin+ROOT+dir+"/";doc.head.prepend(base);
- const designSystem=doc.createElement("link");designSystem.rel="stylesheet";designSystem.href=ROOT+"design-system.css?v=20261114-1";doc.head.append(designSystem);
+ const designSystem=doc.createElement("link");designSystem.rel="stylesheet";designSystem.href=ROOT+"design-system.css?v=production";doc.head.append(designSystem);
 
  // Restore shared site assets that were authored as lesson-relative URLs.
  // The protected viewer has a virtual lesson URL, but shared JS and the site logo live at the site root.
@@ -51,9 +51,9 @@ async function run(){
  i.far,i.fa-regular,i.far::before,i.fa-regular::before{font-family:"Font Awesome 6 Free"!important;font-weight:400;font-style:normal}
  i.fab,i.fa-brands,i.fab::before,i.fa-brands::before{font-family:"Font Awesome 6 Brands"!important;font-weight:400;font-style:normal}
  .aside{font-family:"Times New Roman",Times,serif!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;overflow-y:auto!important}
- .aside .nav{width:100%;margin-top:145px!important;margin-bottom:150px!important;max-height:calc(100vh - 330px);overflow-y:auto;padding-bottom:12px}
- .aside .nav li a{font-family:"Times New Roman",Times,serif!important;font-size:16px!important;line-height:1.4!important;padding:9px 15px!important}
- .aside .nav li a i{font-size:17px!important;width:22px!important;margin-right:12px!important}
+ .aside .nav{width:100%;margin-top:145px!important;margin-bottom:150px!important;max-height:calc(100vh - 330px);overflow-y:auto;padding-bottom:12px}.aside .nav li{margin-bottom:20px!important}
+ .aside .nav li a{font-family:"Times New Roman",Times,serif!important;font-size:16px!important;font-style:normal!important;font-weight:600!important;line-height:1.5!important;letter-spacing:normal!important;text-transform:none!important;padding:5px 15px!important}
+ .aside .nav li a i{font-size:16px!important;margin-right:15px!important}
  .aside > .sidebar-auth-list-item,.aside .sidebar-auth-actions,.aside a.sidebar-auth-btn{display:none!important}
  .lesson-sidebar-footer{position:fixed;left:20px;width:230px;bottom:18px;display:flex;flex-direction:column;gap:10px;font-family:"Times New Roman",Times,serif;z-index:1002;background:var(--bg-black-100,#fff);padding:10px 0 0;border-top:1px solid var(--bg-black-50,#ddd)}
  @media(max-height:650px){.aside .nav{margin-top:110px!important;margin-bottom:125px!important;max-height:calc(100vh - 260px)}.lesson-sidebar-footer{bottom:8px}}
@@ -103,7 +103,7 @@ async function run(){
  // Load all three homepage accent palettes explicitly so color controls work even in older lesson HTML.
  const themeOverrides=doc.createElement("style");
  themeOverrides.textContent=`
- body.dark{background:#151515!important;color:#ededed!important}
+ body.dark{--bg-black-900:#151515;--bg-black-100:#222222;--bg-black-50:#393939;--text-black-900:#ffffff;--text-black-700:#e9e9e9;background:#151515!important;color:#ededed!important}
  body.dark .main-container,body.dark .main-content,body.dark .section,body.dark section,body.dark .aside,body.dark .dropdown,body.dark .child,body.dark table,body.dark .container{background-color:#202020!important;color:#ededed!important}
  body.dark h1,body.dark h2,body.dark h3,body.dark h4,body.dark h5,body.dark p,body.dark li,body.dark td,body.dark th,body.dark label,body.dark .lesson-name{color:#ededed!important}
  body.dark a{color:#8fc8ff}
