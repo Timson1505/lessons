@@ -22,7 +22,7 @@ async function run(){
  const {data,error}=await db.rpc("get_lesson_content",{p_lesson_path:path});
  if(error||!Array.isArray(data)||!data.length||!data[0].body_html){message("Нет доступа к этому уроку","Материал не опубликован или не входит в ваш доступ. Обратитесь к своему учителю.");return;}
  const doc=new DOMParser().parseFromString(data[0].body_html,"text/html"),base=doc.createElement("base");base.href=location.origin+ROOT+dir+"/";doc.head.prepend(base);
- const designSystem=doc.createElement("link");designSystem.rel="stylesheet";designSystem.href=ROOT+"design-system.css?v=20261114-cabinet-button1";doc.head.append(designSystem);
+ const designSystem=doc.createElement("link");designSystem.rel="stylesheet";designSystem.href=ROOT+"design-system.css?v=20261114-sidebar-parity1";doc.head.append(designSystem);
  const switcherStyles=doc.createElement("link");switcherStyles.rel="stylesheet";switcherStyles.href=ROOT+"style-switcher.css?v=20261114-sidebar-parity1";doc.head.append(switcherStyles);
 
  // Restore shared site assets that were authored as lesson-relative URLs.

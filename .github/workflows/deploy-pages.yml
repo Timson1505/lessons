@@ -39,7 +39,7 @@ jobs:
           grep -q 'applyDark' theme-controller.js
           python - <<'PY'
           from pathlib import Path
-          version = "20261114-sidebar-parity1"
+          version = "20261114-cabinet-button1"
           shells = sorted(
               p for level in ("Beginner-*", "Elementary-*")
               for p in Path(".").glob(f"{level}/*/index.html")
