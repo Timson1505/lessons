@@ -30,15 +30,18 @@ jobs:
           test -f index.html
           test -f design-system.css
           test -f lesson-loader.js
-          lesson_count=$(find Beginner-* Elementary-* -type f -path '*/lesson-*/index.html' | wc -l | tr -d ' ')
+          lesson_files=$(find Beginner-* Elementary-* -type f | grep -E '/[Ll]esson-[^/]+/index[.]html$')
+          lesson_count=$(printf '%s\n' "$lesson_files" | wc -l | tr -d ' ')
           echo "Protected lesson shells found: $lesson_count"
           test "$lesson_count" -eq 71
           grep -q 'get_lesson_content' lesson-loader.js
           grep -q 'lesson-sidebar-theme-row' lesson-loader.js
           grep -q 'fa-droplet' lesson-loader.js
           grep -q 'design-system.css' lesson-loader.js
-          if grep -L 'lesson-loader.js' $(find Beginner-* Elementary-* -type f -path '*/lesson-*/index.html'); then
-            echo "A lesson shell is missing the protected viewer loader."
+          missing_loaders=$(printf '%s\n' "$lesson_files" | xargs grep -L 'lesson-loader.js' || true)
+          if [ -n "$missing_loaders" ]; then
+            echo "Lesson shells missing the protected viewer loader:"
+            echo "$missing_loaders"
             exit 1
           fi
           printf '{"commit":"%s"}\n' "$GITHUB_SHA" > deployment.json
