@@ -54,6 +54,13 @@ jobs:
                   raise SystemExit(f"Expected one loader URL in {path}; found {count}")
               path.write_text(updated, encoding="utf-8")
           print(f"Cache-busted lesson-loader.js URLs for all {len(paths)} protected shells.")
+          theme_pattern = re.compile(r"""(theme-controller[.]js[?]v=)[^"']+""")
+          for path in (Path("index.html"), Path("lesson-loader.js")):
+              source = path.read_text(encoding="utf-8")
+              updated, count = theme_pattern.subn(lambda match: match.group(1) + os.environ["GITHUB_SHA"], source)
+              if count != 1:
+                  raise SystemExit(f"Expected one shared theme-controller URL in {path}; found {count}")
+              path.write_text(updated, encoding="utf-8")
           PY
           grep -q 'get_lesson_content' lesson-loader.js
           grep -q 'lesson-sidebar-theme-row' lesson-loader.js
