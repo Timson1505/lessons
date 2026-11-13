@@ -103,7 +103,7 @@ async function run(){
    link.href=ROOT+color+".css?v=20261114-sidebar-parity1";
  });
  const themeScript=doc.createElement("script");
- themeScript.src=ROOT+"theme-controller.js?v=20261114-deployfix1";
+ themeScript.src=ROOT+"theme-controller.js?v=20261114-sidebar-parity1";
  doc.body.append(themeScript);
  document.open();document.write("<!doctype html>\n"+doc.documentElement.outerHTML);document.close();
 }
