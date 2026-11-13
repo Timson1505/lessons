@@ -37,12 +37,21 @@ async function run(){
    if(href.endsWith("media/logo.png"))link.setAttribute("href",ROOT+"media/logo.png");
  });
 
- // Match the homepage sidebar typography and create a dedicated bottom area for account/theme controls.
+ // Ensure the same Font Awesome icon font used by the homepage is available in the protected lesson viewer.
+ if(!doc.querySelector('link[href*="font-awesome/6.7.2/css/all.min.css"]')){
+   const icons=doc.createElement("link");icons.rel="stylesheet";icons.href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css";doc.head.append(icons);
+ }
+ // Match the homepage typography and create a dedicated bottom area for account/theme controls.
  const sidebarStyle=doc.createElement("style");
  sidebarStyle.textContent=`
+ body,body *{font-family:"Times New Roman",Times,serif!important}
+ body{font-size:15px!important;line-height:1.5!important}
+ i.fa,i.fas,i.fa-solid,i.fa::before,i.fas::before,i.fa-solid::before{font-family:"Font Awesome 6 Free"!important;font-weight:900;font-style:normal}
+ i.far,i.fa-regular,i.far::before,i.fa-regular::before{font-family:"Font Awesome 6 Free"!important;font-weight:400;font-style:normal}
+ i.fab,i.fa-brands,i.fab::before,i.fa-brands::before{font-family:"Font Awesome 6 Brands"!important;font-weight:400;font-style:normal}
  .aside{font-family:"Times New Roman",Times,serif!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;overflow-y:auto!important}
  .aside .nav{width:100%;margin-top:145px!important;margin-bottom:150px!important;max-height:calc(100vh - 330px);overflow-y:auto;padding-bottom:12px}
- .aside .nav li a{font-family:"Times New Roman",Times,serif!important;font-size:17px!important;line-height:1.45!important;padding:9px 15px!important}
+ .aside .nav li a{font-family:"Times New Roman",Times,serif!important;font-size:15px!important;line-height:1.4!important;padding:9px 15px!important}
  .aside .nav li a i{font-size:17px!important;width:22px!important;margin-right:12px!important}
  .aside > .sidebar-auth-list-item,.aside .sidebar-auth-actions,.aside a.sidebar-auth-btn{display:none!important}
  .lesson-sidebar-footer{position:fixed;left:20px;width:230px;bottom:18px;display:flex;flex-direction:column;gap:10px;font-family:"Times New Roman",Times,serif;z-index:1002;background:var(--bg-black-100,#fff);padding:10px 0 0;border-top:1px solid var(--bg-black-50,#ddd)}
@@ -54,7 +63,9 @@ async function run(){
  .lesson-sidebar-theme-row [data-theme-color="color-1"]{background:#4fadc0}
  .lesson-sidebar-theme-row [data-theme-color="color-2"]{background:#ec1839}
  .lesson-sidebar-theme-row [data-theme-color="color-3"]{background:#37b182}
- .lesson-sidebar-theme-row [data-theme-color]{width:22px;height:22px;border:0}
+ .lesson-sidebar-theme-row [data-theme-color]{width:24px;height:24px;border:0;color:#fff!important;font-size:11px}
+ .lesson-sidebar-theme-row [data-theme-color] i{font-family:"Font Awesome 6 Free"!important;font-weight:900;font-style:normal}
+ .lesson-sidebar-theme-row .lesson-dark-toggle i{font-family:"Font Awesome 6 Free"!important;font-weight:900;font-style:normal}
  .lesson-sidebar-cabinet{display:flex;align-items:center;justify-content:center;gap:9px;padding:11px 14px;border:1px solid var(--skin-color,#2878a8);border-radius:9px;color:var(--skin-color,#2878a8)!important;font-size:16px;font-weight:700;text-decoration:none;background:var(--bg-black-100,#fff);transition:background .2s,color .2s}
  .lesson-sidebar-cabinet:hover{background:var(--skin-color,#2878a8);color:#fff!important}
  body.dark .lesson-sidebar-cabinet{background:#202020}
@@ -68,7 +79,7 @@ async function run(){
    aside.querySelectorAll('a[href*="account.html"],a[href*="#signin"],a[href*="#signup"]').forEach(el=>el.remove());
    const oldFooter=aside.querySelector(".lesson-sidebar-footer");if(oldFooter)oldFooter.remove();
    const footer=doc.createElement("div");footer.className="lesson-sidebar-footer";
-   footer.innerHTML='<div class="lesson-sidebar-theme-row" aria-label="Appearance controls"><button type="button" class="lesson-dark-toggle" aria-label="Switch to dark mode" title="Dark mode"><i class="fas fa-moon" aria-hidden="true"></i></button><button type="button" data-theme-color="color-1" aria-label="Blue theme" title="Blue theme"></button><button type="button" data-theme-color="color-2" aria-label="Red theme" title="Red theme"></button><button type="button" data-theme-color="color-3" aria-label="Green theme" title="Green theme"></button></div><a class="lesson-sidebar-cabinet" href="'+ROOT+'account.html"><i class="fas fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span></a>';
+   footer.innerHTML='<div class="lesson-sidebar-theme-row" aria-label="Appearance controls"><button type="button" class="lesson-dark-toggle" aria-label="Switch to dark mode" title="Dark mode"><i class="fas fa-moon" aria-hidden="true"></i></button><button type="button" data-theme-color="color-1" aria-label="Blue theme" title="Blue accent color"><i class="fas fa-droplet" aria-hidden="true"></i></button><button type="button" data-theme-color="color-2" aria-label="Red theme" title="Red accent color"><i class="fas fa-droplet" aria-hidden="true"></i></button><button type="button" data-theme-color="color-3" aria-label="Green theme" title="Green accent color"><i class="fas fa-droplet" aria-hidden="true"></i></button></div><a class="lesson-sidebar-cabinet" href="'+ROOT+'account.html"><i class="fas fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span></a>';
    aside.append(footer);
    const cabinet=footer.querySelector(".lesson-sidebar-cabinet");
    const {data:profile}=await db.from("profiles").select("role").eq("id",session.user.id).maybeSingle();
