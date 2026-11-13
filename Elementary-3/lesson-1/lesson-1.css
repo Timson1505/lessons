@@ -174,7 +174,6 @@ ul {
     right: 0;
 }
 .aside .nav-toggler {
-    font-size: 12px;
     height: 40px;
     width: 45px;
     border: 1px solid var(--bg-black-50);
