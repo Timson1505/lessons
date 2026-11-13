@@ -25,10 +25,10 @@ body.dark {
 body {
     line-height: 1.5;
     font-family: 'Popoins' sans-serif;
-    font-size: 22px;
+    font-size: 16px;
 }
 * {
-    font-size: 22px;
+    font-size: 16px;
     margin: 0;
     padding: 0;
     outline: none;
