@@ -60,6 +60,10 @@ jobs:
               updated, count = theme_pattern.subn(lambda match: match.group(1) + os.environ["GITHUB_SHA"], source)
               if count != 1:
                   raise SystemExit(f"Expected one shared theme-controller URL in {path}; found {count}")
+              design_pattern = re.compile(r"""(design-system[.]css[?]v=)[^"']+""")
+              updated, design_count = design_pattern.subn(lambda match: match.group(1) + os.environ["GITHUB_SHA"], updated)
+              if design_count != 1:
+                  raise SystemExit(f"Expected one shared design-system URL in {path}; found {design_count}")
               path.write_text(updated, encoding="utf-8")
           PY
           grep -q 'get_lesson_content' lesson-loader.js
