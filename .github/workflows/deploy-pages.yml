@@ -108,8 +108,12 @@ jobs:
             sleep 10
           done
           curl --fail --silent --show-error "$SITE_URL/" -o /dev/null
+          curl --fail --silent --show-error "$SITE_URL/" -o /tmp/homepage.html
+          grep -q "theme-controller.js?v=$EXPECTED_COMMIT" /tmp/homepage.html
+          grep -q 'data-theme-color="color-2"' /tmp/homepage.html
           curl --fail --silent --show-error "$SITE_URL/design-system.css" -o /dev/null
-          curl --fail --silent --show-error "$SITE_URL/lesson-loader.js" -o /dev/null
+          curl --fail --silent --show-error "$SITE_URL/theme-controller.js?v=$EXPECTED_COMMIT" -o /dev/null
           curl --fail --silent --show-error "$SITE_URL/Elementary-3/lesson-1/index.html" -o /tmp/protected-lesson.html
-          grep -q 'lesson-loader.js' /tmp/protected-lesson.html
-          echo "Published commit $ACTUAL_COMMIT verified; homepage, shared CSS, loader and protected lesson shell are reachable."
+          grep -q "lesson-loader.js?v=$EXPECTED_COMMIT" /tmp/protected-lesson.html
+          curl --fail --silent --show-error "$SITE_URL/lesson-loader.js?v=$EXPECTED_COMMIT" -o /dev/null
+          echo "Published commit $ACTUAL_COMMIT verified; homepage, shared CSS, theme controller, versioned lesson loader and protected lesson shell are reachable."
