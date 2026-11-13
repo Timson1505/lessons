@@ -31,6 +31,12 @@ jobs:
           test -f design-system.css
           test -f lesson-loader.js
           test -f theme-controller.js
+          test -f color-1.css
+          test -f color-2.css
+          test -f color-3.css
+          grep -q 'font-family: "Times New Roman", Times, serif !important;' design-system.css
+          grep -q 'font-size: 16px !important;' design-system.css
+          grep -q 'font-weight: 600 !important;' design-system.css
           grep -q 'theme-controller.js' index.html
           grep -q 'theme-controller.js' lesson-loader.js
           grep -q 'applyColor' theme-controller.js
@@ -68,6 +74,8 @@ jobs:
           PY
           grep -q 'get_lesson_content' lesson-loader.js
           grep -q 'lesson-sidebar-theme-row' lesson-loader.js
+          grep -q 'lesson-dark-toggle' lesson-loader.js
+          grep -q 'data-theme-color="color-3"' lesson-loader.js
           grep -q 'fa-droplet' lesson-loader.js
           grep -q 'design-system.css' lesson-loader.js
           missing_loaders=$(printf '%s\n' "$lesson_files" | xargs grep -L 'lesson-loader.js' || true)
@@ -115,9 +123,13 @@ jobs:
           curl --fail --silent --show-error "$SITE_URL/" -o /tmp/homepage.html
           grep -q "theme-controller.js?v=$EXPECTED_COMMIT" /tmp/homepage.html
           grep -q 'data-theme-color="color-2"' /tmp/homepage.html
-          curl --fail --silent --show-error "$SITE_URL/design-system.css" -o /dev/null
+          curl --fail --silent --show-error "$SITE_URL/design-system.css?v=$EXPECTED_COMMIT" -o /dev/null
+          curl --fail --silent --show-error "$SITE_URL/color-1.css" -o /dev/null
+          curl --fail --silent --show-error "$SITE_URL/color-2.css" -o /dev/null
+          curl --fail --silent --show-error "$SITE_URL/color-3.css" -o /dev/null
           curl --fail --silent --show-error "$SITE_URL/theme-controller.js?v=$EXPECTED_COMMIT" -o /dev/null
           curl --fail --silent --show-error "$SITE_URL/Elementary-3/lesson-1/index.html" -o /tmp/protected-lesson.html
           grep -q "lesson-loader.js?v=$EXPECTED_COMMIT" /tmp/protected-lesson.html
-          curl --fail --silent --show-error "$SITE_URL/lesson-loader.js?v=$EXPECTED_COMMIT" -o /dev/null
-          echo "Published commit $ACTUAL_COMMIT verified; homepage, shared CSS, theme controller, versioned lesson loader and protected lesson shell are reachable."
+          curl --fail --silent --show-error "$SITE_URL/lesson-loader.js?v=$EXPECTED_COMMIT" -o /tmp/published-loader.js
+          grep -q "design-system.css?v=$EXPECTED_COMMIT" /tmp/published-loader.js
+          echo "Published commit $ACTUAL_COMMIT verified; homepage, shared sidebar design, three palettes, theme controller, versioned lesson loader and protected lesson shell are reachable."
