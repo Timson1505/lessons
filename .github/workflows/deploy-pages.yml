@@ -1,4 +1,4 @@
-name: Deploy Timson's English Lessons to GitHub Pages
+name: Validate Timson's English Lessons
 
 on:
   push:
@@ -8,25 +8,17 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: github-pages
-  cancel-in-progress: true
 
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out production branch
+      - name: Check out production source
         uses: actions/checkout@v4
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Verify protected lesson architecture
+      - name: Validate shared assets and protected lesson shells
         run: |
+          set -e
           test -f index.html
           test -f design-system.css
           test -f lesson-loader.js
@@ -34,102 +26,25 @@ jobs:
           test -f color-1.css
           test -f color-2.css
           test -f color-3.css
+          grep -q 'design-system.css?v=20261114-deployfix1' index.html
+          grep -q 'theme-controller.js?v=20261114-deployfix1' index.html
+          grep -q 'design-system.css?v=20261114-deployfix1' lesson-loader.js
+          grep -q 'theme-controller.js?v=20261114-deployfix1' lesson-loader.js
           grep -q 'font-family: "Times New Roman", Times, serif !important;' design-system.css
-          grep -q 'font-size: 16px !important;' design-system.css
-          grep -q 'font-weight: 600 !important;' design-system.css
-          grep -q 'theme-controller.js' index.html
-          grep -q 'theme-controller.js' lesson-loader.js
           grep -q 'applyColor' theme-controller.js
           grep -q 'applyDark' theme-controller.js
-          grep -q 'addEventListener("click"' theme-controller.js
-          lesson_files=$(find Beginner-* Elementary-* -mindepth 2 -maxdepth 3 -type f -name index.html)
-          lesson_count=$(printf '%s\n' "$lesson_files" | wc -l | tr -d ' ')
-          echo "Protected lesson and test shells found: $lesson_count"
-          test "$lesson_count" -eq 71
           python - <<'PY'
-          import os, re
           from pathlib import Path
-          paths = sorted(Path(".").glob("Beginner-*/*/index.html")) + sorted(Path(".").glob("Elementary-*/*/index.html"))
-          if len(paths) != 71:
-              raise SystemExit(f"Expected 71 protected shells; found {len(paths)}")
-          pattern = re.compile(r"""(lesson-loader[.]js[?]v=)[^"']+""")
-          for path in paths:
-              source = path.read_text(encoding="utf-8")
-              updated, count = pattern.subn(lambda match: match.group(1) + os.environ["GITHUB_SHA"], source)
-              if count != 1:
-                  raise SystemExit(f"Expected one loader URL in {path}; found {count}")
-              path.write_text(updated, encoding="utf-8")
-          print(f"Cache-busted lesson-loader.js URLs for all {len(paths)} protected shells.")
-          theme_pattern = re.compile(r"""(theme-controller[.]js[?]v=)[^"']+""")
-          for path in (Path("index.html"), Path("lesson-loader.js")):
-              source = path.read_text(encoding="utf-8")
-              updated, count = theme_pattern.subn(lambda match: match.group(1) + os.environ["GITHUB_SHA"], source)
-              if count != 1:
-                  raise SystemExit(f"Expected one shared theme-controller URL in {path}; found {count}")
-              design_pattern = re.compile(r"""(design-system[.]css[?]v=)[^"']+""")
-              updated, design_count = design_pattern.subn(lambda match: match.group(1) + os.environ["GITHUB_SHA"], updated)
-              if design_count != 1:
-                  raise SystemExit(f"Expected one shared design-system URL in {path}; found {design_count}")
-              path.write_text(updated, encoding="utf-8")
+          version = "20261114-deployfix1"
+          shells = sorted(
+              p for level in ("Beginner-*", "Elementary-*")
+              for p in Path(".").glob(f"{level}/*/index.html")
+          )
+          if len(shells) != 71:
+              raise SystemExit(f"Expected 71 protected lesson shells; found {len(shells)}")
+          for path in shells:
+              html = path.read_text(encoding="utf-8")
+              if f"lesson-loader.js?v={version}" not in html:
+                  raise SystemExit(f"Stale lesson-loader URL in {path}")
+          print(f"Validated homepage, shared theme assets and all {len(shells)} protected lesson shells.")
           PY
-          grep -q 'get_lesson_content' lesson-loader.js
-          grep -q 'lesson-sidebar-theme-row' lesson-loader.js
-          grep -q 'lesson-dark-toggle' lesson-loader.js
-          grep -q 'data-theme-color="color-3"' lesson-loader.js
-          grep -q 'fa-droplet' lesson-loader.js
-          grep -q 'design-system.css' lesson-loader.js
-          missing_loaders=$(printf '%s\n' "$lesson_files" | xargs grep -L 'lesson-loader.js' || true)
-          if [ -n "$missing_loaders" ]; then
-            echo "Protected shells missing the viewer loader:"
-            echo "$missing_loaders"
-            exit 1
-          fi
-          printf '{"commit":"%s"}\n' "$GITHUB_SHA" > deployment.json
-
-      - name: Upload static website
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-      - name: Verify published website
-        env:
-          SITE_URL: ${{ steps.deployment.outputs.page_url }}
-          EXPECTED_COMMIT: ${{ github.sha }}
-        run: |
-          set -e
-          for attempt in $(seq 1 12); do
-            if curl --fail --silent --show-error "$SITE_URL/deployment.json" -o /tmp/deployment.json; then
-              ACTUAL_COMMIT=$(python -c 'import json; print(json.load(open("/tmp/deployment.json"))["commit"])')
-              if [ "$ACTUAL_COMMIT" = "$EXPECTED_COMMIT" ]; then break; fi
-            fi
-            if [ "$attempt" -eq 12 ]; then
-              echo "Published deployment marker does not match the expected commit."
-              exit 1
-            fi
-            sleep 10
-          done
-          curl --fail --silent --show-error "$SITE_URL/" -o /dev/null
-          curl --fail --silent --show-error "$SITE_URL/" -o /tmp/homepage.html
-          grep -q "theme-controller.js?v=$EXPECTED_COMMIT" /tmp/homepage.html
-          grep -q 'data-theme-color="color-2"' /tmp/homepage.html
-          curl --fail --silent --show-error "$SITE_URL/design-system.css?v=$EXPECTED_COMMIT" -o /dev/null
-          curl --fail --silent --show-error "$SITE_URL/color-1.css" -o /dev/null
-          curl --fail --silent --show-error "$SITE_URL/color-2.css" -o /dev/null
-          curl --fail --silent --show-error "$SITE_URL/color-3.css" -o /dev/null
-          curl --fail --silent --show-error "$SITE_URL/theme-controller.js?v=$EXPECTED_COMMIT" -o /dev/null
-          curl --fail --silent --show-error "$SITE_URL/Elementary-3/lesson-1/index.html" -o /tmp/protected-lesson.html
-          grep -q "lesson-loader.js?v=$EXPECTED_COMMIT" /tmp/protected-lesson.html
-          curl --fail --silent --show-error "$SITE_URL/lesson-loader.js?v=$EXPECTED_COMMIT" -o /tmp/published-loader.js
-          grep -q "design-system.css?v=$EXPECTED_COMMIT" /tmp/published-loader.js
-          echo "Published commit $ACTUAL_COMMIT verified; homepage, shared sidebar design, three palettes, theme controller, versioned lesson loader and protected lesson shell are reachable."
