@@ -115,3 +115,16 @@ body.dark a:not(.lesson-sidebar-cabinet){color:var(--skin-color,#8fc8ff)}
 body.dark input,body.dark textarea,body.dark select{background:#292929!important;color:#ededed!important;border-color:#555!important}
 body.dark .style-switcher,body.dark .style-switcher .s-icon,body.dark .lesson-sidebar-footer{background:var(--bg-black-100)!important;color:var(--text-black-900)!important;border-color:var(--bg-black-50)!important}
 body.dark .lesson-sidebar-cabinet{background:var(--bg-black-100)!important;color:var(--skin-color)!important}
+
+/* Lesson sidebar: enforce a consistent 16px text size across every sidebar element. */
+.aside,
+.aside :where(.logo, .logo a, .logo span, .nav, .nav li, .nav li a, .lesson-sidebar-footer, .lesson-sidebar-cabinet, .sidebar-auth-btn) {
+  font-size: 16px !important;
+}
+.aside .nav li a,
+.aside .lesson-sidebar-cabinet {
+  font-size: 16px !important;
+}
+.aside .nav li a :not(i):not(svg):not(path) {
+  font-size: 16px !important;
+}
