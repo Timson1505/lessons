@@ -30,7 +30,7 @@ jobs:
           test -f index.html
           test -f design-system.css
           test -f lesson-loader.js
-          lesson_files=$(find Beginner-* Elementary-* -mindepth 2 -maxdepth 2 -type f -name index.html)
+          lesson_files=$(find Beginner-* Elementary-* -mindepth 2 -maxdepth 3 -type f -name index.html)
           lesson_count=$(printf '%s\n' "$lesson_files" | wc -l | tr -d ' ')
           echo "Protected lesson and test shells found: $lesson_count"
           test "$lesson_count" -eq 71
