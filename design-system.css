@@ -1,0 +1,44 @@
+/* Timson's English Lessons — shared design system
+   Common typography and sidebar rules for the homepage and protected lesson viewer. */
+:root {
+  --tle-font-family: "Times New Roman", Times, serif;
+  --tle-font-size: 16px;
+  --tle-sidebar-width: 270px;
+}
+html, body {
+  font-family: var(--tle-font-family) !important;
+}
+body, body :where(p, li, label, input, textarea, select, button, a, td, th, small, strong, em, span, div) {
+  font-family: var(--tle-font-family) !important;
+}
+body { font-size: var(--tle-font-size); line-height: 1.5; }
+.aside {
+  font-family: var(--tle-font-family) !important;
+}
+.aside .nav li a {
+  font-family: var(--tle-font-family) !important;
+  font-size: 16px !important;
+  line-height: 1.4 !important;
+}
+.aside .nav li a i,
+.aside .nav li a .fa,
+.aside .nav li a .fas,
+.aside .nav li a .far,
+.aside .nav li a .fab {
+  font-size: 17px !important;
+}
+/* Keep icon glyphs in their own icon fonts instead of replacing them with Times. */
+i[class*="fa-"], i[class^="fa"], .fa, .fas, .far, .fab,
+[class^="bx"], [class*=" bx-"], .material-symbols-outlined {
+  font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands", "boxicons", "Material Symbols Outlined" !important;
+}
+body.dark {
+  color: #ededed;
+}
+body.dark .aside {
+  background: var(--bg-black-100, #222) !important;
+  color: var(--text-black-900, #fff) !important;
+}
+@media (max-width: 767px) {
+  .aside .nav li a { font-size: 16px !important; }
+}
