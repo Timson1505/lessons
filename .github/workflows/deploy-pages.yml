@@ -25,6 +25,24 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
+      - name: Verify protected lesson architecture
+        run: |
+          test -f index.html
+          test -f design-system.css
+          test -f lesson-loader.js
+          lesson_count=$(find Beginner-* Elementary-* -type f -path '*/lesson-*/index.html' | wc -l | tr -d ' ')
+          echo "Protected lesson shells found: $lesson_count"
+          test "$lesson_count" -eq 71
+          grep -q 'get_lesson_content' lesson-loader.js
+          grep -q 'lesson-sidebar-theme-row' lesson-loader.js
+          grep -q 'fa-droplet' lesson-loader.js
+          grep -q 'design-system.css' lesson-loader.js
+          if grep -L 'lesson-loader.js' $(find Beginner-* Elementary-* -type f -path '*/lesson-*/index.html'); then
+            echo "A lesson shell is missing the protected viewer loader."
+            exit 1
+          fi
+          printf '{"commit":"%s"}\n' "$GITHUB_SHA" > deployment.json
+
       - name: Upload static website
         uses: actions/upload-pages-artifact@v3
         with:
@@ -40,3 +58,27 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Verify published website
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+          EXPECTED_COMMIT: ${{ github.sha }}
+        run: |
+          set -e
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent --show-error "$SITE_URL/deployment.json" -o /tmp/deployment.json; then
+              ACTUAL_COMMIT=$(python -c 'import json; print(json.load(open("/tmp/deployment.json"))["commit"])')
+              if [ "$ACTUAL_COMMIT" = "$EXPECTED_COMMIT" ]; then break; fi
+            fi
+            if [ "$attempt" -eq 12 ]; then
+              echo "Published deployment marker does not match the expected commit."
+              exit 1
+            fi
+            sleep 10
+          done
+          curl --fail --silent --show-error "$SITE_URL/" -o /dev/null
+          curl --fail --silent --show-error "$SITE_URL/design-system.css" -o /dev/null
+          curl --fail --silent --show-error "$SITE_URL/lesson-loader.js" -o /dev/null
+          curl --fail --silent --show-error "$SITE_URL/Elementary-3/lesson-1/index.html" -o /tmp/protected-lesson.html
+          grep -q 'lesson-loader.js' /tmp/protected-lesson.html
+          echo "Published commit $ACTUAL_COMMIT verified; homepage, shared CSS, loader and protected lesson shell are reachable."
