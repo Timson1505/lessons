@@ -117,41 +117,7 @@ async function run(){
    link.href=ROOT+color+".css";
  });
  const themeScript=doc.createElement("script");
- themeScript.textContent=`
- (function(){
-   var controls=document.querySelector(".lesson-sidebar-theme-row");
-   if(!controls || controls.dataset.ready==="true") return;
-   controls.dataset.ready="true";
-   var night=controls.querySelector(".lesson-dark-toggle");
-   var icon=night.querySelector("i");
-   function applyColor(color){
-     document.querySelectorAll("link.alternate-style[title^='color-']").forEach(function(link){
-       if(link.title===color) link.removeAttribute("disabled");
-       else link.setAttribute("disabled","true");
-     });
-     controls.querySelectorAll("[data-theme-color]").forEach(function(button){
-       button.setAttribute("aria-pressed",String(button.dataset.themeColor===color));
-     });
-     try{localStorage.setItem("timsons-lesson-theme-color",color);}catch(e){}
-   }
-   function applyDark(enabled){
-     document.body.classList.toggle("dark",enabled);
-     icon.classList.toggle("fa-sun",enabled);
-     icon.classList.toggle("fa-moon",!enabled);
-     night.setAttribute("aria-label",enabled?"Switch to light mode":"Switch to dark mode");
-     night.title=enabled?"Light mode":"Dark mode";
-     try{localStorage.setItem("timsons-lesson-dark",enabled?"1":"0");}catch(e){}
-   }
-   night.addEventListener("click",function(){applyDark(!document.body.classList.contains("dark"));});
-   controls.querySelectorAll("[data-theme-color]").forEach(function(button){
-     button.addEventListener("click",function(){applyColor(button.dataset.themeColor);});
-   });
-   var savedColor="color-2",savedDark=false;
-   try{savedColor=localStorage.getItem("timsons-lesson-theme-color")||savedColor;savedDark=localStorage.getItem("timsons-lesson-dark")==="1";}catch(e){}
-   if(!["color-1","color-2","color-3"].includes(savedColor))savedColor="color-2";
-   applyColor(savedColor);applyDark(savedDark);
- })();
- `;
+ themeScript.src=ROOT+"theme-controller.js?v=20261114-1";
  doc.body.append(themeScript);
  document.open();document.write("<!doctype html>\n"+doc.documentElement.outerHTML);document.close();
 }
