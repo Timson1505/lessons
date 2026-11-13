@@ -34,6 +34,21 @@ jobs:
           lesson_count=$(printf '%s\n' "$lesson_files" | wc -l | tr -d ' ')
           echo "Protected lesson and test shells found: $lesson_count"
           test "$lesson_count" -eq 71
+          python - <<'PY'
+          import os, re
+          from pathlib import Path
+          paths = sorted(Path(".").glob("Beginner-*/*/index.html")) + sorted(Path(".").glob("Elementary-*/*/index.html"))
+          if len(paths) != 71:
+              raise SystemExit(f"Expected 71 protected shells; found {len(paths)}")
+          pattern = re.compile(r"(lesson-loader\\.js\\?v=)[^\\\"'\\s]+")
+          for path in paths:
+              source = path.read_text(encoding="utf-8")
+              updated, count = pattern.subn(lambda match: match.group(1) + os.environ["GITHUB_SHA"], source)
+              if count != 1:
+                  raise SystemExit(f"Expected one loader URL in {path}; found {count}")
+              path.write_text(updated, encoding="utf-8")
+          print(f"Cache-busted lesson-loader.js URLs for all {len(paths)} protected shells.")
+          PY
           grep -q 'get_lesson_content' lesson-loader.js
           grep -q 'lesson-sidebar-theme-row' lesson-loader.js
           grep -q 'fa-droplet' lesson-loader.js
