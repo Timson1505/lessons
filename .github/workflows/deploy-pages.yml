@@ -30,6 +30,12 @@ jobs:
           test -f index.html
           test -f design-system.css
           test -f lesson-loader.js
+          test -f theme-controller.js
+          grep -q 'theme-controller.js' index.html
+          grep -q 'theme-controller.js' lesson-loader.js
+          grep -q 'applyColor' theme-controller.js
+          grep -q 'applyDark' theme-controller.js
+          grep -q 'addEventListener("click"' theme-controller.js
           lesson_files=$(find Beginner-* Elementary-* -mindepth 2 -maxdepth 3 -type f -name index.html)
           lesson_count=$(printf '%s\n' "$lesson_files" | wc -l | tr -d ' ')
           echo "Protected lesson and test shells found: $lesson_count"
