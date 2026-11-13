@@ -22,6 +22,7 @@ async function run(){
  const {data,error}=await db.rpc("get_lesson_content",{p_lesson_path:path});
  if(error||!Array.isArray(data)||!data.length||!data[0].body_html){message("Нет доступа к этому уроку","Материал не опубликован или не входит в ваш доступ. Обратитесь к своему учителю.");return;}
  const doc=new DOMParser().parseFromString(data[0].body_html,"text/html"),base=doc.createElement("base");base.href=location.origin+ROOT+dir+"/";doc.head.prepend(base);
+ const designSystem=doc.createElement("link");designSystem.rel="stylesheet";designSystem.href=ROOT+"design-system.css?v=20261114-1";doc.head.append(designSystem);
 
  // Restore shared site assets that were authored as lesson-relative URLs.
  // The protected viewer has a virtual lesson URL, but shared JS and the site logo live at the site root.
@@ -51,7 +52,7 @@ async function run(){
  i.fab,i.fa-brands,i.fab::before,i.fa-brands::before{font-family:"Font Awesome 6 Brands"!important;font-weight:400;font-style:normal}
  .aside{font-family:"Times New Roman",Times,serif!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;overflow-y:auto!important}
  .aside .nav{width:100%;margin-top:145px!important;margin-bottom:150px!important;max-height:calc(100vh - 330px);overflow-y:auto;padding-bottom:12px}
- .aside .nav li a{font-family:"Times New Roman",Times,serif!important;font-size:15px!important;line-height:1.4!important;padding:9px 15px!important}
+ .aside .nav li a{font-family:"Times New Roman",Times,serif!important;font-size:16px!important;line-height:1.4!important;padding:9px 15px!important}
  .aside .nav li a i{font-size:17px!important;width:22px!important;margin-right:12px!important}
  .aside > .sidebar-auth-list-item,.aside .sidebar-auth-actions,.aside a.sidebar-auth-btn{display:none!important}
  .lesson-sidebar-footer{position:fixed;left:20px;width:230px;bottom:18px;display:flex;flex-direction:column;gap:10px;font-family:"Times New Roman",Times,serif;z-index:1002;background:var(--bg-black-100,#fff);padding:10px 0 0;border-top:1px solid var(--bg-black-50,#ddd)}
