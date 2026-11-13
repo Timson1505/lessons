@@ -21,21 +21,25 @@ jobs:
           set -e
           test -f index.html
           test -f design-system.css
+          test -f style-switcher.css
           test -f lesson-loader.js
           test -f theme-controller.js
           test -f color-1.css
           test -f color-2.css
           test -f color-3.css
-          grep -q 'design-system.css?v=20261114-deployfix1' index.html
-          grep -q 'theme-controller.js?v=20261114-deployfix1' index.html
-          grep -q 'design-system.css?v=20261114-deployfix1' lesson-loader.js
+          grep -q 'design-system.css?v=20261114-sidebar-parity1' index.html
+          grep -q 'theme-controller.js?v=20261114-sidebar-parity1' index.html
+          grep -q 'design-system.css?v=20261114-sidebar-parity1' lesson-loader.js
           grep -q 'theme-controller.js?v=20261114-deployfix1' lesson-loader.js
+          grep -q 'style-switcher.css?v=20261114-sidebar-parity1' lesson-loader.js
+          grep -q 'style-switcher-toggler' lesson-loader.js
+          grep -q 'lesson-sidebar-cabinet' lesson-loader.js
           grep -q 'font-family: "Times New Roman", Times, serif !important;' design-system.css
           grep -q 'applyColor' theme-controller.js
           grep -q 'applyDark' theme-controller.js
           python - <<'PY'
           from pathlib import Path
-          version = "20261114-deployfix1"
+          version = "20261114-sidebar-parity1"
           shells = sorted(
               p for level in ("Beginner-*", "Elementary-*")
               for p in Path(".").glob(f"{level}/*/index.html")
