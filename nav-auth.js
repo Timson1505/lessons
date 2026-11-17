@@ -12,54 +12,17 @@
     const signIn = actions.querySelector('.sidebar-signin');
     const signUp = actions.querySelector('.sidebar-signup');
 
-    let toggle = actions.querySelector('.sidebar-account-toggle');
-    if (!toggle) {
-      toggle = document.createElement('button');
-      toggle.type = 'button';
-      toggle.className = 'sidebar-auth-btn sidebar-account-toggle';
-      toggle.setAttribute('aria-expanded', 'false');
-      toggle.setAttribute('aria-controls', 'sidebar-cabinet-link');
-      toggle.setAttribute('aria-label', 'Open account menu');
-      toggle.title = 'Account menu';
-      toggle.innerHTML = '<i class="fa fa-user-circle" aria-hidden="true"></i>';
-      actions.appendChild(toggle);
-    }
-
     let cabinet = actions.querySelector('.sidebar-cabinet');
     if (!cabinet) {
       cabinet = document.createElement('a');
       cabinet.className = 'sidebar-auth-btn sidebar-cabinet';
-      cabinet.href = 'account.html';
       cabinet.id = 'sidebar-cabinet-link';
       cabinet.innerHTML = '<i class="fa fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span>';
-      cabinet.hidden = true;
       actions.appendChild(cabinet);
     }
-
-    toggle.addEventListener('click', () => {
-      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
-      toggle.setAttribute('aria-expanded', String(!isOpen));
-      cabinet.hidden = isOpen;
-      if (!isOpen) cabinet.focus();
-    });
-
-    document.addEventListener('click', (event) => {
-      if (!actions.contains(event.target)) {
-        cabinet.hidden = true;
-        toggle.setAttribute('aria-expanded', 'false');
-      }
-    });
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
-        cabinet.hidden = true;
-        toggle.setAttribute('aria-expanded', 'false');
-        toggle.focus();
-      }
-    });
-    cabinet.addEventListener('click', () => {
-      cabinet.hidden = true;
-      toggle.setAttribute('aria-expanded', 'false');
-    });
+    if (signIn) signIn.hidden = true;
+    if (signUp) signUp.hidden = true;
+    cabinet.hidden = false;
 
     const heroImage = document.querySelector('.home-img img');
     const defaultHeroImage = heroImage?.getAttribute('src') || 'hero.jpg';
@@ -90,9 +53,7 @@
       // Keep a single account entry in the sidebar for both guests and signed-in users.
       if (signIn) signIn.hidden = true;
       if (signUp) signUp.hidden = true;
-      cabinet.hidden = true;
-      toggle.hidden = false;
-      toggle.setAttribute('aria-expanded', 'false');
+      cabinet.hidden = false;
       cabinet.href = 'account.html';
       if (!session?.user) {
         updateHeroPhoto(null, null);
