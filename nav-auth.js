@@ -12,15 +12,34 @@
     const signIn = actions.querySelector('.sidebar-signin');
     const signUp = actions.querySelector('.sidebar-signup');
 
+    let toggle = actions.querySelector('.sidebar-account-toggle');
+    if (!toggle) {
+      toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'sidebar-auth-btn sidebar-account-toggle';
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-controls', 'sidebar-cabinet-link');
+      toggle.innerHTML = '<i class="fa fa-user-circle" aria-hidden="true"></i><span>Account</span>';
+      actions.appendChild(toggle);
+    }
+
     let cabinet = actions.querySelector('.sidebar-cabinet');
     if (!cabinet) {
       cabinet = document.createElement('a');
       cabinet.className = 'sidebar-auth-btn sidebar-cabinet';
       cabinet.href = 'account.html';
+      cabinet.id = 'sidebar-cabinet-link';
       cabinet.innerHTML = '<i class="fa fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span>';
       cabinet.hidden = true;
       actions.appendChild(cabinet);
     }
+
+    toggle.addEventListener('click', () => {
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!isOpen));
+      cabinet.hidden = isOpen;
+      if (!isOpen) cabinet.focus();
+    });
 
     const heroImage = document.querySelector('.home-img img');
     const defaultHeroImage = heroImage?.getAttribute('src') || 'hero.jpg';
@@ -51,10 +70,13 @@
       // Keep a single account entry in the sidebar for both guests and signed-in users.
       if (signIn) signIn.hidden = true;
       if (signUp) signUp.hidden = true;
-      cabinet.hidden = false;
+      cabinet.hidden = true;
+      toggle.hidden = false;
+      toggle.setAttribute('aria-expanded', 'false');
       cabinet.href = 'account.html';
       if (!session?.user) {
         updateHeroPhoto(null, null);
+        cabinet.href = 'account.html#signin';
         return;
       }
 
