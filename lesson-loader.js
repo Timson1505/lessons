@@ -22,8 +22,8 @@ async function run(){
  const {data,error}=await db.rpc("get_lesson_content",{p_lesson_path:path});
  if(error||!Array.isArray(data)||!data.length||!data[0].body_html){message("Нет доступа к этому уроку","Материал не опубликован или не входит в ваш доступ. Обратитесь к своему учителю.");return;}
  const doc=new DOMParser().parseFromString(data[0].body_html,"text/html"),base=doc.createElement("base");base.href=location.origin+ROOT+dir+"/";doc.head.prepend(base);
- const designSystem=doc.createElement("link");designSystem.rel="stylesheet";designSystem.href=ROOT+"design-system.css?v=20261117-cabinet-sidebar2";doc.head.append(designSystem);
- const switcherStyles=doc.createElement("link");switcherStyles.rel="stylesheet";switcherStyles.href=ROOT+"style-switcher.css?v=20261117-cabinet-sidebar2";doc.head.append(switcherStyles);
+ const designSystem=doc.createElement("link");designSystem.rel="stylesheet";designSystem.href=ROOT+"design-system.css?v=20261118-cabinet-width1";doc.head.append(designSystem);
+ const switcherStyles=doc.createElement("link");switcherStyles.rel="stylesheet";switcherStyles.href=ROOT+"style-switcher.css?v=20261118-cabinet-width1";doc.head.append(switcherStyles);
 
  // Restore shared site assets that were authored as lesson-relative URLs.
  // The protected viewer has a virtual lesson URL, but shared JS and the site logo live at the site root.
@@ -111,10 +111,10 @@ async function run(){
  ["color-1","color-2","color-3"].forEach(function(color){
    let link=doc.querySelector('link.alternate-style[title="'+color+'"]');
    if(!link){link=doc.createElement("link");link.rel="stylesheet";link.className="alternate-style";link.title=color;link.disabled=true;doc.head.append(link);}
-   link.href=ROOT+color+".css?v=20261117-cabinet-sidebar2";
+   link.href=ROOT+color+".css?v=20261118-cabinet-width1";
  });
  const themeScript=doc.createElement("script");
- themeScript.src=ROOT+"theme-controller.js?v=20261117-cabinet-sidebar2";
+ themeScript.src=ROOT+"theme-controller.js?v=20261118-cabinet-width1";
  doc.body.append(themeScript);
  document.open();document.write("<!doctype html>\n"+doc.documentElement.outerHTML);document.close();
 }
