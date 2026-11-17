@@ -128,3 +128,28 @@ body.dark .lesson-sidebar-cabinet{background:var(--bg-black-100)!important;color
 .aside .nav li a :not(i):not(svg):not(path) {
   font-size: 16px !important;
 }
+
+
+/* Account menu: keep the My Cabinet destination collapsed until the user opens it. */
+.sidebar-account-toggle,
+.lesson-sidebar-account-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--skin-color, #2878a8);
+  color: var(--skin-color, #2878a8);
+  background: var(--bg-black-100, #fff);
+  cursor: pointer;
+}
+.sidebar-account-toggle { width: 100%; min-height: 40px; border-radius: 8px; }
+.sidebar-account-toggle:hover,
+.sidebar-account-toggle[aria-expanded="true"],
+.lesson-sidebar-account-toggle:hover,
+.lesson-sidebar-account-toggle[aria-expanded="true"] {
+  color: #fff;
+  background: var(--skin-color, #2878a8);
+}
+.sidebar-cabinet[hidden],
+.lesson-sidebar-cabinet[hidden] { display: none !important; }
+.sidebar-auth-actions .sidebar-cabinet { margin-top: 8px; }
