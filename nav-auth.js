@@ -43,6 +43,24 @@
       if (!isOpen) cabinet.focus();
     });
 
+    document.addEventListener('click', (event) => {
+      if (!actions.contains(event.target)) {
+        cabinet.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        cabinet.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.focus();
+      }
+    });
+    cabinet.addEventListener('click', () => {
+      cabinet.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+
     const heroImage = document.querySelector('.home-img img');
     const defaultHeroImage = heroImage?.getAttribute('src') || 'hero.jpg';
 
