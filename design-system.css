@@ -245,3 +245,9 @@ body.dark .aside .sidebar-cabinet { color: var(--text-black-900) !important; bac
 .lesson-cabinet-floating{position:fixed!important;left:22px!important;bottom:22px!important;z-index:10040}
 .aside .sidebar-cabinet[hidden],.aside .lesson-sidebar-cabinet[hidden]{display:none!important}
 @media(max-width:767px){.aside .sidebar-auth-list-item{bottom:16px!important}.aside .lesson-sidebar-cabinet{bottom:16px!important}.lesson-cabinet-floating{left:16px!important;bottom:16px!important}}
+
+
+/* Keep My Cabinet comfortably inside the sidebar on narrow layouts. */
+.aside .sidebar-auth-list-item{left:34px!important;right:34px!important}
+.aside .lesson-sidebar-cabinet{left:34px!important;right:34px!important;width:auto!important}
+@media(max-width:767px){.aside .sidebar-auth-list-item{left:28px!important;right:28px!important}.aside .lesson-sidebar-cabinet{left:28px!important;right:28px!important}}
