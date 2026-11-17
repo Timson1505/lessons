@@ -22,8 +22,8 @@ async function run(){
  const {data,error}=await db.rpc("get_lesson_content",{p_lesson_path:path});
  if(error||!Array.isArray(data)||!data.length||!data[0].body_html){message("Нет доступа к этому уроку","Материал не опубликован или не входит в ваш доступ. Обратитесь к своему учителю.");return;}
  const doc=new DOMParser().parseFromString(data[0].body_html,"text/html"),base=doc.createElement("base");base.href=location.origin+ROOT+dir+"/";doc.head.prepend(base);
- const designSystem=doc.createElement("link");designSystem.rel="stylesheet";designSystem.href=ROOT+"design-system.css?v=20261117-account-menu3";doc.head.append(designSystem);
- const switcherStyles=doc.createElement("link");switcherStyles.rel="stylesheet";switcherStyles.href=ROOT+"style-switcher.css?v=20261117-account-menu3";doc.head.append(switcherStyles);
+ const designSystem=doc.createElement("link");designSystem.rel="stylesheet";designSystem.href=ROOT+"design-system.css?v=20261117-cabinet-link1";doc.head.append(designSystem);
+ const switcherStyles=doc.createElement("link");switcherStyles.rel="stylesheet";switcherStyles.href=ROOT+"style-switcher.css?v=20261117-cabinet-link1";doc.head.append(switcherStyles);
 
  // Restore shared site assets that were authored as lesson-relative URLs.
  // The protected viewer has a virtual lesson URL, but shared JS and the site logo live at the site root.
@@ -108,7 +108,7 @@ async function run(){
  cabinet.addEventListener("click",()=>{cabinet.hidden=true;accountToggle.setAttribute("aria-expanded","false");});
  const {data:profile}=await db.from("profiles").select("role").eq("id",session.user.id).maybeSingle();
  const destinations={admin:"admin.html",teacher:"teacher.html",student:"student.html"};
- if(profile?.role&&destinations[profile.role])cabinet.href=ROOT+destinations[profile.role];
+ const role=profile?.role||session.user.user_metadata?.role;if(role&&destinations[role]){cabinet.href=ROOT+destinations[role];cabinet.dataset.dashboard=destinations[role];}
  doc.head.querySelectorAll('meta[name="robots"]').forEach(x=>x.remove());const robots=doc.createElement("meta");robots.name="robots";robots.content="noindex,nofollow,noarchive";doc.head.append(robots);
  const refs=[];
  for(const el of doc.querySelectorAll("[src],[poster]"))for(const attr of ["src","poster"]){const p=resolveMedia(el.getAttribute(attr),dir);if(p)refs.push({el,attr,path:p});}
@@ -126,10 +126,10 @@ async function run(){
  ["color-1","color-2","color-3"].forEach(function(color){
    let link=doc.querySelector('link.alternate-style[title="'+color+'"]');
    if(!link){link=doc.createElement("link");link.rel="stylesheet";link.className="alternate-style";link.title=color;link.disabled=true;doc.head.append(link);}
-   link.href=ROOT+color+".css?v=20261117-account-menu3";
+   link.href=ROOT+color+".css?v=20261117-cabinet-link1";
  });
  const themeScript=doc.createElement("script");
- themeScript.src=ROOT+"theme-controller.js?v=20261117-account-menu3";
+ themeScript.src=ROOT+"theme-controller.js?v=20261117-cabinet-link1";
  doc.body.append(themeScript);
  document.open();document.write("<!doctype html>\n"+doc.documentElement.outerHTML);document.close();
 }
