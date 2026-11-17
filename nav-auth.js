@@ -19,7 +19,9 @@
       toggle.className = 'sidebar-auth-btn sidebar-account-toggle';
       toggle.setAttribute('aria-expanded', 'false');
       toggle.setAttribute('aria-controls', 'sidebar-cabinet-link');
-      toggle.innerHTML = '<i class="fa fa-user-circle" aria-hidden="true"></i><span>Account</span>';
+      toggle.setAttribute('aria-label', 'Open account menu');
+      toggle.title = 'Account menu';
+      toggle.innerHTML = '<i class="fa fa-user-circle" aria-hidden="true"></i>';
       actions.appendChild(toggle);
     }
 
