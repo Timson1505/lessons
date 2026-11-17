@@ -103,8 +103,10 @@
       const { data: profile } = await client
         .from('profiles').select('role').eq('id', session.user.id).maybeSingle();
       const destinations = { admin: 'admin.html', teacher: 'teacher.html', student: 'student.html' };
-      if (profile?.role && destinations[profile.role]) {
-        cabinet.href = destinations[profile.role];
+      const role = profile?.role || session.user.user_metadata?.role;
+      if (role && destinations[role]) {
+        cabinet.href = destinations[role];
+        cabinet.dataset.dashboard = destinations[role];
       }
       updateHeroPhoto(session.user, profile?.role);
     }
