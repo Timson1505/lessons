@@ -228,3 +228,20 @@ body.dark .aside .sidebar-cabinet { color: var(--text-black-900) !important; bac
 @media (max-width: 767px) {
   .aside .sidebar-auth-list-item { margin-top: 12px; }
 }
+
+/* My Cabinet is a permanent direct dashboard link at the bottom of the sidebar. */
+.aside .sidebar-auth-list-item{position:absolute!important;left:22px!important;right:22px!important;bottom:22px!important;margin:0!important;z-index:10040}
+.aside .sidebar-auth-actions{display:block!important;min-height:0!important}
+.aside .sidebar-cabinet,.aside .lesson-sidebar-cabinet{
+ display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;
+ width:100%!important;min-height:46px!important;padding:10px 14px!important;box-sizing:border-box!important;
+ border:0!important;border-radius:13px!important;color:#fff!important;
+ background:linear-gradient(135deg,var(--skin-color,#2878a8),#23446d)!important;
+ font-family:"Times New Roman",Times,serif!important;font-size:16px!important;font-weight:700!important;
+ text-decoration:none!important;box-shadow:0 7px 20px rgba(20,35,65,.2)!important;
+}
+.aside .sidebar-cabinet:hover,.aside .lesson-sidebar-cabinet:hover{filter:brightness(1.08);transform:translateY(-2px)}
+.aside .lesson-sidebar-cabinet{position:absolute!important;left:22px!important;right:22px!important;bottom:22px!important;width:auto!important;z-index:10040}
+.lesson-cabinet-floating{position:fixed!important;left:22px!important;bottom:22px!important;z-index:10040}
+.aside .sidebar-cabinet[hidden],.aside .lesson-sidebar-cabinet[hidden]{display:none!important}
+@media(max-width:767px){.aside .sidebar-auth-list-item{bottom:16px!important}.aside .lesson-sidebar-cabinet{bottom:16px!important}.lesson-cabinet-floating{left:16px!important;bottom:16px!important}}
