@@ -251,3 +251,10 @@ body.dark .aside .sidebar-cabinet { color: var(--text-black-900) !important; bac
 .aside .sidebar-auth-list-item{left:34px!important;right:34px!important}
 .aside .lesson-sidebar-cabinet{left:34px!important;right:34px!important;width:auto!important}
 @media(max-width:767px){.aside .sidebar-auth-list-item{left:28px!important;right:28px!important}.aside .lesson-sidebar-cabinet{left:28px!important;right:28px!important}}
+
+
+/* Narrow My Cabinet control so it stays fully within the sidebar bounds. */
+.aside .sidebar-auth-list-item{left:50px!important;right:50px!important;width:auto!important;max-width:calc(100% - 100px)!important}
+.aside .sidebar-cabinet,.aside .lesson-sidebar-cabinet{width:100%!important;max-width:100%!important;min-width:0!important;padding-left:8px!important;padding-right:8px!important;gap:6px!important;box-sizing:border-box!important}
+.aside .lesson-sidebar-cabinet{left:50px!important;right:50px!important;width:auto!important;max-width:calc(100% - 100px)!important}
+@media(max-width:767px){.aside .sidebar-auth-list-item{left:40px!important;right:40px!important;max-width:calc(100% - 80px)!important}.aside .lesson-sidebar-cabinet{left:40px!important;right:40px!important;max-width:calc(100% - 80px)!important}}
