@@ -22,8 +22,8 @@ async function run(){
  const {data,error}=await db.rpc("get_lesson_content",{p_lesson_path:path});
  if(error||!Array.isArray(data)||!data.length||!data[0].body_html){message("Нет доступа к этому уроку","Материал не опубликован или не входит в ваш доступ. Обратитесь к своему учителю.");return;}
  const doc=new DOMParser().parseFromString(data[0].body_html,"text/html"),base=doc.createElement("base");base.href=location.origin+ROOT+dir+"/";doc.head.prepend(base);
- const designSystem=doc.createElement("link");designSystem.rel="stylesheet";designSystem.href=ROOT+"design-system.css?v=20261117-cabinet-link1";doc.head.append(designSystem);
- const switcherStyles=doc.createElement("link");switcherStyles.rel="stylesheet";switcherStyles.href=ROOT+"style-switcher.css?v=20261117-cabinet-link1";doc.head.append(switcherStyles);
+ const designSystem=doc.createElement("link");designSystem.rel="stylesheet";designSystem.href=ROOT+"design-system.css?v=20261117-cabinet-sidebar2";doc.head.append(designSystem);
+ const switcherStyles=doc.createElement("link");switcherStyles.rel="stylesheet";switcherStyles.href=ROOT+"style-switcher.css?v=20261117-cabinet-sidebar2";doc.head.append(switcherStyles);
 
  // Restore shared site assets that were authored as lesson-relative URLs.
  // The protected viewer has a virtual lesson URL, but shared JS and the site logo live at the site root.
@@ -82,30 +82,15 @@ async function run(){
    switcher.innerHTML='<div class="style-switcher-toggler s-icon"><i class="fas fa-cog fa-spin"></i></div><div class="day-night s-icon"><i class="fas fa-moon"></i></div><h4>Theme Colors</h4><div class="colors"><span class="color-1" data-theme-color="color-2" aria-label="Red accent colour" title="Red accent colour"><i class="fas fa-droplet" aria-hidden="true"></i></span><span class="color-2" data-theme-color="color-1" aria-label="Blue accent colour" title="Blue accent colour"><i class="fas fa-droplet" aria-hidden="true"></i></span><span class="color-3" data-theme-color="color-3" aria-label="Green accent colour" title="Green accent colour"><i class="fas fa-droplet" aria-hidden="true"></i></span></div>';
    doc.body.append(switcher);
  }
- // Always render a persistent My Cabinet shortcut, even if a lesson's sidebar markup
- // differs from the expected .aside structure. The role-specific destination opens
- // the correct dashboard; account.html remains the safe fallback.
- const oldCabinet=doc.querySelector(".lesson-sidebar-footer");if(oldCabinet)oldCabinet.remove();
- const footer=doc.createElement("div");footer.className="lesson-sidebar-footer";
- footer.innerHTML='<button class="lesson-sidebar-account-toggle" type="button" aria-label="Open account menu" aria-expanded="false" aria-controls="lesson-cabinet-link"><i class="fas fa-user-circle" aria-hidden="true"></i></button><a id="lesson-cabinet-link" class="lesson-sidebar-cabinet" href="'+ROOT+'account.html" hidden><i class="fas fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span></a>';
- doc.body.append(footer);
- const cabinet=footer.querySelector(".lesson-sidebar-cabinet");
- const accountToggle=footer.querySelector(".lesson-sidebar-account-toggle");
- accountToggle.addEventListener("click",()=>{
-   const open=accountToggle.getAttribute("aria-expanded")==="true";
-   accountToggle.setAttribute("aria-expanded",String(!open));
-   cabinet.hidden=open;
-   if(!open)cabinet.focus();
- });
- doc.addEventListener("click",event=>{
-   if(!footer.contains(event.target)){cabinet.hidden=true;accountToggle.setAttribute("aria-expanded","false");}
- });
- doc.addEventListener("keydown",event=>{
-   if(event.key==="Escape"&&accountToggle.getAttribute("aria-expanded")==="true"){
-     cabinet.hidden=true;accountToggle.setAttribute("aria-expanded","false");accountToggle.focus();
-   }
- });
- cabinet.addEventListener("click",()=>{cabinet.hidden=true;accountToggle.setAttribute("aria-expanded","false");});
+ // Keep My Cabinet inside the sidebar so it remains part of the hamburger navigation.
+ const oldFooter=doc.querySelector(".lesson-sidebar-footer");if(oldFooter)oldFooter.remove();
+ const asideForAccount=doc.querySelector(".aside");
+ const cabinet=doc.createElement("a");
+ cabinet.id="lesson-cabinet-link";
+ cabinet.className="lesson-sidebar-cabinet";
+ cabinet.href=ROOT+"account.html";
+ cabinet.innerHTML='<i class="fas fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span>';
+ if(asideForAccount)asideForAccount.append(cabinet);else{cabinet.classList.add("lesson-cabinet-floating");doc.body.append(cabinet);}
  const {data:profile}=await db.from("profiles").select("role").eq("id",session.user.id).maybeSingle();
  const destinations={admin:"admin.html",teacher:"teacher.html",student:"student.html"};
  const role=profile?.role||session.user.user_metadata?.role;if(role&&destinations[role]){cabinet.href=ROOT+destinations[role];cabinet.dataset.dashboard=destinations[role];}
@@ -126,10 +111,10 @@ async function run(){
  ["color-1","color-2","color-3"].forEach(function(color){
    let link=doc.querySelector('link.alternate-style[title="'+color+'"]');
    if(!link){link=doc.createElement("link");link.rel="stylesheet";link.className="alternate-style";link.title=color;link.disabled=true;doc.head.append(link);}
-   link.href=ROOT+color+".css?v=20261117-cabinet-link1";
+   link.href=ROOT+color+".css?v=20261117-cabinet-sidebar2";
  });
  const themeScript=doc.createElement("script");
- themeScript.src=ROOT+"theme-controller.js?v=20261117-cabinet-link1";
+ themeScript.src=ROOT+"theme-controller.js?v=20261117-cabinet-sidebar2";
  doc.body.append(themeScript);
  document.open();document.write("<!doctype html>\n"+doc.documentElement.outerHTML);document.close();
 }
