@@ -1746,3 +1746,32 @@ body { font-family: "Times New Roman", Times, serif; font-size: 15px; }
 @media(max-width:1000px){.school-method-grid,.school-proof-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.school-hero-grid{gap:25px}.school-hero-visual{min-height:300px}}
 @media(max-width:767px){.school-showcase{padding-top:55px}.school-hero-grid,.school-demo-layout{grid-template-columns:1fr}.school-hero-copy h1{font-size:40px}.school-hero-visual{min-height:280px;max-width:440px;width:100%;margin:0 auto}.school-visual-main{width:250px}.school-visual-main strong{font-size:34px}.school-audience-strip{grid-template-columns:1fr;margin-top:25px}.school-demo-layout{gap:25px}.school-team-card{grid-template-columns:1fr}.school-team-photo-placeholder{min-height:150px}.school-hero-actions .btn{width:100%;justify-content:center}}
 @media(max-width:480px){.school-method-grid,.school-proof-grid{grid-template-columns:1fr}.school-demo-card{padding:18px}.school-hero-copy h1{font-size:34px}.school-visual-chip{font-size:11px;padding:9px 11px}.chip-one{left:0}.chip-two{right:0}}
+
+
+/* Homepage brand mark: larger, clearer sidebar logo */
+.aside .logo {
+  top: 42px;
+  font-size: 38px;
+}
+.aside .logo a {
+  display: inline-block;
+  font-size: 38px;
+  line-height: 1.15;
+  letter-spacing: .08em;
+  padding: 15px 18px;
+  white-space: nowrap;
+}
+.aside .logo a span {
+  font-size: 50px;
+  line-height: 1;
+}
+.aside .logo a::before,
+.aside .logo a::after {
+  width: 23px;
+  height: 23px;
+}
+@media (max-width: 640px) {
+  .aside .logo { top: 38px; }
+  .aside .logo a { font-size: 35px; }
+  .aside .logo a span { font-size: 46px; }
+}
