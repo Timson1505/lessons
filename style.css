@@ -1748,30 +1748,30 @@ body { font-family: "Times New Roman", Times, serif; font-size: 15px; }
 @media(max-width:480px){.school-method-grid,.school-proof-grid{grid-template-columns:1fr}.school-demo-card{padding:18px}.school-hero-copy h1{font-size:34px}.school-visual-chip{font-size:11px;padding:9px 11px}.chip-one{left:0}.chip-two{right:0}}
 
 
-/* Homepage brand mark: larger, clearer sidebar logo */
+/* Homepage brand mark: prominent sidebar logo */
 .aside .logo {
-  top: 42px;
-  font-size: 38px;
+  top: 34px !important;
+  font-size: 54px !important;
 }
 .aside .logo a {
   display: inline-block;
-  font-size: 38px;
-  line-height: 1.15;
-  letter-spacing: .08em;
-  padding: 15px 18px;
+  font-size: 54px !important;
+  line-height: 1.12;
+  letter-spacing: .035em !important;
+  padding: 16px 12px !important;
   white-space: nowrap;
 }
 .aside .logo a span {
-  font-size: 50px;
+  font-size: 68px !important;
   line-height: 1;
 }
 .aside .logo a::before,
 .aside .logo a::after {
-  width: 23px;
-  height: 23px;
+  width: 27px;
+  height: 27px;
 }
 @media (max-width: 640px) {
-  .aside .logo { top: 38px; }
-  .aside .logo a { font-size: 35px; }
-  .aside .logo a span { font-size: 46px; }
+  .aside .logo { top: 32px !important; }
+  .aside .logo a { font-size: 49px !important; }
+  .aside .logo a span { font-size: 62px !important; }
 }
