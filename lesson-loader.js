@@ -70,6 +70,7 @@ async function run(){
  .lesson-sidebar-cabinet[hidden]{display:none!important}
  /* Reliable lesson navigation: the cabinet remains inside the sidebar on every viewport. */
  .aside{position:fixed!important;z-index:1001!important}
+ .aside .nav-toggler{display:none!important}
  .aside .lesson-sidebar-cabinet{position:absolute!important;display:flex!important;left:18px!important;right:18px!important;bottom:20px!important;width:auto!important;max-width:none!important;min-width:0!important;min-height:46px!important;box-sizing:border-box!important;align-items:center!important;justify-content:center!important;gap:8px!important;padding:9px 12px!important;z-index:10040!important;white-space:nowrap!important}
  .aside .nav{margin-bottom:88px!important;max-height:calc(100vh - 245px)!important;overflow-y:auto!important}
  .lesson-mobile-menu-toggle{display:none;position:fixed;top:16px;left:16px;width:46px;height:46px;padding:11px;border:1px solid var(--bg-black-50,#ddd);border-radius:11px;background:var(--bg-black-100,#fff);box-shadow:0 5px 18px rgba(0,0,0,.16);cursor:pointer;z-index:10050;flex-direction:column;justify-content:center;gap:5px}
