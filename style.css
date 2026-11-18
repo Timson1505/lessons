@@ -1751,18 +1751,18 @@ body { font-family: "Times New Roman", Times, serif; font-size: 15px; }
 /* Homepage sidebar logo: 38px, with a proportionate initial. */
 .aside .logo {
   top: 42px !important;
-  font-size: 38px !important;
+  font-size:48px !important;
 }
 .aside .logo a {
   display: inline-block;
-  font-size: 38px !important;
+  font-size:48px !important;
   line-height: 1.2 !important;
   letter-spacing: 2px !important;
   padding: 15px 12px !important;
   white-space: nowrap;
 }
 .aside .logo a span {
-  font-size: 46px !important;
+  font-size:58px !important;
   line-height: 1 !important;
 }
 .aside .logo a::before,
@@ -1772,6 +1772,6 @@ body { font-family: "Times New Roman", Times, serif; font-size: 15px; }
 }
 @media (max-width: 640px) {
   .aside .logo { top: 32px !important; }
-  .aside .logo a { font-size: 38px !important; }
-  .aside .logo a span { font-size: 46px !important; }
+  .aside .logo a { font-size:48px !important; }
+  .aside .logo a span { font-size:58px !important; }
 }
