@@ -68,8 +68,28 @@ async function run(){
  .lesson-sidebar-cabinet i{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:color-mix(in srgb,var(--skin-color,#2878a8) 13%,transparent);color:var(--skin-color,#2878a8)}
  .lesson-sidebar-cabinet:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(20,35,65,.23)}
  .lesson-sidebar-cabinet[hidden]{display:none!important}
- @media(max-height:650px){.aside .nav{margin-top:110px!important;margin-bottom:115px!important;max-height:calc(100vh - 240px)}.lesson-sidebar-footer{bottom:8px}}
- @media(max-width:767px){.lesson-sidebar-footer{left:20px;bottom:12px}.aside .nav{margin-bottom:75px!important;max-height:calc(100vh - 170px)}}
+ /* Reliable lesson navigation: the cabinet remains inside the sidebar on every viewport. */
+ .aside{position:fixed!important;z-index:1001!important}
+ .aside .lesson-sidebar-cabinet{position:absolute!important;display:flex!important;left:18px!important;right:18px!important;bottom:20px!important;width:auto!important;max-width:none!important;min-width:0!important;min-height:46px!important;box-sizing:border-box!important;align-items:center!important;justify-content:center!important;gap:8px!important;padding:9px 12px!important;z-index:10040!important;white-space:nowrap!important}
+ .aside .nav{margin-bottom:88px!important;max-height:calc(100vh - 245px)!important;overflow-y:auto!important}
+ .lesson-mobile-menu-toggle{display:none;position:fixed;top:16px;left:16px;width:46px;height:46px;padding:11px;border:1px solid var(--bg-black-50,#ddd);border-radius:11px;background:var(--bg-black-100,#fff);box-shadow:0 5px 18px rgba(0,0,0,.16);cursor:pointer;z-index:10050;flex-direction:column;justify-content:center;gap:5px}
+ .lesson-mobile-menu-toggle span{display:block;width:22px;height:2px;border-radius:2px;background:var(--skin-color,#2878a8);transition:transform .2s ease,opacity .2s ease}
+ .lesson-mobile-menu-toggle[aria-expanded="true"] span:first-child{transform:translateY(7px) rotate(45deg)}
+ .lesson-mobile-menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+ .lesson-mobile-menu-toggle[aria-expanded="true"] span:last-child{transform:translateY(-7px) rotate(-45deg)}
+ .lesson-mobile-menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000}
+ .lesson-mobile-menu-overlay[hidden]{display:none!important}
+ @media(max-height:650px){.aside .nav{margin-top:110px!important;margin-bottom:88px!important;max-height:calc(100vh - 210px)!important}}
+ @media(max-width:767px){
+   .lesson-mobile-menu-toggle{display:flex}
+   .aside{left:-280px!important;width:270px!important;max-width:85vw!important;height:100vh!important;top:0!important;bottom:0!important;padding:28px 22px!important;overflow-y:auto!important;transition:left .28s ease!important}
+   .aside.active{left:0!important}
+   .aside .logo{top:28px!important}
+   .aside .nav{margin-top:105px!important;margin-bottom:88px!important;max-height:calc(100vh - 205px)!important}
+   .aside .lesson-sidebar-cabinet{left:16px!important;right:16px!important;bottom:14px!important}
+   body.lesson-menu-open{overflow:hidden!important}
+ }
+ @media(min-width:768px){.lesson-mobile-menu-toggle,.lesson-mobile-menu-overlay{display:none!important}}
  `;
  doc.head.append(sidebarStyle);
  const aside=doc.querySelector(".aside");
@@ -91,6 +111,23 @@ async function run(){
  cabinet.href=ROOT+"account.html";
  cabinet.innerHTML='<i class="fas fa-user-circle" aria-hidden="true"></i><span>My Cabinet</span>';
  if(asideForAccount)asideForAccount.append(cabinet);else{cabinet.classList.add("lesson-cabinet-floating");doc.body.append(cabinet);}
+ // Add a real mobile menu control to the lesson document. Older lesson HTML contains
+ // only the legacy .nav-toggler, which is not wired to the current mobile menu.
+ if(asideForAccount){
+   const menuButton=doc.createElement("button");
+   menuButton.type="button";
+   menuButton.className="lesson-mobile-menu-toggle";
+   menuButton.setAttribute("aria-label","Open navigation menu");
+   menuButton.setAttribute("aria-controls","lesson-sidebar");
+   menuButton.setAttribute("aria-expanded","false");
+   menuButton.innerHTML="<span></span><span></span><span></span>";
+   asideForAccount.id="lesson-sidebar";
+   const overlay=doc.createElement("div");
+   overlay.className="lesson-mobile-menu-overlay";
+   overlay.hidden=true;
+   overlay.setAttribute("aria-hidden","true");
+   doc.body.append(menuButton,overlay);
+ }
  const {data:profile}=await db.from("profiles").select("role").eq("id",session.user.id).maybeSingle();
  const destinations={admin:"admin.html",teacher:"teacher.html",student:"student.html"};
  const role=profile?.role||session.user.user_metadata?.role;if(role&&destinations[role]){cabinet.href=ROOT+destinations[role];cabinet.dataset.dashboard=destinations[role];}
